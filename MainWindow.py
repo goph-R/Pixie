@@ -1,0 +1,69 @@
+from PyQt4.QtCore import Qt, QSettings, QSize
+from PyQt4.QtGui import QMainWindow, QIcon, QMenu, QMenuBar, QImage
+
+from DirWidgets import DirDockWidget
+from FileWidgets import FilesWidget
+
+class MainWindow(QMainWindow):
+
+	def __init__(self, app, parent=None):
+		super(MainWindow, self).__init__(parent)
+
+		self.createStyle()
+
+		self.app = app
+		self.homePath = "c:/users/gopher"
+		self.readSettings()
+		self.setWindowTitle("Pixie - The Image Manager")
+		self.setWindowIcon(QIcon("images/favicon.ico"))
+
+		self.dirDock = DirDockWidget(app)
+		self.addDockWidget(Qt.LeftDockWidgetArea, self.dirDock)
+
+		menuBar = QMenuBar(self)
+		menu = QMenu("&Windows", menuBar)
+		menu.addAction(self.dirDock.toggleViewAction())
+		menuBar.addMenu(menu)
+		self.setMenuBar(menuBar)
+
+		self.files = FilesWidget(app)
+		self.setCentralWidget(self.files)
+
+		self.dirDock.tree.itemSelectionChanged.connect(self.dirChanged)
+
+	def createStyle(self):
+		f = open("style.qss")
+		style = f.read()
+		f.close()
+		style = style.replace("%imagesdir%", "images/style")
+		self.setStyleSheet(style)
+
+	def dirChanged(self):
+		items = self.dirDock.tree.selectedItems()
+		if items:
+			self.files.changeDir(items[0].path)
+
+	def closeEvent(self, event):
+		self.writeSettings()
+		self.files.list.clear()
+		self.app.request({
+			"call": self.app.system.files.quit,
+			"callback": self.closeCallback()
+		})
+		event.ignore()
+		super(MainWindow, self).closeEvent(event)
+
+	def closeCallback(self):
+		self.app.qApp.quit()
+
+	def readSettings(self):
+		settings = QSettings()
+		self.restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+		self.restoreState(settings.value("MainWindow/windowState").toByteArray());
+
+	def writeSettings(self):
+		settings = QSettings()
+		settings.setValue("MainWindow/geometry", self.saveGeometry())
+		settings.setValue("MainWindow/windowState", self.saveState())
+
+

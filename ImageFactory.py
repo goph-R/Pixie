@@ -1,6 +1,5 @@
 import os
 import copy
-import time
 
 from PyQt4.QtCore import Qt, QObject, QThread, QThreadPool, QRunnable, pyqtSignal
 from PyQt4.QtGui import QImage
@@ -14,15 +13,14 @@ class ImageFactoryWorker(QObject):
 		self._imageData = copy.deepcopy(imageData)
 
 	def run(self):
-		if not self._imageData['cached']:
-			self._imageData['image'] = None
-			if os.path.exists(self._imageData['path']):
-				image = QImage(self._imageData['path'])
+		self._imageData['image'] = None
+		if os.path.exists(self._imageData['path']):
+			image = QImage(self._imageData['path'])
+			if not image.isNull():
+				ratio = Qt.KeepAspectRatio if self._imageData['keepRatio'] else Qt.IgnoreAspectRatio
+				image = image.scaled(self._imageData['width'], self._imageData['height'], ratio, Qt.SmoothTransformation)
 				if not image.isNull():
-					ratio = Qt.KeepAspectRatio if self._imageData['keepRatio'] else Qt.IgnoreAspectRatio
-					image = image.scaled(self._imageData['width'], self._imageData['height'], ratio, Qt.SmoothTransformation)
-					if not image.isNull():
-						self._imageData['image'] = image
+					self._imageData['image'] = image
 		self.doneSignal.emit(self._imageData)
 
 
@@ -55,11 +53,6 @@ class ImageFactory(QObject):
 		self._keepRatio = True
 		self._compare = ImageFactory.DefaultCompare
 		self._runnableCount = 0
-		self._cache = {}
-		self._useCache = False
-
-	def setUseCache(self, uc):
-		self._useCache = uc
 
 	def setThreadCount(self, tc):
 		self._threadCount = tc
@@ -74,15 +67,14 @@ class ImageFactory(QObject):
 	def setCompare(self, func):
 		self._compare = func
 
-	def add(self, path, meta={}):
+	def add(self, path, width, height, meta={}):
 		imageData = {
 			'path': path,
 			'meta': meta,
 			'priority': self._nextPriority,
-			'width': self._width,
-			'height': self._height,
-			'keepRatio': self._keepRatio,
-			'cached': self._useCache and path in self._cache
+			'width': width if width else self._width,
+			'height': height if height else self._height,
+			'keepRatio': self._keepRatio
 		}
 		self._imagesData.append(imageData)
 		self._nextPriority += 1
@@ -105,17 +97,7 @@ class ImageFactory(QObject):
 
 	def done(self, imageData):
 		self._queueNext()
-		if self._useCache:
-			path = imageData['path']
-			if imageData['cached']:
-				imageData['image'] = self._cache[path]['image']
-			else:
-				self._cache[path] = imageData
-				self._cache[path]['cacheTime'] = time.time()
 		self.doneSignal.emit(imageData)
-
-	def clearCache(self):
-		self._cache.clear()
 
 	def clear(self):
 		del self._imagesData[:]
@@ -138,11 +120,11 @@ class ImageListWidget(QListWidget):
 
 		self._noImage = QImage()
 		self._noImageScaled = self._noImage
+		self._hasIconSize = False
 
 		self._imageFactory = ImageFactory()
 		self._imageFactory.doneSignal.connect(self.imageDone)
 		self._imageFactory.setCompare(self.compare)
-		self.setIconSize(192, 192)
 
 		self._itemsByPath = {}
 		self._itemWidth = 216
@@ -157,7 +139,6 @@ class ImageListWidget(QListWidget):
 
 		self.setViewMode(QListView.IconMode)
 		self.setResizeMode(QListView.Adjust)
-
 
 	def resizeEvent(self, event):
 		super(ImageListWidget, self).resizeEvent(event)
@@ -183,7 +164,6 @@ class ImageListWidget(QListWidget):
 
 	def setIconSize(self, w, h):
 		super(ImageListWidget, self).setIconSize(QSize(w, h))
-		self._imageFactory.clearCache()
 		self._imageFactory.setSize(w, h)
 		self._scaleNoImage()
 
@@ -191,17 +171,17 @@ class ImageListWidget(QListWidget):
 		self._itemWidth = w
 		self._itemHeight = h
 
-	def addItem(self, path, item, meta={}):
+	def addItem(self, path, item, width=None, height=None, meta={}):
 		super(ImageListWidget, self).addItem(item)
-		self.addToFactory(path, meta)
 		if not path in self._itemsByPath:
 			self._itemsByPath[path] = [item]
 		else:
 			self._itemsByPath[path].append(item)
 		item.setSizeHint(QSize(self._itemWidth, self._itemHeight))
+		self.addToFactory(path, width, height, meta)
 
-	def addToFactory(self, path, meta):
-		self._imageFactory.add(path, meta)
+	def addToFactory(self, path, width, height, meta):
+		self._imageFactory.add(path, width, height, meta)
 
 	def _itemIsVisible(self, item):
 		return self.rect().intersects(self.visualItemRect(item))

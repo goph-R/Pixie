@@ -2,6 +2,10 @@ import sys
 import traceback
 import logging
 
+# we don't want to convert unicode to QString in dictionaries passed in signals
+import sip
+sip.setapi('QString', 2)
+
 from PyQt4.QtCore import QCoreApplication, QObject, pyqtSignal
 from PyQt4.QtGui import QApplication
 

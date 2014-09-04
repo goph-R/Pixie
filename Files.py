@@ -44,7 +44,7 @@ class SubImageChecker(SubChecker):
 			while it.hasNext():
 				name = unicode(it.next())
 				# TODO: use a central "supportedFormats" stuff
-				if name.endswith('.jpg') or name.endswith('.png'):
+				if name.lower().endswith('.jpg') or name.lower().endswith('.png') or name.lower().endswith('.tif') or name.lower().endswith('.gif') or name.lower().endswith('.tiff') or name.lower().endswith('.jpeg'):
 					imagePaths.append(path + name)
 					count += 1
 					if count == maxCount:
@@ -164,8 +164,8 @@ class Files(QObject):
 			})
 			roots = []
 			for r in ret["/"]:
-				data = {"name": "/" + r["name"]}
-				roots.append(data)
+				d = {"name": "/" + r["name"]}
+				roots.append(d)
 		roots.sort(cmp=self.sort, reverse=rev)
 		return roots
 

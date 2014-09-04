@@ -47,7 +47,7 @@ class FileListWidget(ImageListWidget):
 
 	def addToFactory(self, path, width, height, meta):
 		# TODO: use a central "supportedFormats" stuff
-		if path.endswith(".jpg") or path.endswith(".png"):
+		if path.lower().endswith('.jpg') or path.lower().endswith('.png') or path.lower().endswith('.tif') or path.lower().endswith('.gif') or path.lower().endswith('.tiff') or path.lower().endswith('.jpeg'):
 			self._imageFactory.add(path, width, height, meta)
 		elif not meta["isDir"] and path in self._itemsByPath:
 			for item in self._itemsByPath[path]:

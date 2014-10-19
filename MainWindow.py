@@ -41,7 +41,10 @@ class MainWindow(QMainWindow):
 	def dirChanged(self):
 		items = self.dirDock.tree.selectedItems()
 		if items:
-			self.files.changeDir(items[0].path)
+			paths = []
+			for item in items:
+				paths.append(item.path)
+			self.files.changeDir(paths)
 
 	def closeEvent(self, event):
 		self.writeSettings()
@@ -65,5 +68,8 @@ class MainWindow(QMainWindow):
 		settings = QSettings()
 		settings.setValue("MainWindow/geometry", self.saveGeometry())
 		settings.setValue("MainWindow/windowState", self.saveState())
+
+	def sizeHint(self):
+		return QSize(640, 480)
 
 

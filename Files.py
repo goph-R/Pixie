@@ -1,5 +1,7 @@
 import platform
 import locale
+from Utils import Utils
+
 locale.setlocale(locale.LC_ALL, "")
 
 from PyQt4.QtCore import QObject, QDir, pyqtSignal, QDirIterator, QThreadPool, QRunnable
@@ -43,8 +45,7 @@ class SubImageChecker(SubChecker):
 			count = 0
 			while it.hasNext():
 				name = unicode(it.next())
-				# TODO: use a central "supportedFormats" stuff
-				if name.lower().endswith('.jpg') or name.lower().endswith('.png') or name.lower().endswith('.tif') or name.lower().endswith('.gif') or name.lower().endswith('.tiff') or name.lower().endswith('.jpeg'):
+				if Utils.IsSupported(name):
 					imagePaths.append(path + name)
 					count += 1
 					if count == maxCount:

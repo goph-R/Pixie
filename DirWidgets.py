@@ -1,5 +1,6 @@
-from PyQt4.QtCore import Qt, QUrl
-from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem, QDockWidget, QIcon
+from PyQt4.QtCore import Qt, QUrl, QSize
+from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem, QDockWidget, QIcon, QAbstractItemView
+
 
 class DirDockWidget(QDockWidget):
 
@@ -10,6 +11,9 @@ class DirDockWidget(QDockWidget):
 		self.setWindowTitle("Folders")
 		self.tree = DirTreeWidget(app)
 		self.setWidget(self.tree)
+
+	# def sizeHint(self):
+	# 	return QSize(340, 480)
 
 class DirTreeWidgetItem(QTreeWidgetItem):
 
@@ -38,6 +42,7 @@ class DirTreeWidget(QTreeWidget):
 		self.dropAction = Qt.MoveAction
 		self.setAlternatingRowColors(True)
 		#self.setDragDropMode(QAbstractItemView::InternalMove)
+		self.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
 		self.getRoots()
 

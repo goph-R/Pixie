@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 import logging
@@ -6,8 +7,10 @@ import logging
 import sip
 sip.setapi('QString', 2)
 
+from Utils import Utils
+
 from PyQt4.QtCore import QCoreApplication, QObject, pyqtSignal
-from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QApplication, QImageReader
 
 from Config import Config
 from System import System, SystemThread
@@ -45,6 +48,8 @@ class App(QObject):
 		system.responseSignal.connect(self.response)
 
 		self.system.start()
+
+		Utils.Init()
 
 	def request(self, data):
 		self.requestSignal.emit(data)

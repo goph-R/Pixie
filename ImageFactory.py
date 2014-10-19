@@ -183,7 +183,7 @@ class ImageListWidget(QListWidget):
 	def addToFactory(self, path, width, height, meta):
 		self._imageFactory.add(path, width, height, meta)
 
-	def _itemIsVisible(self, item):
+	def itemIsVisible(self, item):
 		return self.rect().intersects(self.visualItemRect(item))
 
 	def compare(self, a, b):
@@ -191,10 +191,10 @@ class ImageListWidget(QListWidget):
 		bVisible = False
 		if a['path'] in self._itemsByPath:
 			for item in self._itemsByPath[a['path']]:
-				aVisible |= self._itemIsVisible(item)
+				aVisible |= self.itemIsVisible(item)
 		if b['path'] in self._itemsByPath:
 			for item in self._itemsByPath[b['path']]:
-				bVisible |= self._itemIsVisible(item)
+				bVisible |= self.itemIsVisible(item)
 		if aVisible and not bVisible:
 			return -1
 		if bVisible and not aVisible:

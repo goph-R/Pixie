@@ -10,7 +10,9 @@ class Utils:
 
 	@staticmethod
 	def Init():
-		Utils.AppDir = os.path.dirname(__file__).replace('\\', '/').replace('/library.zip', '') + '/'
+		Utils.AppDir = os.path.dirname(__file__).replace('\\', '/') + '/'
+		if Utils.AppDir.endswith("library.zip/"):
+			Utils.AppDir = Utils.AppDir[:-12]
 		for fmt in QImageReader.supportedImageFormats():
 			Utils.SupportedFormats.append(unicode(fmt))
 

@@ -55,7 +55,7 @@ class App(QObject):
 		self.requestSignal.emit(data)
 
 	def response(self, data):
-		data["callback"](data["return"])
+		data['callback'](data['return'])
 
 	def run(self):
 		self.mainWindow = MainWindow(self)
@@ -64,15 +64,15 @@ class App(QObject):
 		return self.qApp.exec_()
 
 	def handleError(self, t, v, tb):
-		text = t.__name__ + ": " + str(v) + "\n"
+		text = t.__name__ + ': ' + str(v) + '\n'
 		for textAndLine in traceback.extract_tb(tb):
-			text += str(textAndLine[0]) + " " + str(textAndLine[1]) + " " \
-				+ str(textAndLine[2]) + " " + str(textAndLine[3]) + "\n"
+			text += str(textAndLine[0]) + ' ' + str(textAndLine[1]) + ' ' \
+				+ str(textAndLine[2]) + ' ' + str(textAndLine[3]) + '\n'
 		logging.critical(text)
 
 		self.exceptHook(t, v, tb)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	app = App()
 	app.init()
 	sys.exit(app.run())

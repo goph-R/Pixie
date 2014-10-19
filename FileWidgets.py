@@ -30,10 +30,11 @@ class FileListWidget(ImageListWidget):
 	def __init__(self, parent=None):
 		super(FileListWidget, self).__init__(parent)
 		self.setAcceptDrops(True)
+		imagesDir = Utils.GetImagesDir()
 		self.icons = {
-			"folder": {"image": QImage("images/file-icon-folder.png"), "icon": None },
-			"file": {"image": QImage("images/file-icon-file.png"), "icon": None },
-			"loading": {"image": QImage("images/file-icon-loading.png"), "icon": None }
+			'folder': {'image': QImage(imagesDir + 'file-icon-folder.png'), 'icon': None },
+			'file': {'image': QImage(imagesDir + 'file-icon-file.png'), 'icon': None },
+			'loading': {'image': QImage(imagesDir + 'file-icon-loading.png'), 'icon': None }
 		}
 
 		# TODO: from settings
@@ -58,12 +59,17 @@ class FileListWidget(ImageListWidget):
 		else:
 			event.setDropAction(Qt.MoveAction)
 
+	def dropEvent(self, event):
+		event.setDropAction(Qt.IgnoreAction)
+		event.ignore()
+		super(FileListWidget, self).dropEvent(event)
+
 	def addToFactory(self, path, width, height, meta):
 		if Utils.IsSupported(path):
 			self._imageFactory.add(path, width, height, meta)
-		elif not meta["isDir"] and path in self._itemsByPath:
+		elif not meta['isDir'] and path in self._itemsByPath:
 			for item in self._itemsByPath[path]:
-				item.setIcon(self.icons["file"]["icon"])
+				item.setIcon(self.icons['file']['icon'])
 
 	def setIconSize(self, w, h):
 		super(FileListWidget, self).setIconSize(w, h)
@@ -72,9 +78,9 @@ class FileListWidget(ImageListWidget):
 	def scaleIcons(self):
 		size = self.iconSize()
 		for icon in self.icons.values():
-			if not icon["image"].isNull():
-				image = icon["image"].scaled(size.width(), size.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-				icon["icon"] = QIcon(QPixmap.fromImage(image))
+			if not icon['image'].isNull():
+				image = icon['image'].scaled(size.width(), size.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+				icon['icon'] = QIcon(QPixmap.fromImage(image))
 
 class FilesWidget(QWidget):
 
@@ -93,7 +99,7 @@ class FilesWidget(QWidget):
 		hlayout.setSpacing(5)
 		self.pathEdit = QLineEdit()
 		self.pathEdit.returnPressed.connect(self.pathEditReturnPressed)
-		hlayout.addWidget(QLabel("Path:"))
+		hlayout.addWidget(QLabel('Path:'))
 		hlayout.addWidget(self.pathEdit)
 		vlayout.addLayout(hlayout)
 
@@ -104,23 +110,23 @@ class FilesWidget(QWidget):
 		self.setLayout(vlayout)
 
 		self.paths = []
-		self.sortBy = "name"
+		self.sortBy = 'name'
 		self.sortReverse = False
 
 		self.imageWidgets = []
 
 	def refresh(self):
 		self.app.request({
-			"call": self.app.system.files.clearImageCheckers
+			'call': self.app.system.files.clearImageCheckers
 		})
 		self.app.request({
-			"call": self.app.system.files.getFilesAndDirs,
-			"callback": self.refreshCallback,
-			"getDirs": False,
-			"getBack": len(self.paths) > 3, # TODO: this trick will not work on linux
-			"paths": self.paths,
-			"sortBy": self.sortBy,
-			"sortReverse": self.sortReverse
+			'call': self.app.system.files.getFilesAndDirs,
+			'callback': self.refreshCallback,
+			'getDirs': False,
+			'getBack': len(self.paths) > 3, # TODO: this trick will not work on linux
+			'paths': self.paths,
+			'sortBy': self.sortBy,
+			'sortReverse': self.sortReverse
 		})
 
 	def refreshCallback(self, data):
@@ -128,26 +134,26 @@ class FilesWidget(QWidget):
 		self.list.clear()
 		self.list.scrollToTop() # TODO: if user hits F5, don't do this
 
-		for path in data["dirs"].keys():
-			for d in data["dirs"][path]:
+		for path in data['dirs'].keys():
+			for d in data['dirs'][path]:
 				item = FileListWidgetItem()
-				item.setText(d["name"])
-				p = path + d["name"] + "/"
+				item.setText(d['name'])
+				p = path + d['name'] + '/'
 				item.setData(Qt.UserRole, p)
-				if d["name"] != "..":
-					item.setIcon(self.list.icons["folder"]["icon"])
-				self.list.addItem(p, item, meta={"isDir": True})
-		self.dirsData = data["dirs"]
+				if d['name'] != '..':
+					item.setIcon(self.list.icons['folder']['icon'])
+				self.list.addItem(p, item, meta={'isDir': True})
+		self.dirsData = data['dirs']
 
-		for path in data["files"].keys():
-			for d in data["files"][path]:
+		for path in data['files'].keys():
+			for d in data['files'][path]:
 				item = FileListWidgetItem()
-				item.setText(d["name"])
-				item.setIcon(self.list.icons["loading"]["icon"])
-				p = path + d["name"]
+				item.setText(d['name'])
+				item.setIcon(self.list.icons['loading']['icon'])
+				p = path + d['name']
 				item.setData(Qt.UserRole, p)
-				self.list.addItem(p, item, meta={"isDir": False})
-		self.filesData = data["files"]
+				self.list.addItem(p, item, meta={'isDir': False})
+		self.filesData = data['files']
 
 		self.list.create()
 
@@ -156,14 +162,14 @@ class FilesWidget(QWidget):
 		self.refresh()
 		if len(self.paths) == 1:
 			path = paths[0]
-			if platform.system() == "Windows":
-				p = path.replace("/", "\\")[:-1]
+			if platform.system() == 'Windows':
+				p = path.replace('/', '\\')[:-1]
 				p = p[:1].upper() + p[1:]
 			else:
 				p = path[:-1]
 			self.pathEdit.setText(p)
 		else:
-			self.pathEdit.setText("")
+			self.pathEdit.setText('')
 
 	def pathEditReturnPressed(self):
 		self.pathEdit.text()

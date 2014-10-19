@@ -22,8 +22,8 @@ class System(QObject):
 		super(System, self).__init__(parent)
 
 	def request(self, data):
-		data["return"] = data["call"](data)
-		if "callback" in data and not "noResponse" in data:
+		data['return'] = data['call'](data)
+		if 'callback' in data and not 'noResponse' in data:
 			self.response(data)
 
 	def response(self, data):

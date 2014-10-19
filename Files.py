@@ -2,11 +2,11 @@ import platform
 import locale
 from Utils import Utils
 
-locale.setlocale(locale.LC_ALL, "")
+locale.setlocale(locale.LC_ALL, '')
 
 from PyQt4.QtCore import QObject, QDir, pyqtSignal, QDirIterator, QThreadPool, QRunnable
 
-if platform.system() == "Windows":
+if platform.system() == 'Windows':
 	import win32api
 
 
@@ -25,12 +25,12 @@ class SubChecker(QObject):
 class SubDirChecker(SubChecker):
 
 	def run(self, data):
-		for path in data["paths"]:
+		for path in data['paths']:
 			it = QDirIterator(path, QDir.Dirs | QDir.NoDotAndDotDot)
 			hasDirs = it.hasNext()
 			self.doneSignal.emit({
-				"callback": data["callback"],
-				"return": {"path": path, "hasDirs": hasDirs}
+				'callback': data['callback'],
+				'return': {'path': path, 'hasDirs': hasDirs}
 			})
 		self.finishedSignal.emit()
 
@@ -38,9 +38,9 @@ class SubDirChecker(SubChecker):
 class SubImageChecker(SubChecker):
 
 	def run(self, data):
-		maxCount = data["count"]
+		maxCount = data['count']
 		imagePaths = []
-		for path in data["paths"]:
+		for path in data['paths']:
 			it = QDirIterator(path, QDir.Files | QDir.NoDotAndDotDot)
 			count = 0
 			while it.hasNext():
@@ -51,8 +51,8 @@ class SubImageChecker(SubChecker):
 					if count == maxCount:
 						break
 			self.doneSignal.emit({
-				"callback": data["callback"],
-				"return": {"path": path, "imagePaths": imagePaths}
+				'callback': data['callback'],
+				'return': {'path': path, 'imagePaths': imagePaths}
 			})
 		self.finishedSignal.emit()
 
@@ -73,7 +73,7 @@ class Files(QObject):
 
 	def __init__(self, system, parent=None):
 		super(Files, self).__init__(parent)
-		self.sortBy = "name"
+		self.sortBy = 'name'
 		self.system = system
 		self.subDirChecker = None
 		self.subImageChecker = None
@@ -100,11 +100,11 @@ class Files(QObject):
 		return ret
 
 	def getFiles(self, data):
-		self.sortBy = data["sortBy"] if "sortBy" in data else "name"
-		rev = data["sortReverse"] if "sortReverse" in data else False
-		paths = data["paths"]
-		getDirs = data["getDirs"] if "getDirs" in data else False
-		getBack = getDirs & data["getBack"] if "getBack" in data else False
+		self.sortBy = data['sortBy'] if 'sortBy' in data else 'name'
+		rev = data['sortReverse'] if 'sortReverse' in data else False
+		paths = data['paths']
+		getDirs = data['getDirs'] if 'getDirs' in data else False
+		getBack = getDirs & data['getBack'] if 'getBack' in data else False
 		ret = {}
 		for path in paths:
 			allFiles = QDir(path).entryInfoList(QDir.Dirs | QDir.Files | QDir.NoDotAndDotDot)
@@ -114,34 +114,34 @@ class Files(QObject):
 				if (not isDir and getDirs) or (isDir and not getDirs):
 					continue
 				data = {
-					"name": unicode(fileInfo.fileName()),
-					"mtime": int(fileInfo.created().toTime_t()),
-					"ctime": int(fileInfo.lastModified().toTime_t()),
-					"size": fileInfo.size()
+					'name': unicode(fileInfo.fileName()),
+					'mtime': int(fileInfo.created().toTime_t()),
+					'ctime': int(fileInfo.lastModified().toTime_t()),
+					'size': fileInfo.size()
 				}
 				files.append(data)
 			files.sort(cmp=self.sort, reverse=rev)
 			if getBack:
 				files.insert(0, {
-					"name": "..",
-					"mtime": 0,
-					"ctime": 0,
-					"size": 0
+					'name': '..',
+					'mtime': 0,
+					'ctime': 0,
+					'size': 0
 				})
 			ret[path] = files
 		return ret
 
 	def getFilesAndDirs(self, data):
-		data["getDirs"] = True
+		data['getDirs'] = True
 		dirs = self.getFiles(data)
-		data["getDirs"] = False
+		data['getDirs'] = False
 		files = self.getFiles(data)
-		return {"dirs": dirs, "files": files}
+		return {'dirs': dirs, 'files': files}
 
 	def getRoots(self, data):
-		self.sortBy = data["sortBy"] if "sortBy" in data else "name"
-		rev = data["sortReverse"] if "sortReverse" in data else False
-		if platform.system() == "Windows":
+		self.sortBy = data['sortBy'] if 'sortBy' in data else 'name'
+		rev = data['sortReverse'] if 'sortReverse' in data else False
+		if platform.system() == 'Windows':
 			drives = win32api.GetLogicalDriveStrings()
 			roots = []
 			for drive in drives.split(chr(0)):
@@ -150,22 +150,22 @@ class Files(QObject):
 				try:
 					info = win32api.GetVolumeInformation(drive)
 				except:
-					info = [""]
+					info = ['']
 				data = {
-					"name": drive[:-1].lower(),
-					"label": info[0]
+					'name': drive[:-1].lower(),
+					'label': info[0]
 				}
 				roots.append(data)
 		else:
 			ret = self.getFiles({
-				"sortBy": self.sortBy,
-				"sortReverse": rev,
-				"getDirs": True,
-				"paths": ["/"]
+				'sortBy': self.sortBy,
+				'sortReverse': rev,
+				'getDirs': True,
+				'paths': ['/']
 			})
 			roots = []
-			for r in ret["/"]:
-				d = {"name": "/" + r["name"]}
+			for r in ret['/']:
+				d = {'name': '/' + r['name']}
 				roots.append(d)
 		roots.sort(cmp=self.sort, reverse=rev)
 		return roots

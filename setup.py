@@ -15,7 +15,7 @@ options = {
 }
 
 executables = [
-    Executable('App.py', base=base, icon="images/favicon.ico")
+    Executable('App.py', base=base, icon='images/favicon.ico')
 ]
 
 setup(name='App',
@@ -27,8 +27,8 @@ setup(name='App',
 
 # copy resources
 try:
-    shutil.rmtree("build/exe.win-amd64-2.7/images")
+    shutil.rmtree('build/exe.win-amd64-2.7/images')
 except:
     pass
-shutil.copytree("images", "build/exe.win-amd64-2.7/images")
-shutil.copy("style.qss", "build/exe.win-amd64-2.7/style.qss")
+shutil.copytree('images', 'build/exe.win-amd64-2.7/images')
+shutil.copy('style.qss', 'build/exe.win-amd64-2.7/style.qss')

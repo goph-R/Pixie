@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
 		self.homePath = 'c:/users/gopher'
 		self.readSettings()
 		self.setWindowTitle('Pixie - The Image Manager')
-		self.setWindowIcon(QIcon('images/favicon.ico'))
+		self.setWindowIcon(QIcon(Utils.GetImagesDir() + 'favicon.ico'))
 
 		self.dirDock = DirDockWidget(app)
 		self.addDockWidget(Qt.LeftDockWidgetArea, self.dirDock)

@@ -5,10 +5,12 @@ from PyQt4.QtGui import QImageReader
 
 class Utils:
 
+	AppDir = ''
 	SupportedFormats = []
 
 	@staticmethod
 	def Init():
+		Utils.AppDir = os.path.dirname(__file__).replace('\\', '/').replace('/library.zip', '') + '/'
 		for fmt in QImageReader.supportedImageFormats():
 			Utils.SupportedFormats.append(unicode(fmt))
 
@@ -19,10 +21,6 @@ class Utils:
 		return ext in Utils.SupportedFormats
 
 	@staticmethod
-	def GetAppDir():
-		return os.path.dirname(__file__).replace('\\', '/') + '/'
-
-	@staticmethod
 	def GetImagesDir():
-		return Utils.GetAppDir() + 'images/'
+		return Utils.AppDir + 'images/'
 

@@ -30,6 +30,11 @@ class FileListWidget(ImageListWidget):
 	def __init__(self, parent=None):
 		super(FileListWidget, self).__init__(parent)
 		self.setAcceptDrops(True)
+		### Why this doesn't working in PyQt4.8/Python2.7 ?
+		# self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+		# self.verticalScrollBar().setSingleStep(2)
+
+		# set icons
 		imagesDir = Utils.GetImagesDir()
 		self.icons = {
 			'folder': {'image': QImage(imagesDir + 'file-icon-folder.png'), 'icon': None },
@@ -40,10 +45,6 @@ class FileListWidget(ImageListWidget):
 		# TODO: from settings
 		self.setIconSize(192, 192)
 		self.setItemSize(192 + 8, 192 + 64)
-
-		### Why this doesn't working in PyQt4.8/Python2.7 ?
-		# self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-		# self.verticalScrollBar().setSingleStep(2)
 
 	def dragEnterEvent(self, event):
 		super(FileListWidget, self).dragEnterEvent(event)
@@ -67,7 +68,7 @@ class FileListWidget(ImageListWidget):
 	def addToFactory(self, path, width, height, meta):
 		if Utils.IsSupported(path):
 			self._imageFactory.add(path, width, height, meta)
-		elif not meta['isDir'] and path in self._itemsByPath:
+		elif path in self._itemsByPath and not meta['isDir']:
 			for item in self._itemsByPath[path]:
 				item.setIcon(self.icons['file']['icon'])
 
@@ -88,8 +89,7 @@ class FilesWidget(QWidget):
 		super(FilesWidget, self).__init__(parent)
 		self.app = app
 		self.setAcceptDrops(False)
-		self.dirsData = {}
-		self.filesData = {}
+		self.data = {}
 		vlayout = QVBoxLayout()
 		vlayout.setContentsMargins(0, 0, 0, 0)
 		vlayout.setSpacing(0)
@@ -134,6 +134,10 @@ class FilesWidget(QWidget):
 		self.list.clear()
 		self.list.scrollToTop() # TODO: if user hits F5, don't do this
 
+		# store data
+		self.data = data
+
+		# create folder items
 		for path in data['dirs'].keys():
 			for d in data['dirs'][path]:
 				item = FileListWidgetItem()
@@ -143,8 +147,8 @@ class FilesWidget(QWidget):
 				if d['name'] != '..':
 					item.setIcon(self.list.icons['folder']['icon'])
 				self.list.addItem(p, item, meta={'isDir': True})
-		self.dirsData = data['dirs']
 
+		# create file items
 		for path in data['files'].keys():
 			for d in data['files'][path]:
 				item = FileListWidgetItem()
@@ -153,23 +157,24 @@ class FilesWidget(QWidget):
 				p = path + d['name']
 				item.setData(Qt.UserRole, p)
 				self.list.addItem(p, item, meta={'isDir': False})
-		self.filesData = data['files']
 
+		# create thumbnails
 		self.list.create()
 
 	def changeDir(self, paths):
 		self.paths = paths
 		self.refresh()
-		if len(self.paths) == 1:
-			path = paths[0]
+		pathText = ''
+		sep = ''
+		for path in self.paths:
 			if platform.system() == 'Windows':
 				p = path.replace('/', '\\')[:-1]
 				p = p[:1].upper() + p[1:]
 			else:
 				p = path[:-1]
-			self.pathEdit.setText(p)
-		else:
-			self.pathEdit.setText('')
+			pathText += sep + p
+			sep = '|'
+		self.pathEdit.setText(pathText)
 
 	def pathEditReturnPressed(self):
 		self.pathEdit.text()

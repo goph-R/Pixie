@@ -1,5 +1,5 @@
-from PyQt4.QtCore import Qt, QUrl, QSize
-from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem, QDockWidget, QIcon, QAbstractItemView
+from PySide.QtCore import Qt, QUrl, QSize
+from PySide.QtGui import QTreeWidget, QTreeWidgetItem, QDockWidget, QIcon, QAbstractItemView
 
 
 class DirDockWidget(QDockWidget):

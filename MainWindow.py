@@ -1,6 +1,6 @@
 import os
-from PyQt4.QtCore import Qt, QSettings, QSize
-from PyQt4.QtGui import QMainWindow, QIcon, QMenu, QMenuBar, QImage
+from PySide.QtCore import Qt, QSettings, QSize
+from PySide.QtGui import QMainWindow, QIcon, QMenu, QMenuBar, QImage
 
 from DirWidgets import DirDockWidget
 from FileWidgets import FilesWidget
@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
 		self.createStyle()
 
 		self.app = app
-		self.homePath = 'c:/users/gopher'
+		self.homePath = 'c:/users/laszlog'
 		self.readSettings()
 		self.setWindowTitle('Pixie - The Image Manager')
 		self.setWindowIcon(QIcon(Utils.GetImagesDir() + 'favicon.ico'))
@@ -64,8 +64,8 @@ class MainWindow(QMainWindow):
 
 	def readSettings(self):
 		settings = QSettings()
-		self.restoreGeometry(settings.value('MainWindow/geometry').toByteArray());
-		self.restoreState(settings.value('MainWindow/windowState').toByteArray());
+		self.restoreGeometry(settings.value('MainWindow/geometry'));
+		self.restoreState(settings.value('MainWindow/windowState'));
 
 	def writeSettings(self):
 		settings = QSettings()

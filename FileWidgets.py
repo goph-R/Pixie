@@ -1,7 +1,7 @@
 import platform
 
-from PyQt4.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
-from PyQt4.QtGui import QWidget, QListWidgetItem, QVBoxLayout, QHBoxLayout, QLineEdit, QLabel, QImage, \
+from PySide.QtCore import Qt, QRect, QSize, QPoint, Signal
+from PySide.QtGui import QWidget, QListWidgetItem, QVBoxLayout, QHBoxLayout, QLineEdit, QLabel, QImage, \
 	QIcon, QPixmap, QStyledItemDelegate, QAbstractItemView, QSizeGrip, QPainter
 
 from ImageFactory import ImageListWidget
@@ -30,9 +30,9 @@ class FileListWidget(ImageListWidget):
 	def __init__(self, parent=None):
 		super(FileListWidget, self).__init__(parent)
 		self.setAcceptDrops(True)
-		### Why this doesn't working in PyQt4.8/Python2.7 ?
-		# self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-		# self.verticalScrollBar().setSingleStep(2)
+		### Why this doesn't working in PySide.8/Python2.7 ?
+		self.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
+		#self.verticalScrollBar().setSingleStep(2)
 
 		# set icons
 		imagesDir = Utils.GetImagesDir()
@@ -104,7 +104,7 @@ class FilesWidget(QWidget):
 		vlayout.addLayout(hlayout)
 
 		self.list = FileListWidget()
-		self.list.itemDoubleClicked.connect(self.fileDoubleClicked);
+		self.list.itemDoubleClicked.connect(self.fileDoubleClicked)
 		vlayout.addWidget(self.list)
 
 		self.setLayout(vlayout)
@@ -183,4 +183,4 @@ class FilesWidget(QWidget):
 		items = self.list.selectedItems()
 		if not items:
 			return
-		print unicode(items[0].data(Qt.UserRole).toString())
+		print unicode(items[0].data(Qt.UserRole))

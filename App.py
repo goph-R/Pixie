@@ -1,16 +1,11 @@
-import os
 import sys
 import traceback
 import logging
 
-# we don't want to convert unicode to QString in dictionaries passed in signals
-import sip
-sip.setapi('QString', 2)
-
 from Utils import Utils
 
-from PyQt4.QtCore import QCoreApplication, QObject, pyqtSignal
-from PyQt4.QtGui import QApplication, QImageReader
+from PySide.QtCore import QCoreApplication, QObject, Signal
+from PySide.QtGui import QApplication
 
 from Config import Config
 from System import System, SystemThread
@@ -18,7 +13,7 @@ from MainWindow import MainWindow
 
 class App(QObject):
 
-	requestSignal = pyqtSignal(dict)
+	requestSignal = Signal(dict)
 
 	def __init__(self):
 		super(App, self).__init__()
@@ -42,7 +37,6 @@ class App(QObject):
 
 		system = System()
 		self.system = SystemThread(self, system)
-		system.moveToThread(self.system)
 
 		self.requestSignal.connect(system.request)
 		system.responseSignal.connect(self.response)

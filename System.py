@@ -1,4 +1,4 @@
-from PyQt4.QtCore import QObject, QThread, pyqtSignal
+from PySide.QtCore import QObject, QThread, Signal
 
 from Files import Files
 
@@ -6,8 +6,9 @@ class SystemThread(QThread):
 
 	def __init__(self, app, system):
 		super(SystemThread, self).__init__()
-		self.system = system
 		self.app = app
+		self.system = system
+		self.system.moveToThread(self)
 		self.files = Files(system)
 		self.files.moveToThread(self)
 
@@ -16,7 +17,7 @@ class SystemThread(QThread):
 
 class System(QObject):
 
-	responseSignal = pyqtSignal(dict)
+	responseSignal = Signal(dict)
 
 	def __init__(self, parent=None):
 		super(System, self).__init__(parent)

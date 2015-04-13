@@ -2,18 +2,14 @@ import platform
 import locale
 from Utils import Utils
 
-locale.setlocale(locale.LC_ALL, '')
+#locale.setlocale(locale.LC_ALL, '')
 
-from PyQt4.QtCore import QObject, QDir, pyqtSignal, QDirIterator, QThreadPool, QRunnable
-
-if platform.system() == 'Windows':
-	import win32api
-
+from PySide.QtCore import QObject, QDir, Signal, QDirIterator, QThreadPool, QRunnable
 
 class SubChecker(QObject):
 
-	doneSignal = pyqtSignal(dict)
-	finishedSignal = pyqtSignal()
+	doneSignal = Signal(dict)
+	finishedSignal = Signal()
 
 	def __init__(self):
 		super(SubChecker, self).__init__()
@@ -142,18 +138,13 @@ class Files(QObject):
 		self.sortBy = data['sortBy'] if 'sortBy' in data else 'name'
 		rev = data['sortReverse'] if 'sortReverse' in data else False
 		if platform.system() == 'Windows':
-			drives = win32api.GetLogicalDriveStrings()
+			drives = QDir.drives()
 			roots = []
-			for drive in drives.split(chr(0)):
-				if not drive:
-					continue
-				try:
-					info = win32api.GetVolumeInformation(drive)
-				except:
-					info = ['']
+			for d in drives:
+				drive = d.absolutePath()
 				data = {
 					'name': drive[:-1].lower(),
-					'label': info[0]
+					'label': ''
 				}
 				roots.append(data)
 		else:

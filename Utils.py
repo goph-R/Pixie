@@ -1,7 +1,6 @@
 import os
 
-from PyQt4.QtGui import QImageReader
-
+from PySide.QtGui import QImageReader
 
 class Utils:
 

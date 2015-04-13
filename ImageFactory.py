@@ -1,12 +1,12 @@
 import os
 import copy
 
-from PyQt4.QtCore import Qt, QObject, QThread, QThreadPool, QRunnable, pyqtSignal
-from PyQt4.QtGui import QImage
+from PySide.QtCore import Qt, QObject, QThread, QThreadPool, QRunnable, Signal
+from PySide.QtGui import QImage
 
 class ImageFactoryWorker(QObject):
 
-	doneSignal = pyqtSignal(dict)
+	doneSignal = Signal(dict)
 
 	def __init__(self, imageData, parent=None):
 		super(ImageFactoryWorker, self).__init__(parent)
@@ -36,7 +36,7 @@ class ImageFactoryRunnable(QRunnable):
 
 class ImageFactory(QObject):
 
-	doneSignal = pyqtSignal(dict)
+	doneSignal = Signal(dict)
 
 	@staticmethod
 	def DefaultCompare(a, b):
@@ -108,12 +108,12 @@ class ImageFactory(QObject):
 
 ##############################################################################################################
 
-from PyQt4.QtGui import QListWidget, QIcon, QPixmap, QListView
-from PyQt4.QtCore import QSize, QTimer
+from PySide.QtGui import QListWidget, QIcon, QPixmap, QListView
+from PySide.QtCore import QSize, QTimer
 
 class ImageListWidget(QListWidget):
 
-	imageDoneSignal = pyqtSignal(dict)
+	imageDoneSignal = Signal(dict)
 
 	def __init__(self, parent=None):
 		super(ImageListWidget, self).__init__(parent)

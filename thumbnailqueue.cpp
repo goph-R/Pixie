@@ -43,6 +43,7 @@ bool ThumbnailQueue::startNext() {
         queue.takeFirst();
         auto worker = task->getWorker();
         connect(worker, &ThumbnailWorker::done, this, &ThumbnailQueue::doneSlot);
+        connect(worker, &ThumbnailWorker::error, this, &ThumbnailQueue::errorSlot);
         result = true;
     }
     return result;
@@ -52,3 +53,9 @@ void ThumbnailQueue::doneSlot(QString path, QImage image) {
     emit done(path, image);
     start();
 }
+
+void ThumbnailQueue::errorSlot(QString path) {
+    emit error(path);
+    start();
+}
+

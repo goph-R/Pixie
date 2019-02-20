@@ -11,6 +11,7 @@ public:
     FileListItem(File* file);
     File* getFile();
     void setPixmap(QPixmap pixmap);
+    void setErrorPixmap();
 
 private:
     File* file;

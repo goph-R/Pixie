@@ -6,9 +6,12 @@
 
 FileListWidget::FileListWidget(Config* config) : QListWidget() {
     this->config = config;
+
     folderPixmap = QPixmap(":/icons/folder-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     filePixmap = QPixmap(":/icons/file-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     imagePixmap = QPixmap(":/icons/image-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    imageErrorPixmap = QPixmap(":/icons/image-error-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
     delegate = new FileListDelegate(this);
     setItemDelegate(delegate);
     setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
@@ -41,6 +44,14 @@ bool FileListWidget::isItemExist(QString path) {
 
 FileListItem* FileListWidget::getItem(QString path) {
     return itemsByPath.value(path);
+}
+
+void FileListWidget::setErrorPixmap(QString path) {
+    if (isItemExist(path)) {
+        auto item = getItem(path);
+        item->setPixmap(imageErrorPixmap);
+        viewport()->update();
+    }
 }
 
 void FileListWidget::clear() {

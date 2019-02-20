@@ -19,6 +19,7 @@ public:
     FileListItem* createItem(File* file);
     bool isItemExist(QString path);
     FileListItem* getItem(QString path);
+    void setErrorPixmap(QString path);
     virtual void clear();
 
 private:
@@ -28,6 +29,7 @@ private:
     QPixmap folderPixmap;
     QPixmap filePixmap;
     QPixmap imagePixmap;
+    QPixmap imageErrorPixmap;
 
     friend class FileListDelegate;
 };

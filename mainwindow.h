@@ -26,6 +26,7 @@ public slots:
     void addFile(File*);
     void findFilesDone();
     void thumbnailDone(QString path, QImage image);
+    void thumbnailError(QString path);
 
 private:    
     Config* config;

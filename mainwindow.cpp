@@ -28,6 +28,7 @@ MainWindow::MainWindow(Config* config, FileManager* fileManager, ThumbnailQueue*
     connect(fileManager, &FileManager::fileAdded, this, &MainWindow::addFile);
     connect(fileManager, &FileManager::findFilesDone, this, &MainWindow::findFilesDone);
     connect(thumbnailQueue, &ThumbnailQueue::done, this, &MainWindow::thumbnailDone);
+    connect(thumbnailQueue, &ThumbnailQueue::error, this, &MainWindow::thumbnailError);
 }
 
 MainWindow::~MainWindow() {
@@ -88,4 +89,8 @@ void MainWindow::thumbnailDone(QString path, QImage image) {
         item->setPixmap(pixmap);
         fileListWidget->viewport()->update();
     }
+}
+
+void MainWindow::thumbnailError(QString path) {
+    fileListWidget->setErrorPixmap(path);
 }

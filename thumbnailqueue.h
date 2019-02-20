@@ -21,9 +21,11 @@ public:
 
 public slots:
     void doneSlot(QString path, QImage image);
+    void errorSlot(QString path);
 
 signals:
     void done(QString path, QImage image);
+    void error(QString path);
 
 private:
     QList<ThumbnailRunner*> queue;

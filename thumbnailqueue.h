@@ -22,6 +22,7 @@ public:
 public slots:
     void doneSlot(QString path, QImage image);
     void errorSlot(QString path);
+    void emptySlot();
 
 signals:
     void done(QString path, QImage image);
@@ -31,8 +32,9 @@ private:
     QList<ThumbnailRunner*> queue;
     QThreadPool threadPool;
     Config* config;
-    int retries;
-    bool startNext();
+    void startNext();
+    int active;
+    void workerFinished();
 };
 
 #endif // THUMBNAILFACTORY_H

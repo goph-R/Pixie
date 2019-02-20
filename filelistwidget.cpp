@@ -6,11 +6,7 @@
 
 FileListWidget::FileListWidget(Config* config) : QListWidget() {
     this->config = config;
-
-    folderPixmap = QPixmap(":/icons/folder-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    filePixmap = QPixmap(":/icons/file-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    imagePixmap = QPixmap(":/icons/image-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    imageErrorPixmap = QPixmap(":/icons/image-error-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    resizeImages();
 
     delegate = new FileListDelegate(this);
     setItemDelegate(delegate);
@@ -18,6 +14,14 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
     setViewMode(QListView::IconMode);
     setResizeMode(QListView::Adjust);
     setUniformItemSizes(true);
+}
+
+void FileListWidget::resizeImages() {
+    int size = config->getThumbnailSize();
+    folderPixmap = QPixmap(":/icons/folder-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    filePixmap = QPixmap(":/icons/file-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    imagePixmap = QPixmap(":/icons/image-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    imageErrorPixmap = QPixmap(":/icons/image-error-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 FileListWidget::~FileListWidget() {
@@ -30,9 +34,10 @@ FileListItem* FileListWidget::createItem(File* file) {
     if (!file->isFolder()) {
         item->setPixmap(imageExtensions.contains(file->getExtension()) ? imagePixmap : filePixmap);
     }
+    int thumbnailSize = config->getThumbnailSize();
     item->setText(file->getName());
     item->setData(Qt::UserRole, file->getPath());
-    item->setSizeHint(QSize(132, 165));
+    item->setSizeHint(QSize(thumbnailSize + 4, thumbnailSize + 37));
     addItem(item);
     itemsByPath.insert(file->getPath(), item);
     return item;

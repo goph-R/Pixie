@@ -16,6 +16,7 @@ class FileListWidget : public QListWidget
 public:
     FileListWidget(Config* config);
     ~FileListWidget();
+    void resizeImages();
     FileListItem* createItem(File* file);
     bool isItemExist(QString path);
     FileListItem* getItem(QString path);

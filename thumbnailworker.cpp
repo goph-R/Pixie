@@ -7,7 +7,10 @@
 ThumbnailWorker::ThumbnailWorker(File* file, Config* config) : QObject() {
     path = file->getPath();
     folder = file->isFolder();
-    size = folder ? 88 : 128;
+    size = config->getThumbnailSize();
+    if (folder) {
+        size = static_cast<int>((static_cast<float>(size) * 0.68f));
+    }
     imageNameFilters = config->getImageFileNameFilters();
 }
 
@@ -16,6 +19,7 @@ void ThumbnailWorker::run() {
     if (folder) {
         imagePath = getFirstImagePath();
         if (imagePath == "") {
+            emit empty();
             return;
         }
     }
@@ -24,7 +28,6 @@ void ThumbnailWorker::run() {
     } else {
         emit error(path);
     }
-
 }
 
 QString ThumbnailWorker::getFirstImagePath() {

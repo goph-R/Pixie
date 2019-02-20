@@ -3,7 +3,7 @@
 #include <QDebug>
 
 ThumbnailQueue::ThumbnailQueue(Config* config) : QObject() {
-    retries = 0;
+    active = 0;
     this->config = config;
 }
 
@@ -26,36 +26,36 @@ void ThumbnailQueue::clear() {
 
 void ThumbnailQueue::start() {
     int max = threadPool.maxThreadCount();
-    while (queue.size() && threadPool.activeThreadCount() < max && retries < max) {
-        if (!startNext()) {
-            retries++;
-        }
-    }
-    if (retries == max) {
-        qDebug() << "ThumbnailQueue tried to start a task too many times";
+    while (queue.size() && active < max) {
+        startNext();
     }
 }
 
-bool ThumbnailQueue::startNext() {
-    auto task = queue.at(0);
-    bool result = false;
-    if (threadPool.tryStart(task)) {
-        queue.takeFirst();
-        auto worker = task->getWorker();
-        connect(worker, &ThumbnailWorker::done, this, &ThumbnailQueue::doneSlot);
-        connect(worker, &ThumbnailWorker::error, this, &ThumbnailQueue::errorSlot);
-        result = true;
-    }
-    return result;
+void ThumbnailQueue::startNext() {
+    active++;
+    auto task = queue.takeFirst();
+    threadPool.start(task);
+    auto worker = task->getWorker();
+    connect(worker, &ThumbnailWorker::done, this, &ThumbnailQueue::doneSlot);
+    connect(worker, &ThumbnailWorker::error, this, &ThumbnailQueue::errorSlot);
+    connect(worker, &ThumbnailWorker::empty, this, &ThumbnailQueue::emptySlot);
 }
 
 void ThumbnailQueue::doneSlot(QString path, QImage image) {
     emit done(path, image);
-    start();
+    workerFinished();
 }
 
 void ThumbnailQueue::errorSlot(QString path) {
     emit error(path);
-    start();
+    workerFinished();
 }
 
+void ThumbnailQueue::emptySlot() {
+    workerFinished();
+}
+
+void ThumbnailQueue::workerFinished() {
+    active--;
+    start();
+}

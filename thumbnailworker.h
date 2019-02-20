@@ -18,6 +18,7 @@ public:
 signals:
     void done(QString path, QImage thumbnail);
     void error(QString path);
+    void empty();
 
 private:
     bool folder;

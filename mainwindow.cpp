@@ -5,11 +5,11 @@
 #include <QPixmap>
 #include "file.h"
 
-MainWindow::MainWindow(Config* config, FileManager* fileManager, ThumbnailQueue* thumbnailQueue, QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {    
-    this->config = config;
-    this->fileManager = fileManager;
-    this->thumbnailQueue = thumbnailQueue;
+    config = new Config();
+    fileManager = new FileManager();
+    thumbnailQueue = new ThumbnailQueue(config);
 
     folderTreeWidget = new FolderTreeWidget();
     dockWidget = new QDockWidget("Folders");
@@ -31,7 +31,13 @@ MainWindow::MainWindow(Config* config, FileManager* fileManager, ThumbnailQueue*
     connect(thumbnailQueue, &ThumbnailQueue::error, this, &MainWindow::thumbnailError);
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow() {    
+}
+
+void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
+    delete thumbnailQueue;
+    delete fileManager;
+    delete config;
 }
 
 void MainWindow::addDrives() {

@@ -15,10 +15,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(Config* config, FileManager* fileManager, ThumbnailQueue* thumbnailQueue, QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     virtual ~MainWindow() override;
     virtual QSize sizeHint() const override;
     void addDrives();
+    virtual void closeEvent(QCloseEvent* event) override;
 
 public slots:
     void folderSelectionChanged();    

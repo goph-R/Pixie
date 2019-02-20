@@ -16,22 +16,12 @@ int main(int argc, char *argv[])
     qRegisterMetaType<FoundFile>("FoundFile");
     qRegisterMetaType<FoundFile>("FoundFolder");
 
-    auto config = new Config();
-    auto fileManager = new FileManager();
-    auto thumbnailQueue = new ThumbnailQueue(config);
-
-    MainWindow mainWindow(config, fileManager, thumbnailQueue);
+    MainWindow mainWindow;
     mainWindow.show();
     mainWindow.setGeometry(QStyle::alignedRect(
         Qt::LeftToRight, Qt::AlignCenter, mainWindow.size(),
         app.screens().at(app.desktop()->screenNumber())->availableGeometry())
     );
 
-    int result = app.exec();
-
-    delete thumbnailQueue;
-    delete fileManager;
-    delete config;
-
-    return result;
+    return app.exec();
 }

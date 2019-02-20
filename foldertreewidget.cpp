@@ -2,11 +2,15 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QHeaderView>
 #include "foldertreeitem.h"
 
 FolderTreeWidget::FolderTreeWidget() : QTreeWidget() {
     setHeaderHidden(true);
     folderIcon = QIcon(":/icons/folder.png");
+    auto h = header();
+    h->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    h->setStretchLastSection(false);
 }
 
 FolderTreeWidget::~FolderTreeWidget() {

@@ -8,8 +8,10 @@ class Config
 public:
     Config();
     const QStringList getImageExtensions();
+    const QStringList getImageFileNameFilters();
 private:
     QStringList imageExtensions;
+    QStringList imageFileNameFilters;
 };
 
 #endif // CONFIG_H

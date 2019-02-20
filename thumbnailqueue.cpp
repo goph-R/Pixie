@@ -2,8 +2,9 @@
 
 #include <QDebug>
 
-ThumbnailQueue::ThumbnailQueue() : QObject() {
+ThumbnailQueue::ThumbnailQueue(Config* config) : QObject() {
     retries = 0;
+    this->config = config;
 }
 
 ThumbnailQueue::~ThumbnailQueue() {
@@ -12,7 +13,7 @@ ThumbnailQueue::~ThumbnailQueue() {
 }
 
 void ThumbnailQueue::add(File* file) {
-    auto task = new ThumbnailRunner(file->getPath());
+    auto task = new ThumbnailRunner(file, config);
     queue.append(task);
 }
 

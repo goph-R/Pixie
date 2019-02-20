@@ -15,8 +15,10 @@ public:
 
 private:
     FileListWidget* fileListWidget;
-    QBrush brush;
-    QPen pen;
+    QBrush backgroundBrush;
+    QBrush borderBrush;
+    QPen textPen;
+    void drawPixmap(QPainter *p, QPixmap &pixmap, QRect &rect, bool border) const;
 };
 
 #endif // FILELISTDELEGATE_H

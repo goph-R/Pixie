@@ -9,18 +9,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {    
     config = new Config();
     fileManager = new FileManager();
-    thumbnailQueue = new ThumbnailQueue();
+    thumbnailQueue = new ThumbnailQueue(config);
 
     folderTreeWidget = new FolderTreeWidget();
     dockWidget = new QDockWidget("Folders");
     dockWidget->setWidget(folderTreeWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
-    fileListWidget = new FileListWidget();
+    fileListWidget = new FileListWidget(config);
     setCentralWidget(fileListWidget);
-
-    folderPixmap = QPixmap(":/icons/folder-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    filePixmap = QPixmap(":/icons/file-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    imagePixmap = QPixmap(":/icons/image-big.png").scaled(112, 112, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     addDrives();
 
@@ -73,14 +69,10 @@ void MainWindow::folderSelectionChanged() {
 
 void MainWindow::addFile(File* file) {
     auto imageExtensions = config->getImageExtensions();
-    auto pixmap = filePixmap;
-    if (file->isFolder()) {
-        pixmap = folderPixmap;
-    } else if (imageExtensions.contains(file->getExtension())) {
-        pixmap = imagePixmap;
+    if (file->isFolder() || imageExtensions.contains(file->getExtension())) {
         thumbnailQueue->add(file);
     }
-    fileListWidget->createItem(file, pixmap);
+    fileListWidget->createItem(file);
 }
 
 void MainWindow::findFilesDone() {

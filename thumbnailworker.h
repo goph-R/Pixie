@@ -4,13 +4,15 @@
 #include <QObject>
 #include <QString>
 #include <QImage>
+#include "config.h"
+#include "file.h"
 
 class ThumbnailWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    ThumbnailWorker(QString path);
+    ThumbnailWorker(File* file, Config* config);
     void run();
 
 signals:
@@ -18,7 +20,13 @@ signals:
     void error(QString path);
 
 private:
+    bool folder;
+    QString getFirstImagePath();
     QString path;
+    QStringList imageNameFilters;
+    bool createThumbnail(QString path);
+    int size;
+    QImage image;
 };
 
 #endif // THUMBNAILTASKSIGNALS_H

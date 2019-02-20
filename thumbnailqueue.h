@@ -4,16 +4,16 @@
 #include <QObject>
 #include <QThreadPool>
 #include <QImage>
-#include <QTimer>
 #include "file.h"
 #include "thumbnailrunner.h"
+#include "config.h"
 
 class ThumbnailQueue : public QObject
 {
     Q_OBJECT
 
 public:
-    ThumbnailQueue();
+    ThumbnailQueue(Config* config);
     ~ThumbnailQueue();
     void add(File* file);
     void start();
@@ -28,7 +28,7 @@ signals:
 private:
     QList<ThumbnailRunner*> queue;
     QThreadPool threadPool;
-    QTimer timer;
+    Config* config;
     int retries;
     bool startNext();
 };

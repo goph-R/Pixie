@@ -34,9 +34,6 @@ private:
     QDockWidget* dockWidget;
     FolderTreeWidget* folderTreeWidget;
     FileListWidget* fileListWidget;
-    QPixmap folderPixmap;
-    QPixmap filePixmap;
-    QPixmap imagePixmap;
 };
 
 #endif // MAINWINDOW_H

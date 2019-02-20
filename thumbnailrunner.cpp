@@ -2,9 +2,9 @@
 
 #include <QDebug>
 
-ThumbnailRunner::ThumbnailRunner(QString path) : QRunnable() {
+ThumbnailRunner::ThumbnailRunner(File* file, Config* config) : QRunnable() {
     setAutoDelete(true);
-    worker = new ThumbnailWorker(path);
+    worker = new ThumbnailWorker(file, config);
 }
 
 ThumbnailRunner::~ThumbnailRunner() {

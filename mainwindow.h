@@ -34,6 +34,7 @@ private:
     QDockWidget* dockWidget;
     FolderTreeWidget* folderTreeWidget;
     FileListWidget* fileListWidget;
+    File* currentFolder;
 };
 
 #endif // MAINWINDOW_H

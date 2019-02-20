@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     fileListWidget = new FileListWidget(config);
     setCentralWidget(fileListWidget);
+    currentFolder = nullptr;
 
     addDrives();
 
@@ -64,10 +65,14 @@ void MainWindow::folderSelectionChanged() {
     }
     thumbnailQueue->clear();
     fileListWidget->clear();
-    fileManager->findFiles(folderItem->getFile());
+    currentFolder = folderItem->getFile();
+    fileManager->findFiles(currentFolder);
 }
 
 void MainWindow::addFile(File* file) {
+    if (file->getParent()->getPath() != currentFolder->getPath()) {
+        return;
+    }
     auto imageExtensions = config->getImageExtensions();
     if (file->isFolder() || imageExtensions.contains(file->getExtension())) {
         thumbnailQueue->add(file);

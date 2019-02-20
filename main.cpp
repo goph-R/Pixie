@@ -10,17 +10,28 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
     qRegisterMetaType<File*>("File*");
     qRegisterMetaType<FoundFile>("FoundFile");
     qRegisterMetaType<FoundFile>("FoundFolder");
 
-    MainWindow w;
-    w.show();    
+    auto config = new Config();
+    auto fileManager = new FileManager();
+    auto thumbnailQueue = new ThumbnailQueue(config);
 
-    // w.center() or something like that???
-    w.setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, w.size(), a.screens().at(a.desktop()->screenNumber())->availableGeometry()));
+    MainWindow mainWindow(config, fileManager, thumbnailQueue);
+    mainWindow.show();
+    mainWindow.setGeometry(QStyle::alignedRect(
+        Qt::LeftToRight, Qt::AlignCenter, mainWindow.size(),
+        app.screens().at(app.desktop()->screenNumber())->availableGeometry())
+    );
 
-    return a.exec();
+    int result = app.exec();
+
+    delete thumbnailQueue;
+    delete fileManager;
+    delete config;
+
+    return result;
 }

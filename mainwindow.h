@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(Config* config, FileManager* fileManager, ThumbnailQueue* thumbnailQueue, QWidget *parent = nullptr);
     virtual ~MainWindow() override;
     virtual QSize sizeHint() const override;
     void addDrives();

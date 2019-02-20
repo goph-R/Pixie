@@ -13,7 +13,7 @@ FileManager::FileManager() : QObject() {
 FileManager::~FileManager() {
     workerThread.quit();
     workerThread.wait();
-    //delete root;
+    delete root;
 }
 
 void FileManager::createWorkerThread() {

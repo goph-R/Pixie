@@ -17,10 +17,12 @@ public:
     const QList<File*> getChildren();
     void removeChildren();
     bool isFolder();
+    bool isImage();
 
 private:
     File* parent;
     bool folder;
+    bool image;
     QString name;
     QString path;
     QString extension;

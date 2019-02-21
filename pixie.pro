@@ -40,7 +40,9 @@ SOURCES += \
     filelistitem.cpp \
     foldertreeitem.cpp \
     thumbnailrunner.cpp \
-    thumbnailworker.cpp
+    thumbnailworker.cpp \
+    viewwindow.cpp \
+    viewwidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -57,7 +59,9 @@ HEADERS += \
     foldertreeitem.h \
     filelistitem.h \
     thumbnailrunner.h \
-    thumbnailworker.h
+    thumbnailworker.h \
+    viewwindow.h \
+    viewwidget.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -6,6 +6,7 @@ File::File(File* parent, QString name, bool folder) {
     this->name = name;
     this->parent = parent;
     this->folder = folder;
+    this->image = false;
     this->extension = "";
     QString parentPath = "";
     QString endSlash = "";
@@ -53,4 +54,8 @@ void File::removeChildren() {
 
 bool File::isFolder() {
     return folder;
+}
+
+bool File::isImage() {
+    return image;
 }

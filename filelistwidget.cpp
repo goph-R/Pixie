@@ -30,9 +30,8 @@ FileListWidget::~FileListWidget() {
 
 FileListItem* FileListWidget::createItem(File* file) {
     auto item = new FileListItem(file);
-    auto imageExtensions = config->getImageExtensions();
     if (!file->isFolder()) {
-        item->setPixmap(imageExtensions.contains(file->getExtension()) ? imagePixmap : filePixmap);
+        item->setPixmap(file->isImage() ? imagePixmap : filePixmap);
     }
     int thumbnailSize = config->getThumbnailSize();
     item->setText(file->getName());

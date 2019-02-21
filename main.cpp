@@ -1,9 +1,8 @@
-#include "mainwindow.h"
 #include <QApplication>
-
 #include <QScreen>
 #include <QDesktopWidget>
-
+#include "mainwindow.h"
+#include "viewwindow.h"
 #include "file.h"
 #include "foundfile.h"
 #include "foundfolder.h"
@@ -17,11 +16,13 @@ int main(int argc, char *argv[])
     qRegisterMetaType<FoundFile>("FoundFolder");
 
     MainWindow mainWindow;
-    mainWindow.show();
-    mainWindow.setGeometry(QStyle::alignedRect(
-        Qt::LeftToRight, Qt::AlignCenter, mainWindow.size(),
-        app.screens().at(app.desktop()->screenNumber())->availableGeometry())
-    );
+    ViewWindow viewWindow(&mainWindow);
+    mainWindow.setViewWindow(&viewWindow);
+
+    QMainWindow* active = &mainWindow; // TODO: open the image view if filename argument presents
+    QRect availableGeometry = app.screens().at(app.desktop()->screenNumber())->availableGeometry();
+    active->show();
+    active->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, active->size(), availableGeometry));
 
     return app.exec();
 }

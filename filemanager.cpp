@@ -4,7 +4,8 @@
 #include <QDir>
 #include "filemanagerworker.h"
 
-FileManager::FileManager() : QObject() {
+FileManager::FileManager(Config* config) : QObject() {
+    imageExtensions = config->getImageExtensions();
     createWorkerThread();
     createRoot();
     findDrives();
@@ -50,6 +51,15 @@ void FileManager::findFolders(File* file) {
     emit findFoldersSignal(file->getPath());
 }
 
+void FileManager::expandFolders(QString path) {
+    QFileInfo info(path);
+    QString expandPath = info.absoluteFilePath();
+    if (!info.isDir()) {
+        expandPath = info.absoluteDir().path();
+    }
+    qDebug() << path;
+}
+
 void FileManager::findFiles(File* file) {
     emit findFilesSignal(file->getPath());
 }
@@ -82,6 +92,7 @@ void FileManager::foundFile(FoundFile foundFile) {
     } else if (filesByPath.contains(folderPath)) {
         auto file = createEntry(folderPath, foundFile.getName(), foundFile.isFolder());
         file->extension = foundFile.getExtension();
+        file->image = imageExtensions.contains(file->extension);
         emit fileAdded(file);
     }
 }

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QHash>
+#include "config.h"
 #include "file.h"
 #include "foundfile.h"
 #include "foundfolder.h"
@@ -13,10 +14,11 @@ class FileManager : public QObject
     Q_OBJECT
 
 public:
-    FileManager();
+    FileManager(Config* config);
     ~FileManager();
     File* getRoot();
     void findFolders(File* file);
+    void expandFolders(QString path);
     void findFiles(File* file);
 
 public slots:
@@ -32,8 +34,10 @@ signals:
     void folderEmpty(File* file);
     void fileAdded(File* file);
     void findFilesDone();
+    void expandFoldersSignal(QString path);
 
 private:
+    QStringList imageExtensions;
     QThread workerThread;
     QHash<QString, File*> filesByPath;
     File* root;

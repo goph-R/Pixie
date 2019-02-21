@@ -130,11 +130,5 @@ void MainWindow::selectFolder(File* file) {
 
 void MainWindow::showImage(File* file) {
     viewWindow->setImage(file);
-    if (isMaximized()) {
-        viewWindow->showMaximized();
-    } else {
-        viewWindow->setGeometry(geometry());
-        viewWindow->showNormal();
-    }
-    hide();
+    viewWindow->show();
 }

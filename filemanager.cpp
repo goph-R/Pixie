@@ -100,6 +100,7 @@ void FileManager::foundFile(FoundFile foundFile) {
 File* FileManager::createEntry(QString folderPath, QString name, bool folder) {
     auto parent = filesByPath.value(folderPath);
     auto file = new File(parent, name, folder);
+    parent->addChild(file);
     filesByPath.insert(file->getPath(), file);
     return file;
 }

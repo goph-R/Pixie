@@ -40,8 +40,10 @@ void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     }
 
     // draw image on center
+    // TODO: optimize
+    auto smoothPixmap = pixmap.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     auto r = QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, s, rect());
-    p.drawPixmap(r, pixmap);
+    p.drawPixmap(r, smoothPixmap);
 }
 
 

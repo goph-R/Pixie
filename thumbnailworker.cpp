@@ -15,7 +15,7 @@ ThumbnailWorker::ThumbnailWorker(File* file, Config* config) : QObject() {
 }
 
 void ThumbnailWorker::run() {
-    QString imagePath = path;
+    QString imagePath = path;    
     if (folder) {
         imagePath = getFirstImagePath();
         if (imagePath == "") {

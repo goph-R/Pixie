@@ -12,6 +12,7 @@ void ViewWidget::setImage(QString path) {
     update();
 }
 
+
 void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     QPainter p(this);
 
@@ -19,6 +20,10 @@ void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     p.setPen(Qt::NoPen);
     p.setBrush(backgroundBrush);
     p.drawRect(rect());
+
+    if (pixmap.isNull()) {
+        return;
+    }
 
     QSize s;
     float pw = pixmap.width();

@@ -20,6 +20,7 @@ public:
     void findFolders(File* file);
     void expandFolders(QString path);
     void findFiles(File* file);
+    File* getFileByPath(QString path);
 
 public slots:
     void foundFile(FoundFile result);

@@ -18,7 +18,7 @@ public:
     ~FileListWidget();
     void resizeImages();
     FileListItem* createItem(File* file);
-    bool isItemExist(QString path);
+    bool hasItem(QString path);
     FileListItem* getItem(QString path);
     void setErrorPixmap(QString path);
     virtual void clear();

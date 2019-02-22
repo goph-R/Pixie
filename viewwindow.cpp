@@ -4,22 +4,33 @@
 
 ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     mainWindow = static_cast<MainWindow*>(parent);
+
     QShortcut* escapeShortcut = new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
     escapeShortcut->setAutoRepeat(false);
+
+    QShortcut* fullscreenShortcut = new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
+    fullscreenShortcut->setAutoRepeat(false);
+
     viewWidget = new ViewWidget();
     setCentralWidget(viewWidget);
-    setMouseTracking(true);
+
+    wasMaximized = false;
 }
 
 ViewWindow::~ViewWindow() {
 }
 
-QSize ViewWindow::sizeHint() const {
-    return QSize(1280, 720);
+void ViewWindow::setMaximized(bool value) {
+    wasMaximized = value;
+    if (value) {
+        showMaximized();
+    } else {
+        showNormal();
+    }
 }
 
-void ViewWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
-    showMainWindow();
+QSize ViewWindow::sizeHint() const {
+    return QSize(1280, 720);
 }
 
 void ViewWindow::wheelEvent(QWheelEvent* event) {
@@ -27,6 +38,69 @@ void ViewWindow::wheelEvent(QWheelEvent* event) {
         nextImage();
     } else {
         prevImage();
+    }
+}
+
+void ViewWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
+    showMainWindow();
+}
+
+void ViewWindow::escapePressed() {
+    showMainWindow();
+}
+
+void ViewWindow::mouseDoubleClickEvent(QMouseEvent *event __attribute__((unused))) {
+    showMainWindow();
+}
+
+void ViewWindow::setImage(File* file) {
+    fillImageList(file->getParent());
+    currentIndex = imageList.indexOf(file->getPath());
+    showCurrentImage();
+}
+
+void ViewWindow::fillImageList(File* parent) {
+    imageList.clear();
+    foreach (auto child, parent->getChildren()) {
+        if (child->isImage()) {
+            imageList.append(child->getPath());
+        }
+    }
+}
+
+void ViewWindow::showMainWindow() {
+    backFromFullscreen();
+    if (isMaximized()) { // TODO: when back from fullscreen this isn't true
+        mainWindow->showMaximized();
+    } else {
+        mainWindow->showNormal();
+        mainWindow->setGeometry(geometry());
+    }
+    hide();
+}
+
+void ViewWindow::switchFullscreen() {
+    if (isFullScreen()) {
+        backFromFullscreen();
+    } else {
+        goFullscreen();
+    }
+}
+
+void ViewWindow::goFullscreen() {
+    if (!isFullScreen()) {
+        wasMaximized = isMaximized();
+        showFullScreen();
+    }
+}
+
+void ViewWindow::backFromFullscreen() {
+    if (isFullScreen()) {
+        if (wasMaximized) {
+            showMaximized();
+        } else {
+            showNormal();
+        }
     }
 }
 
@@ -47,28 +121,7 @@ void ViewWindow::prevImage() {
 }
 
 void ViewWindow::showCurrentImage() {
-    viewWidget->setImage(imageList.at(currentIndex));
+    QString path = imageList.at(currentIndex);
+    viewWidget->setImage(path);
 }
 
-void ViewWindow::escapePressed() {
-    showMainWindow();
-}
-
-void ViewWindow::showMainWindow() {
-    hide();
-}
-
-void ViewWindow::setImage(File* file) {
-    fillImageList(file->getParent());
-    currentIndex = imageList.indexOf(file->getPath());
-    showCurrentImage();
-}
-
-void ViewWindow::fillImageList(File* parent) {
-    imageList.clear();
-    foreach (auto child, parent->getChildren()) {
-        if (child->isImage()) {
-            imageList.append(child->getPath());
-        }
-    }
-}

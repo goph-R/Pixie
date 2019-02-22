@@ -1,8 +1,12 @@
 #include "config.h"
+#include <QImageReader>
+#include <QDebug>
 
 Config::Config() {
     thumbnailSize = 192;
-    imageExtensions = QStringList() << "jpg" << "jpeg" << "gif" << "png" << "bmp";
+    foreach (auto format, QImageReader::supportedImageFormats()) {
+        imageExtensions << QString(format);
+    }
     foreach (auto extension, imageExtensions) {
         imageFileNameFilters.append("*." + extension);
     }

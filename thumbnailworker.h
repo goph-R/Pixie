@@ -20,6 +20,7 @@ signals:
     void error(QString path);
     void empty();
 
+
 private:
     bool folder;
     QString getFirstImagePath();

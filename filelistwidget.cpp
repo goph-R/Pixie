@@ -42,7 +42,7 @@ FileListItem* FileListWidget::createItem(File* file) {
     return item;
 }
 
-bool FileListWidget::isItemExist(QString path) {
+bool FileListWidget::hasItem(QString path) {
     return itemsByPath.contains(path);
 }
 
@@ -51,7 +51,7 @@ FileListItem* FileListWidget::getItem(QString path) {
 }
 
 void FileListWidget::setErrorPixmap(QString path) {
-    if (isItemExist(path)) {
+    if (hasItem(path)) {
         auto item = getItem(path);
         item->setPixmap(imageErrorPixmap);
         viewport()->update();

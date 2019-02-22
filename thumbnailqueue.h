@@ -7,34 +7,44 @@
 #include "file.h"
 #include "thumbnailrunner.h"
 #include "config.h"
+#include "filemanager.h"
 
 class ThumbnailQueue : public QObject
 {
     Q_OBJECT
 
 public:
-    ThumbnailQueue(Config* config);
+    ThumbnailQueue(Config* config, FileManager* fileManager);
     ~ThumbnailQueue();
     void add(File* file);
     void start();
     void clear();
 
 public slots:
+    void foundSlot(QString path, QImage image);
+    void notFoundSlot(QString path);
     void doneSlot(QString path, QImage image);
     void errorSlot(QString path);
     void emptySlot();
 
-signals:
+signals:    
+    void connectDatabase();
+    void find(QString path);
+    void save(QString path, QImage image);
     void done(QString path, QImage image);
     void error(QString path);
 
 private:
+    void createDatabaseThread();
     QList<ThumbnailRunner*> queue;
     QThreadPool threadPool;
     Config* config;
     void startNext();
     int active;
     void workerFinished();
+    QThread databaseThread;
+    FileManager* fileManager;
+
 };
 
 #endif // THUMBNAILFACTORY_H

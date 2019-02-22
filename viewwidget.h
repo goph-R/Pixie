@@ -10,12 +10,11 @@ public:
     void setImage(QString path);
 
 protected:
-    void paintEvent(QPaintEvent* event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     QBrush backgroundBrush;
     QPixmap pixmap;
-
 };
 
 #endif // VIEWWIDGET_H

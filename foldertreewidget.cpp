@@ -47,7 +47,7 @@ void FolderTreeWidget::removeLoadingTextItem(FolderTreeItem* item) {
 }
 
 void FolderTreeWidget::addFolder(File* file) {
-    if (isItemExist(file)) {
+    if (hasItem(file)) {
         return;
     }
     auto parentItem = getItem(file->getParent());
@@ -61,7 +61,7 @@ void FolderTreeWidget::addLoadingItem(FolderTreeItem* item) {
     loadingItem->setText(0, "Loading..");
 }
 
-bool FolderTreeWidget::isItemExist(File* file) {
+bool FolderTreeWidget::hasItem(File* file) {
     return itemsByPath.contains(file->getPath());
 }
 

@@ -9,7 +9,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     config = new Config();
     fileManager = new FileManager(config);
-    thumbnailQueue = new ThumbnailQueue(config);
+    thumbnailQueue = new ThumbnailQueue(config, fileManager);
 
     folderTreeWidget = new FolderTreeWidget();
     dockWidget = new QDockWidget("Folders");
@@ -90,11 +90,10 @@ void MainWindow::addFile(File* file) {
 }
 
 void MainWindow::findFilesDone() {
-    thumbnailQueue->start();
 }
 
 void MainWindow::thumbnailDone(QString path, QImage image) {
-    if (fileListWidget->isItemExist(path)) {
+    if (fileListWidget->hasItem(path)) {
         auto item = fileListWidget->getItem(path);
         auto pixmap = QPixmap::fromImage(image);
         item->setPixmap(pixmap);
@@ -120,7 +119,7 @@ void MainWindow::selectFolder(File* file) {
     folderTreeWidget->blockSignals(true);
     folderTreeWidget->clearSelection();
     folderTreeWidget->blockSignals(false);
-    if (folderTreeWidget->isItemExist(file)) {
+    if (folderTreeWidget->hasItem(file)) {
         auto folderItem = folderTreeWidget->getItem(file);
         folderItem->setSelected(true);
     } else {
@@ -129,6 +128,12 @@ void MainWindow::selectFolder(File* file) {
 }
 
 void MainWindow::showImage(File* file) {
+    if (isMaximized()) {
+        viewWindow->setMaximized(true);
+    } else {
+        viewWindow->setMaximized(false);
+        viewWindow->setGeometry(geometry());
+    }
     viewWindow->setImage(file);
-    viewWindow->show();
+    hide();
 }

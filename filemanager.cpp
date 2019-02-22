@@ -104,3 +104,7 @@ File* FileManager::createEntry(QString folderPath, QString name, bool folder) {
     filesByPath.insert(file->getPath(), file);
     return file;
 }
+
+File* FileManager::getFileByPath(QString path) {
+    return filesByPath.value(path);
+}

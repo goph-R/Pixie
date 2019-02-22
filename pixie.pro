@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -42,7 +42,8 @@ SOURCES += \
     thumbnailrunner.cpp \
     thumbnailworker.cpp \
     viewwindow.cpp \
-    viewwidget.cpp
+    viewwidget.cpp \
+    thumbnaildatabase.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -61,7 +62,8 @@ HEADERS += \
     thumbnailrunner.h \
     thumbnailworker.h \
     viewwindow.h \
-    viewwidget.h
+    viewwidget.h \
+    thumbnaildatabase.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

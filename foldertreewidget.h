@@ -13,7 +13,7 @@ public:
     FolderTreeWidget();
     virtual ~FolderTreeWidget();
     FolderTreeItem* createItem(FolderTreeItem* parentItem, File* file, QIcon icon);
-    bool isItemExist(File* file);
+    bool hasItem(File* file);
     FolderTreeItem* getItem(File* file);
     void removeLoadingTextItem(FolderTreeItem* item);
 

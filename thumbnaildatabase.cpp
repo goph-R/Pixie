@@ -6,12 +6,14 @@
 #include <QBuffer>
 #include <QDebug>
 
-ThumbnailDatabase::ThumbnailDatabase() : QObject() {
+ThumbnailDatabase::ThumbnailDatabase(QString path) : QObject() {
+    databasePath = path;
+    qDebug() << path;
 }
 
 void ThumbnailDatabase::connect() {
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("C:/Users/gopher/.pixie/pixie.s3db");
+    db.setDatabaseName(databasePath);
 }
 
 ThumbnailDatabase::~ThumbnailDatabase() {

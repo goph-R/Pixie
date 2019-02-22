@@ -17,7 +17,7 @@ ThumbnailQueue::~ThumbnailQueue() {
 }
 
 void ThumbnailQueue::createDatabaseThread() {
-    auto database = new ThumbnailDatabase();
+    auto database = new ThumbnailDatabase(config->getCacheFolder() + "thumbnails.s3db");
     database->moveToThread(&databaseThread);
     connect(this, &ThumbnailQueue::connectDatabase, database, &ThumbnailDatabase::connect);
     connect(this, &ThumbnailQueue::find, database, &ThumbnailDatabase::find);

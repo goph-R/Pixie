@@ -10,7 +10,7 @@ class ThumbnailDatabase : public QObject
     Q_OBJECT
 
 public:
-    ThumbnailDatabase();
+    ThumbnailDatabase(QString path);
     virtual ~ThumbnailDatabase();
 
 public slots:
@@ -23,6 +23,7 @@ signals:
     void found(QString path, QImage image);
 
 private:
+    QString databasePath;
     QSqlDatabase db;
 };
 

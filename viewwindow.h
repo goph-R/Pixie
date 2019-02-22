@@ -23,11 +23,12 @@ public:
 public slots:
     void escapePressed();
     void switchFullscreen();
+    void switchFit();
+    void doubleClickedSlot();
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
     void nextImage();

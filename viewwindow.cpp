@@ -5,13 +5,12 @@
 ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     mainWindow = static_cast<MainWindow*>(parent);
 
-    QShortcut* escapeShortcut = new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
-    escapeShortcut->setAutoRepeat(false);
-
-    QShortcut* fullscreenShortcut = new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
-    fullscreenShortcut->setAutoRepeat(false);
+    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
+    new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
+    new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
 
     viewWidget = new ViewWidget();
+    connect(viewWidget, &ViewWidget::doubleClickedSignal, this, &ViewWindow::doubleClickedSlot);
     setCentralWidget(viewWidget);
 
     wasMaximized = false;
@@ -49,8 +48,12 @@ void ViewWindow::escapePressed() {
     showMainWindow();
 }
 
-void ViewWindow::mouseDoubleClickEvent(QMouseEvent *event __attribute__((unused))) {
+void ViewWindow::doubleClickedSlot() {
     showMainWindow();
+}
+
+void ViewWindow::switchFit() {
+    viewWidget->setFit(!viewWidget->isFit());
 }
 
 void ViewWindow::setImage(File* file) {
@@ -70,7 +73,7 @@ void ViewWindow::fillImageList(File* parent) {
 
 void ViewWindow::showMainWindow() {
     backFromFullscreen();
-    if (isMaximized()) { // TODO: when back from fullscreen this isn't true
+    if (isMaximized()) { // TODO: when back from fullscreen this never true
         mainWindow->showMaximized();
     } else {
         mainWindow->showNormal();

@@ -37,6 +37,6 @@ void FileManagerWorker::findFolders(QString folderPath) {
 QFileInfoList FileManagerWorker::findEntries(QString folderPath, QFlags<QDir::Filter> filter) {
     QDir dir(folderPath);
     dir.setFilter(filter);
-    dir.setSorting(QDir::Name | QDir::DirsFirst);
+    dir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase);
     return dir.entryInfoList();
 }

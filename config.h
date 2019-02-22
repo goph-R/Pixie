@@ -10,7 +10,7 @@ public:
     const QStringList getImageExtensions();
     const QStringList getImageFileNameFilters();
     int getThumbnailSize();
-    const QString getCacheFolder();
+    const QString getThumbnailsPath();
 
 private:
     void setUpImageExtensions();
@@ -18,6 +18,7 @@ private:
     QStringList imageExtensions;
     QStringList imageFileNameFilters;
     int thumbnailSize;
+    QString thumbnailsPath;
     QString cacheFolder;
 
 };

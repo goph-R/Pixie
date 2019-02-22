@@ -25,6 +25,12 @@ void Config::setUpCacheFolder() {
     if (!dir.exists()) {
         dir.mkdir(".");
     }
+    thumbnailsPath = cacheFolder + "thumbnails.s3db";
+    QFile file(thumbnailsPath);
+    if (!file.exists()) {
+        QFile::copy(":/database/thumbnails.s3db", thumbnailsPath);
+        file.setPermissions(QFile::ReadOther | QFile::WriteOther);
+    }
 }
 
 const QStringList Config::getImageExtensions() {
@@ -39,6 +45,6 @@ int Config::getThumbnailSize() {
     return thumbnailSize;
 }
 
-const QString Config::getCacheFolder() {
-    return cacheFolder;
+const QString Config::getThumbnailsPath() {
+    return thumbnailsPath;
 }

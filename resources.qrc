@@ -7,4 +7,7 @@
         <file alias="image-big.png">resources/icons/image-big.png</file>
         <file alias="image-error-big.png">resources/icons/image-error-big.png</file>
     </qresource>
+    <qresource prefix="/database">
+        <file alias="thumbnails.s3db">resources/thumbnails.s3db</file>
+    </qresource>
 </RCC>

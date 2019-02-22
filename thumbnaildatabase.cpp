@@ -5,10 +5,10 @@
 #include <QSqlField>
 #include <QBuffer>
 #include <QDebug>
+#include <QSqlError>
 
 ThumbnailDatabase::ThumbnailDatabase(QString path) : QObject() {
     databasePath = path;
-    qDebug() << path;
 }
 
 void ThumbnailDatabase::connect() {
@@ -47,6 +47,7 @@ void ThumbnailDatabase::save(QString path, QImage image) {
         return;
     }
     QByteArray ba;
+    qDebug() << "is anything happening";
     QBuffer buffer(&ba);
     QSqlQuery query;
     buffer.open(QIODevice::WriteOnly | QIODevice::Truncate);

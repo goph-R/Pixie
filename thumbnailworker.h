@@ -2,24 +2,22 @@
 #define THUMBNAILTASKSIGNALS_H
 
 #include <QObject>
+#include <QRunnable>
 #include <QString>
 #include <QImage>
 #include "config.h"
 #include "file.h"
 
-class ThumbnailWorker : public QObject
+class ThumbnailWorker : public QRunnable
 {
-    Q_OBJECT
-
 public:
-    ThumbnailWorker(File* file, Config* config);
+    ThumbnailWorker(QObject* receiver, File* file, Config* config);
     void run();
 
 signals:
     void done(QString path, QImage thumbnail, int format);
     void error(QString path);
     void empty();
-
 
 private:
     bool folder;
@@ -29,6 +27,7 @@ private:
     bool createThumbnail(QString path);
     int size;
     QImage image;
+    QObject* receiver;
 };
 
 #endif // THUMBNAILTASKSIGNALS_H

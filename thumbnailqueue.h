@@ -5,9 +5,9 @@
 #include <QThreadPool>
 #include <QImage>
 #include "file.h"
-#include "thumbnailrunner.h"
 #include "config.h"
 #include "filemanager.h"
+#include "thumbnailworker.h"
 
 class ThumbnailQueue : public QObject
 {
@@ -36,7 +36,7 @@ signals:
 
 private:
     void createDatabaseThread();
-    QList<ThumbnailRunner*> queue;
+    QList<ThumbnailWorker*> queue;
     QThreadPool threadPool;
     Config* config;
     void startNext();

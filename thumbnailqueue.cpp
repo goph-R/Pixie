@@ -39,7 +39,7 @@ void ThumbnailQueue::foundSlot(QString path, QImage image) {
 
 void ThumbnailQueue::notFoundSlot(QString path) {
     File* file = fileManager->getFileByPath(path);
-    auto task = new ThumbnailRunner(file, config);
+    auto task = new ThumbnailWorker(this, file, config);
     queue.append(task);
     start();
 }
@@ -62,10 +62,6 @@ void ThumbnailQueue::startNext() {
     active++;
     auto task = queue.takeFirst();
     threadPool.start(task);
-    auto worker = task->getWorker();
-    connect(worker, &ThumbnailWorker::done, this, &ThumbnailQueue::doneSlot);
-    connect(worker, &ThumbnailWorker::error, this, &ThumbnailQueue::errorSlot);
-    connect(worker, &ThumbnailWorker::empty, this, &ThumbnailQueue::emptySlot);
 }
 
 void ThumbnailQueue::doneSlot(QString path, QImage image, int format) {

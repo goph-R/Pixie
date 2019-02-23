@@ -26,7 +26,8 @@ public:
     FileListWidget* getFileListWidget();
 
 public slots:
-    void folderSelectionChanged();    
+    void folderSelectionChanged();
+    void fileSelectionChanged();
     void folderExpanded(QTreeWidgetItem*);    
     void addFile(File*);
     void findFilesDone();
@@ -39,7 +40,7 @@ private:
     void enterFolder(File* file);
     void showImage(File* file);
     void execute(QListWidgetItem* item);
-    void setPathEditToCurrentFolder();
+    void setPathEditTo(QString path);
     QString getDisplayPath(QString path);
     Config* config;
     FileManager* fileManager;

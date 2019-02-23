@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(fileListWidget, &FileListWidget::itemDoubleClicked, this, &MainWindow::execute);
     connect(fileListWidget, &FileListWidget::backspacePressed, this, &MainWindow::backspacePressed);
     connect(fileListWidget, &FileListWidget::enterPressed, this, &MainWindow::enterPressed);
+    connect(fileListWidget, &FileListWidget::itemSelectionChanged, this, &MainWindow::fileSelectionChanged);
 
 }
 
@@ -99,16 +100,25 @@ void MainWindow::folderSelectionChanged() {
     thumbnailQueue->clear();
     fileListWidget->clear();
     currentFolder = folderItem->getFile();    
-    setPathEditToCurrentFolder();
+    setPathEditTo(currentFolder->getPath());
     fileManager->findFiles(currentFolder);
 }
 
-void MainWindow::setPathEditToCurrentFolder() {
-    QString path = currentFolder->getPath();
+void MainWindow::setPathEditTo(QString path) {
     if (config->useBackslash()) {
         path = path.replace("/", "\\");
     }
     pathEdit->setText(path);
+}
+
+void MainWindow::fileSelectionChanged() {
+    auto selectedItems = fileListWidget->selectedItems();
+    if (selectedItems.size() != 1) {
+        return;
+    }
+    auto fileItem = static_cast<FileListItem*>(selectedItems.at(0));
+    auto file = fileItem->getFile();
+    setPathEditTo(file->getPath());
 }
 
 void MainWindow::addFile(File* file) {

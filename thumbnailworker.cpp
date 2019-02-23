@@ -5,7 +5,9 @@
 #include <QFileInfo>
 #include "thumbnaildatabase.h"
 
-ThumbnailWorker::ThumbnailWorker(File* file, Config* config) : QObject() {
+ThumbnailWorker::ThumbnailWorker(QObject* receiver, File* file, Config* config) : QRunnable() {
+    setAutoDelete(true);
+    this->receiver = receiver;
     path = file->getPath();
     folder = file->isFolder();
     size = config->getThumbnailSize();
@@ -20,15 +22,18 @@ void ThumbnailWorker::run() {
     if (folder) {
         imagePath = getFirstImagePath();
         if (imagePath == "") {
-            emit empty();
+            QMetaObject::invokeMethod(receiver, "emptySlot", Qt::QueuedConnection);
+            //emit empty();
             return;
         }
     }
     if (createThumbnail(imagePath)) {
         int format = imagePath.toLower().endsWith(".png") ? ThumbnailDatabase::FORMAT_PNG : ThumbnailDatabase::FORMAT_JPEG;
-        emit done(path, image, format);
+        QMetaObject::invokeMethod(receiver, "doneSlot", Qt::QueuedConnection, Q_ARG(QString, path), Q_ARG(QImage, image), Q_ARG(int, format));
+        //emit done(path, image, format);
     } else {
-        emit error(path);
+        QMetaObject::invokeMethod(receiver, "errorSlot", Qt::QueuedConnection, Q_ARG(QString, path));
+        //emit error(path);
     }
 }
 

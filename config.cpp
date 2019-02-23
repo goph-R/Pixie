@@ -31,7 +31,8 @@ void Config::setUpCacheFolder() {
     cacheFolder = homePath + "/.pixie/";
     QDir dir(cacheFolder);
     if (!dir.exists()) {
-        dir.mkdir(".");
+        QDir homeDir(homePath);
+        dir.mkdir(".pixie");
     }
     thumbnailsPath = cacheFolder + "thumbnails.s3db";
     QFile file(thumbnailsPath);

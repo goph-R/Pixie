@@ -39,7 +39,6 @@ SOURCES += \
     filelistdelegate.cpp \
     filelistitem.cpp \
     foldertreeitem.cpp \
-    thumbnailrunner.cpp \
     thumbnailworker.cpp \
     viewwindow.cpp \
     viewwidget.cpp \
@@ -59,7 +58,6 @@ HEADERS += \
     filelistdelegate.h \
     foldertreeitem.h \
     filelistitem.h \
-    thumbnailrunner.h \
     thumbnailworker.h \
     viewwindow.h \
     viewwidget.h \

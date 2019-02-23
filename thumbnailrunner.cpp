@@ -4,7 +4,7 @@
 
 ThumbnailRunner::ThumbnailRunner(File* file, Config* config) : QRunnable() {
     setAutoDelete(true);
-    worker = new ThumbnailWorker(file, config);
+    worker = new ThumbnailWorker(nullptr, file, config);
 }
 
 ThumbnailRunner::~ThumbnailRunner() {

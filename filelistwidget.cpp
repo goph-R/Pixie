@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QShortcut>
+#include <QKeyEvent>
 #include "filelistdelegate.h"
 #include "filelistitem.h"
 

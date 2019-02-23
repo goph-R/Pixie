@@ -26,7 +26,6 @@ void FileManagerWorker::findFolders(QString folderPath) {
     auto entries = findEntries(folderPath, QDir::NoDotAndDotDot | QDir::Dirs);
     if (entries.size()) {
         foreach (auto entry, entries) {
-            qDebug() << folderPath;
             auto result = FoundFolder();
             result.name = entry.fileName();
             result.folderPath = folderPath;

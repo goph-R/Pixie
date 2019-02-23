@@ -21,7 +21,7 @@ ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
 
     viewWidget = new ViewWidget();
-    connect(viewWidget, &ViewWidget::doubleClickedSignal, this, &ViewWindow::showMainWindow);
+    QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
     setCentralWidget(viewWidget);
 
     wasMaximized = false;

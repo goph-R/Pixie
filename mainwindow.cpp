@@ -34,19 +34,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     setCentralWidget(w);
 
-    connect(folderTreeWidget, &FolderTreeWidget::itemExpanded, this, &MainWindow::folderExpanded);
-    connect(folderTreeWidget, &FolderTreeWidget::itemSelectionChanged, this, &MainWindow::folderSelectionChanged);
-    connect(fileManager, &FileManager::folderAdded, folderTreeWidget, &FolderTreeWidget::addFolder);
-    connect(fileManager, &FileManager::folderEmpty, folderTreeWidget, &FolderTreeWidget::removeLoadingText);
-    connect(fileManager, &FileManager::fileAdded, this, &MainWindow::addFile);
-    connect(fileManager, &FileManager::findFilesDone, this, &MainWindow::findFilesDone);
-    connect(thumbnailQueue, &ThumbnailQueue::done, this, &MainWindow::thumbnailDone);
-    connect(thumbnailQueue, &ThumbnailQueue::error, this, &MainWindow::thumbnailError);
-    connect(fileListWidget, &FileListWidget::itemDoubleClicked, this, &MainWindow::execute);
-    connect(fileListWidget, &FileListWidget::backspacePressed, this, &MainWindow::backspacePressed);
-    connect(fileListWidget, &FileListWidget::enterPressed, this, &MainWindow::enterPressed);
-    connect(fileListWidget, &FileListWidget::itemSelectionChanged, this, &MainWindow::fileSelectionChanged);
-
+    QObject::connect(folderTreeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(folderExpanded(QTreeWidgetItem*)));
+    QObject::connect(folderTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(folderSelectionChanged()));
+    QObject::connect(fileManager, SIGNAL(folderAdded(File*)), folderTreeWidget, SLOT(addFolder(File*)));
+    QObject::connect(fileManager, SIGNAL(folderEmpty(File*)), folderTreeWidget, SLOT(removeLoadingText(File*)));
+    QObject::connect(fileManager, SIGNAL(fileAdded(File*)), this, SLOT(addFile(File*)));
+    QObject::connect(fileManager, SIGNAL(findFilesDone()), this, SLOT(findFilesDone()));
+    QObject::connect(thumbnailQueue, SIGNAL(done(QString, QImage)), this, SLOT(thumbnailDone(QString, QImage)));
+    QObject::connect(thumbnailQueue, SIGNAL(error(QString)), this, SLOT(thumbnailError(QString)));
+    QObject::connect(fileListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(execute(QListWidgetItem*)));
+    QObject::connect(fileListWidget, SIGNAL(backspacePressed()), this, SLOT(backspacePressed()));
+    QObject::connect(fileListWidget, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
+    QObject::connect(fileListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileSelectionChanged()));
 }
 
 MainWindow::~MainWindow() {    

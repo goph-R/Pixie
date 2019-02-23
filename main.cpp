@@ -20,7 +20,12 @@ int main(int argc, char *argv[])
     mainWindow.setViewWindow(&viewWindow);
 
     QMainWindow* active = &mainWindow; // TODO: open the image view if filename argument presents
+
+#if QT_VERSION >= 0x050000
     QRect availableGeometry = app.screens().at(app.desktop()->screenNumber())->availableGeometry();
+#else
+    QRect availableGeometry = QApplication::desktop()->screenGeometry();
+#endif
     active->show();
     active->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, active->size(), availableGeometry));
 

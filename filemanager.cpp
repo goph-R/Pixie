@@ -1,5 +1,6 @@
 #include "filemanager.h"
 
+#include <qglobal.h>
 #include <QDebug>
 #include <QDir>
 #include "filemanagerworker.h"
@@ -20,16 +21,16 @@ FileManager::~FileManager() {
 void FileManager::createWorkerThread() {
     auto worker = new FileManagerWorker();
     worker->moveToThread(&workerThread);
-    connect(this, &FileManager::findFilesSignal, worker, &FileManagerWorker::findFiles);
-    connect(this, &FileManager::findFoldersSignal, worker, &FileManagerWorker::findFolders);
-    connect(this, &FileManager::loadImageSignal, worker, &FileManagerWorker::loadImage);
-    connect(worker, &FileManagerWorker::foundFolder, this, &FileManager::foundFolder);
-    connect(worker, &FileManagerWorker::foundFile, this, &FileManager::foundFile);
-    connect(worker, &FileManagerWorker::folderEmpty, this, &FileManager::folderEmptySlot);
-    connect(worker, &FileManagerWorker::findFilesDone, this, &FileManager::findFilesDoneSlot);
-    connect(worker, &FileManagerWorker::expandFoldersDone, this, &FileManager::expandFoldersDoneSlot);
-    connect(worker, &FileManagerWorker::imageLoaded, this, &FileManager::imageLoadedSlot);
-    connect(&workerThread, &QThread::finished, worker, &FileManagerWorker::deleteLater);
+    QObject::connect(this, SIGNAL(findFilesSignal(QString)), worker, SLOT(findFiles(QString)));
+    QObject::connect(this, SIGNAL(findFoldersSignal(QString)), worker, SLOT(findFolders(QString)));
+    QObject::connect(this, SIGNAL(loadImageSignal(QString)), worker, SLOT(loadImage(QString)));
+    QObject::connect(worker, SIGNAL(foundFolder(FoundFolder)), this, SLOT(foundFolder(FoundFolder)));
+    QObject::connect(worker, SIGNAL(foundFile(FoundFile)), this, SLOT(foundFile(FoundFile)));
+    QObject::connect(worker, SIGNAL(folderEmpty(QString)), this, SLOT(folderEmptySlot(QString)));
+    QObject::connect(worker, SIGNAL(findFilesDone(QString, bool)), this, SLOT(findFilesDoneSlot(QString, bool)));
+    QObject::connect(worker, SIGNAL(expandFoldersDone(QStringList)), this, SLOT(expandFoldersDoneSlot(QStringList)));
+    QObject::connect(worker, SIGNAL(imageLoaded(const QImage)), this, SLOT(imageLoadedSlot(const QImage)));
+    QObject::connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     workerThread.start();
 }
 

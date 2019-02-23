@@ -35,11 +35,11 @@ public slots:
     void thumbnailError(QString path);
     void backspacePressed();
     void enterPressed();
+    void execute(QListWidgetItem* item);
 
 private:    
     void enterFolder(File* file);
     void showImage(File* file);
-    void execute(QListWidgetItem* item);
     void setPathEditTo(QString path);
     QString getDisplayPath(QString path);
     Config* config;

@@ -19,12 +19,12 @@ ThumbnailQueue::~ThumbnailQueue() {
 void ThumbnailQueue::createDatabaseThread() {
     auto database = new ThumbnailDatabase(config->getThumbnailsPath());
     database->moveToThread(&databaseThread);
-    connect(this, &ThumbnailQueue::connectDatabase, database, &ThumbnailDatabase::connect);
-    connect(this, &ThumbnailQueue::find, database, &ThumbnailDatabase::find);
-    connect(this, &ThumbnailQueue::save, database, &ThumbnailDatabase::save);
-    connect(database, &ThumbnailDatabase::found, this, &ThumbnailQueue::foundSlot);
-    connect(database, &ThumbnailDatabase::notFound, this, &ThumbnailQueue::notFoundSlot);
-    connect(&databaseThread, &QThread::finished, database, &ThumbnailDatabase::deleteLater);
+    QObject::connect(this, SIGNAL(connectDatabase()), database, SLOT(connect()));
+    QObject::connect(this, SIGNAL(find(QString)), database, SLOT(find(QString)));
+    QObject::connect(this, SIGNAL(save(QString, QImage, int)), database, SLOT(save(QString, QImage, int)));
+    QObject::connect(database, SIGNAL(found(QString, QImage)), this, SLOT(foundSlot(QString, QImage)));
+    QObject::connect(database, SIGNAL(notFound(QString)), this, SLOT(notFoundSlot(QString)));
+    QObject::connect(&databaseThread, SIGNAL(finished()), database, SLOT(deleteLater()));
     databaseThread.start();
     emit connectDatabase();
 }

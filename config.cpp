@@ -32,13 +32,13 @@ void Config::setUpCacheFolder() {
     QDir dir(cacheFolder);
     if (!dir.exists()) {
         QDir homeDir(homePath);
-        dir.mkdir(".pixie");
+        homeDir.mkdir(".pixie");
     }
     thumbnailsPath = cacheFolder + "thumbnails.s3db";
     QFile file(thumbnailsPath);
     if (!file.exists()) {
         QFile::copy(":/database/thumbnails.s3db", thumbnailsPath);
-        file.setPermissions(QFile::ReadOther | QFile::WriteOther);
+        file.setPermissions(QFile::ReadUser | QFile::WriteUser);
     }
 }
 

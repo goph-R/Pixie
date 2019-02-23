@@ -9,8 +9,12 @@ FolderTreeWidget::FolderTreeWidget() : QTreeWidget() {
     setHeaderHidden(true);
     folderIcon = QIcon(":/icons/folder.png");
     auto h = header();
+#if QT_VERSION >= 0x050000
     h->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    h->setStretchLastSection(false);
+#else
+    h->setResizeMode(0, QHeaderView::ResizeToContents);
+#endif
+    h->setStretchLastSection(false);    
 }
 
 FolderTreeWidget::~FolderTreeWidget() {

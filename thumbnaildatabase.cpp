@@ -6,6 +6,7 @@
 #include <QBuffer>
 #include <QDebug>
 #include <QSqlError>
+#include <QSqlDriver>
 
 ThumbnailDatabase::ThumbnailDatabase(QString path) : QObject() {
     databasePath = path;
@@ -22,6 +23,10 @@ ThumbnailDatabase::~ThumbnailDatabase() {
     }
 }
 
+const char* ThumbnailDatabase::getImageFormat(int format) {
+    return format == FORMAT_PNG ? "png" : "jpg";
+}
+
 void ThumbnailDatabase::find(QString path) {
     if (!db.open()) {
         emit notFound(path);
@@ -30,19 +35,21 @@ void ThumbnailDatabase::find(QString path) {
     QSqlQuery query;
     QSqlRecord record;
     QImage image;
-    query.prepare("SELECT image FROM thumbnail WHERE path = :path");
+    query.prepare("SELECT format, image FROM thumbnail WHERE path = :path");
     query.bindValue(":path", path);
     query.exec();
     if (query.first()) {
         record = query.record();
-        image.loadFromData(record.field("image").value().toByteArray(), "jpg");
+        auto format = record.field("format").value().toInt();
+        auto data = record.field("image").value().toByteArray();
+        image.loadFromData(data, getImageFormat(format));
         emit found(path, image);
     } else {
         emit notFound(path);
     }
 }
 
-void ThumbnailDatabase::save(QString path, QImage image) {
+void ThumbnailDatabase::save(QString path, QImage image, int format) {
     if (!db.open()) {
         return;
     }
@@ -50,9 +57,10 @@ void ThumbnailDatabase::save(QString path, QImage image) {
     QBuffer buffer(&ba);
     QSqlQuery query;
     buffer.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    image.save(&buffer, "jpg", 90);
-    query.prepare("INSERT INTO thumbnail(path, image) VALUES (:path, :image)");
+    image.save(&buffer, getImageFormat(format), 85);
+    query.prepare("INSERT INTO thumbnail (path, format, image) VALUES (:path, :format, :image)");
     query.bindValue(":path", path);
+    query.bindValue(":format", format);
     query.bindValue(":image", buffer.data());
     query.exec();
     buffer.close();

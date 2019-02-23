@@ -1,5 +1,7 @@
 #include <QPixmap>
 #include <QDebug>
+#include <QVBoxLayout>
+#include <QLineEdit>
 
 #include "mainwindow.h"
 #include "viewwindow.h"
@@ -7,6 +9,9 @@
 #include "file.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+    currentFolder = nullptr;
+    fileToSelect = nullptr;
+
     config = new Config();
     fileManager = new FileManager(config);
     thumbnailQueue = new ThumbnailQueue(config, fileManager);
@@ -16,11 +21,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     dockWidget->setWidget(folderTreeWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     fileListWidget = new FileListWidget(config);
-    setCentralWidget(fileListWidget);
-    currentFolder = nullptr;
-    fileToSelect = nullptr;
+    pathEdit = new QLineEdit();
 
     addDrives();
+
+    auto w = new QWidget();
+    auto v = new QVBoxLayout(w);
+    v->setContentsMargins(0, 0, 0, 0);
+    v->setSpacing(5);
+    v->addWidget(pathEdit);
+    v->addWidget(fileListWidget);
+
+    setCentralWidget(w);
 
     connect(folderTreeWidget, &FolderTreeWidget::itemExpanded, this, &MainWindow::folderExpanded);
     connect(folderTreeWidget, &FolderTreeWidget::itemSelectionChanged, this, &MainWindow::folderSelectionChanged);
@@ -86,8 +98,17 @@ void MainWindow::folderSelectionChanged() {
     }
     thumbnailQueue->clear();
     fileListWidget->clear();
-    currentFolder = folderItem->getFile();
+    currentFolder = folderItem->getFile();    
+    setPathEditToCurrentFolder();
     fileManager->findFiles(currentFolder);
+}
+
+void MainWindow::setPathEditToCurrentFolder() {
+    QString path = currentFolder->getPath();
+    if (config->useBackslash()) {
+        path = path.replace("/", "\\");
+    }
+    pathEdit->setText(path);
 }
 
 void MainWindow::addFile(File* file) {

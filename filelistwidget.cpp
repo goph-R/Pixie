@@ -17,7 +17,6 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
     setUniformItemSizes(true);
 
     new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(backspacePressedSlot()));
-
 }
 
 void FileListWidget::resizeImages() {

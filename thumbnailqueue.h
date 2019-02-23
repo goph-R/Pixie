@@ -23,14 +23,14 @@ public:
 public slots:
     void foundSlot(QString path, QImage image);
     void notFoundSlot(QString path);
-    void doneSlot(QString path, QImage image);
+    void doneSlot(QString path, QImage image, int format);
     void errorSlot(QString path);
     void emptySlot();
 
 signals:    
     void connectDatabase();
     void find(QString path);
-    void save(QString path, QImage image);
+    void save(QString path, QImage image, int format);
     void done(QString path, QImage image);
     void error(QString path);
 

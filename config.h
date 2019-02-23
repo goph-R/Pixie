@@ -11,6 +11,7 @@ public:
     const QStringList getImageFileNameFilters();
     int getThumbnailSize();
     const QString getThumbnailsPath();
+    bool useBackslash();
 
 private:
     void setUpImageExtensions();

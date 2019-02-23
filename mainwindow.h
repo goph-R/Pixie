@@ -39,12 +39,15 @@ private:
     void enterFolder(File* file);
     void showImage(File* file);
     void execute(QListWidgetItem* item);
+    void setPathEditToCurrentFolder();
+    QString getDisplayPath(QString path);
     Config* config;
     FileManager* fileManager;
     ThumbnailQueue* thumbnailQueue;
     QDockWidget* dockWidget;
     FolderTreeWidget* folderTreeWidget;
     FileListWidget* fileListWidget;
+    QLineEdit* pathEdit;
     File* currentFolder;
     File* fileToSelect;
     ViewWindow* viewWindow;

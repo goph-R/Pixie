@@ -9,6 +9,7 @@ FileManagerWorker::FileManagerWorker() : QObject() {
 
 void FileManagerWorker::findFiles(QString folderPath) {
     auto entries = findEntries(folderPath, QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+    bool foundFolders = false;
     foreach (auto entry, entries) {
         auto result = FoundFile();
         result.name = entry.fileName();
@@ -16,14 +17,16 @@ void FileManagerWorker::findFiles(QString folderPath) {
         result.extension = entry.suffix().toLower();
         result.folderPath = folderPath;
         emit foundFile(result);
+        foundFolders |= result.folder;
     }
-    emit findFilesDone();
+    emit findFilesDone(folderPath, foundFolders);
 }
 
 void FileManagerWorker::findFolders(QString folderPath) {
     auto entries = findEntries(folderPath, QDir::NoDotAndDotDot | QDir::Dirs);
     if (entries.size()) {
         foreach (auto entry, entries) {
+            qDebug() << folderPath;
             auto result = FoundFolder();
             result.name = entry.fileName();
             result.folderPath = folderPath;

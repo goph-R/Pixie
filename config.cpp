@@ -9,6 +9,14 @@ Config::Config() {
     setUpCacheFolder();
 }
 
+bool Config::useBackslash() {
+#ifdef __linux__
+    return false;
+#else
+    return true;
+#endif
+}
+
 void Config::setUpImageExtensions() {
     foreach (auto format, QImageReader::supportedImageFormats()) {
         imageExtensions << QString(format);

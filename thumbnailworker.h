@@ -16,7 +16,7 @@ public:
     void run();
 
 signals:
-    void done(QString path, QImage thumbnail);
+    void done(QString path, QImage thumbnail, int format);
     void error(QString path);
     void empty();
 

@@ -25,7 +25,7 @@ signals:
     void foundFile(FoundFile result);
     void foundFolder(FoundFolder result);
     void folderEmpty(QString path);
-    void findFilesDone();
+    void findFilesDone(QString path, bool foundFolders);
     void expandFoldersDone(QStringList allFoldersPath);
     void imageLoaded(const QImage image);
 

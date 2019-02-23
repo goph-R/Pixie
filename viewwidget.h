@@ -10,12 +10,9 @@ class ViewWidget : public QWidget
 
 public:
     ViewWidget(QWidget* parent=nullptr);
-    void reset();
     void setImage(const QImage image);
     bool isFit();
     void setFit(bool value);
-
-public slots:
     void translateUp();
     void translateDown();
     void zoomIn();
@@ -32,6 +29,7 @@ protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
+    QSize getZoomedSize();
     QBrush backgroundBrush;
     QImage image;
     bool fit;

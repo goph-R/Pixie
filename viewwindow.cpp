@@ -10,11 +10,15 @@ ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
 
     fileListWidget = mainWindow->getFileListWidget();
 
-    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(showMainWindow()));
-    new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
     new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
-    new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(prevImage()));
-    new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(nextImage()));
+    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
+    new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
+    new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(leftPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(rightPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(upPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(leftPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(plusPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
 
     viewWidget = new ViewWidget();
     connect(viewWidget, &ViewWidget::doubleClickedSignal, this, &ViewWindow::showMainWindow);
@@ -55,6 +59,37 @@ void ViewWindow::switchFit() {
     viewWidget->setFit(!viewWidget->isFit());
 }
 
+void ViewWindow::escapePressed() {
+    // TODO: if started from CLI close the app
+    showMainWindow();
+}
+
+void ViewWindow::leftPressed() {
+    // TODO: settings to translate/prev image
+    prevImage();
+}
+
+void ViewWindow::rightPressed() {
+    // TODO: settings to translate/next image
+    nextImage();
+}
+
+void ViewWindow::upPressed() {
+    viewWidget->translateUp();
+}
+
+void ViewWindow::downPressed() {
+    viewWidget->translateDown();
+}
+
+void ViewWindow::minusPressed() {
+    viewWidget->zoomOut();
+}
+
+void ViewWindow::plusPressed() {
+    viewWidget->zoomIn();
+}
+
 void ViewWindow::setImage(File* file) {
     viewWidget->setImage(emptyImage);
     fillImageList(file->getParent());
@@ -73,7 +108,7 @@ void ViewWindow::fillImageList(File* parent) {
 
 void ViewWindow::showMainWindow() {
     backFromFullscreen();
-    if (isMaximized()) { // TODO: when back from fullscreen this never true
+    if (isMaximized()) { // FIX: when back from fullscreen this never true
         mainWindow->showMaximized();
     } else {
         mainWindow->showNormal();

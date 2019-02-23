@@ -68,8 +68,8 @@ void ThumbnailQueue::startNext() {
     connect(worker, &ThumbnailWorker::empty, this, &ThumbnailQueue::emptySlot);
 }
 
-void ThumbnailQueue::doneSlot(QString path, QImage image) {
-    emit save(path, image);
+void ThumbnailQueue::doneSlot(QString path, QImage image, int format) {
+    emit save(path, image, format);
     emit done(path, image);
     workerFinished();
 }

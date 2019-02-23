@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include "thumbnaildatabase.h"
 
 ThumbnailWorker::ThumbnailWorker(File* file, Config* config) : QObject() {
     path = file->getPath();
@@ -24,7 +25,8 @@ void ThumbnailWorker::run() {
         }
     }
     if (createThumbnail(imagePath)) {
-        emit done(path, image);
+        int format = imagePath.toLower().endsWith(".png") ? ThumbnailDatabase::FORMAT_PNG : ThumbnailDatabase::FORMAT_JPEG;
+        emit done(path, image, format);
     } else {
         emit error(path);
     }

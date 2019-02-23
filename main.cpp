@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<File*>("File*");
     qRegisterMetaType<FoundFile>("FoundFile");
-    qRegisterMetaType<FoundFile>("FoundFolder");
+    qRegisterMetaType<FoundFolder>("FoundFolder");
 
     MainWindow mainWindow;
     ViewWindow viewWindow(&mainWindow);

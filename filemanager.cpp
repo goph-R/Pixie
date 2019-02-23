@@ -93,7 +93,10 @@ void FileManager::folderEmptySlot(QString folderPath) {
     }
 }
 
-void FileManager::findFilesDoneSlot() {
+void FileManager::findFilesDoneSlot(QString folderPath, bool foundFolders) {
+    if (!foundFolders && filesByPath.contains(folderPath)) {
+        //emit folderEmpty(filesByPath.value(folderPath));
+    }
     emit findFilesDone();
 }
 

@@ -28,7 +28,7 @@ public slots:
     void foundFile(FoundFile result);
     void foundFolder(FoundFolder result);
     void folderEmptySlot(QString folderPath);
-    void findFilesDoneSlot();
+    void findFilesDoneSlot(QString folderPath, bool foundFolders);
     void expandFoldersDoneSlot(QStringList folderPaths);
     void imageLoadedSlot(const QImage image);
 

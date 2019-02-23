@@ -28,8 +28,13 @@ public slots:
     void switchFullscreen();
     void switchFit();
     void imageLoaded(const QImage image);
-    void nextImage();
-    void prevImage();
+    void escapePressed();
+    void leftPressed();
+    void rightPressed();
+    void upPressed();
+    void downPressed();
+    void plusPressed();
+    void minusPressed();
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
@@ -37,6 +42,8 @@ protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
+    void nextImage();
+    void prevImage();
     void loadCurrentImage();
     void fillImageList(File* parent);
     void goFullscreen();

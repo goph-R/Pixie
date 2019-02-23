@@ -23,17 +23,14 @@ void ThumbnailWorker::run() {
         imagePath = getFirstImagePath();
         if (imagePath == "") {
             QMetaObject::invokeMethod(receiver, "emptySlot", Qt::QueuedConnection);
-            //emit empty();
             return;
         }
     }
     if (createThumbnail(imagePath)) {
         int format = imagePath.toLower().endsWith(".png") ? ThumbnailDatabase::FORMAT_PNG : ThumbnailDatabase::FORMAT_JPEG;
         QMetaObject::invokeMethod(receiver, "doneSlot", Qt::QueuedConnection, Q_ARG(QString, path), Q_ARG(QImage, image), Q_ARG(int, format));
-        //emit done(path, image, format);
     } else {
         QMetaObject::invokeMethod(receiver, "errorSlot", Qt::QueuedConnection, Q_ARG(QString, path));
-        //emit error(path);
     }
 }
 

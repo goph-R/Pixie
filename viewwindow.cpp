@@ -16,7 +16,7 @@ ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(leftPressed()));
     new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(rightPressed()));
     new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(upPressed()));
-    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(leftPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(downPressed()));
     new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(plusPressed()));
     new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
 

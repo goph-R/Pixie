@@ -15,13 +15,22 @@ class FileListWidget : public QListWidget
 
 public:
     FileListWidget(Config* config);
-    ~FileListWidget();
+    virtual ~FileListWidget() override;
     void resizeImages();
     FileListItem* createItem(File* file);
     bool hasItem(QString path);
     FileListItem* getItem(QString path);
     void setErrorPixmap(QString path);
     virtual void clear();
+    void select(QString path);
+    virtual void keyPressEvent(QKeyEvent* event) override;
+
+public slots:
+    void backspacePressedSlot();
+
+signals:
+    void backspacePressed();
+    void enterPressed();
 
 private:
     Config* config;

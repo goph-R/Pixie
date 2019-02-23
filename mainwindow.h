@@ -22,19 +22,23 @@ public:
     void addDrives();
     virtual void closeEvent(QCloseEvent* event) override;
     void setViewWindow(ViewWindow* value);
+    FileManager* getFileManager();
+    FileListWidget* getFileListWidget();
 
 public slots:
     void folderSelectionChanged();    
-    void folderExpanded(QTreeWidgetItem*);
+    void folderExpanded(QTreeWidgetItem*);    
     void addFile(File*);
     void findFilesDone();
     void thumbnailDone(QString path, QImage image);
     void thumbnailError(QString path);
-    void itemDoubleClicked(QListWidgetItem* item);
+    void backspacePressed();
+    void enterPressed();
 
 private:    
-    void selectFolder(File* file);
+    void enterFolder(File* file);
     void showImage(File* file);
+    void execute(QListWidgetItem* item);
     Config* config;
     FileManager* fileManager;
     ThumbnailQueue* thumbnailQueue;
@@ -42,6 +46,7 @@ private:
     FolderTreeWidget* folderTreeWidget;
     FileListWidget* fileListWidget;
     File* currentFolder;
+    File* fileToSelect;
     ViewWindow* viewWindow;
 };
 

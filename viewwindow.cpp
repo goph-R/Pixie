@@ -5,12 +5,19 @@
 ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     mainWindow = static_cast<MainWindow*>(parent);
 
-    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
+    fileManager = mainWindow->getFileManager();
+    connect(fileManager, &FileManager::imageLoaded, this, &ViewWindow::imageLoaded);
+
+    fileListWidget = mainWindow->getFileListWidget();
+
+    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(showMainWindow()));
     new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
     new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
+    new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(prevImage()));
+    new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(nextImage()));
 
     viewWidget = new ViewWidget();
-    connect(viewWidget, &ViewWidget::doubleClickedSignal, this, &ViewWindow::doubleClickedSlot);
+    connect(viewWidget, &ViewWidget::doubleClickedSignal, this, &ViewWindow::showMainWindow);
     setCentralWidget(viewWidget);
 
     wasMaximized = false;
@@ -44,22 +51,15 @@ void ViewWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
     showMainWindow();
 }
 
-void ViewWindow::escapePressed() {
-    showMainWindow();
-}
-
-void ViewWindow::doubleClickedSlot() {
-    showMainWindow();
-}
-
 void ViewWindow::switchFit() {
     viewWidget->setFit(!viewWidget->isFit());
 }
 
 void ViewWindow::setImage(File* file) {
+    viewWidget->setImage(emptyImage);
     fillImageList(file->getParent());
     currentIndex = imageList.indexOf(file->getPath());
-    showCurrentImage();
+    loadCurrentImage();
 }
 
 void ViewWindow::fillImageList(File* parent) {
@@ -112,7 +112,7 @@ void ViewWindow::nextImage() {
     if (currentIndex >= imageList.size()) {
         currentIndex = imageList.size() - 1;
     }
-    showCurrentImage();
+    loadCurrentImage();
 }
 
 void ViewWindow::prevImage() {
@@ -120,11 +120,22 @@ void ViewWindow::prevImage() {
     if (currentIndex < 0) {
         currentIndex = 0;
     }
-    showCurrentImage();
+    loadCurrentImage();
 }
 
-void ViewWindow::showCurrentImage() {
+void ViewWindow::loadCurrentImage() {
     QString path = imageList.at(currentIndex);
-    viewWidget->setImage(path);
+    fileManager->loadImage(path);
+    fileListWidget->select(path);
 }
 
+void ViewWindow::imageLoaded(const QImage image) {
+    viewWidget->reset();
+    viewWidget->setImage(image);
+}
+
+void ViewWindow::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return) {
+        showMainWindow();
+    }
+}

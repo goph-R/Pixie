@@ -16,6 +16,8 @@ public:
     bool hasItem(File* file);
     FolderTreeItem* getItem(File* file);
     void removeLoadingTextItem(FolderTreeItem* item);
+    void select(File* file);
+    void expandTo(File* file);
 
 public slots:
     void addFolder(File* file);

@@ -10,7 +10,8 @@ class ViewWidget : public QWidget
 
 public:
     ViewWidget(QWidget* parent=nullptr);
-    void setImage(QString path);
+    void reset();
+    void setImage(const QImage image);
     bool isFit();
     void setFit(bool value);
 
@@ -26,7 +27,7 @@ protected:
 
 private:
     QBrush backgroundBrush;
-    QPixmap pixmap;
+    QImage image;
     bool fit;
     bool mouseDown;
     QPoint mouseDownPosition;

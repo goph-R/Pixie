@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     fileListWidget = new FileListWidget(config);
     setCentralWidget(fileListWidget);
     currentFolder = nullptr;
+    fileToSelect = nullptr;
 
     addDrives();
 
@@ -29,10 +30,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(fileManager, &FileManager::findFilesDone, this, &MainWindow::findFilesDone);
     connect(thumbnailQueue, &ThumbnailQueue::done, this, &MainWindow::thumbnailDone);
     connect(thumbnailQueue, &ThumbnailQueue::error, this, &MainWindow::thumbnailError);
-    connect(fileListWidget, &FileListWidget::itemDoubleClicked, this, &MainWindow::itemDoubleClicked);
+    connect(fileListWidget, &FileListWidget::itemDoubleClicked, this, &MainWindow::execute);
+    connect(fileListWidget, &FileListWidget::backspacePressed, this, &MainWindow::backspacePressed);
+    connect(fileListWidget, &FileListWidget::enterPressed, this, &MainWindow::enterPressed);
+
 }
 
 MainWindow::~MainWindow() {    
+}
+
+FileManager* MainWindow::getFileManager() {
+    return fileManager;
+}
+
+FileListWidget* MainWindow::getFileListWidget() {
+    return fileListWidget;
 }
 
 void MainWindow::setViewWindow(ViewWindow* value) {
@@ -75,7 +87,6 @@ void MainWindow::folderSelectionChanged() {
     thumbnailQueue->clear();
     fileListWidget->clear();
     currentFolder = folderItem->getFile();
-    folderItem->setExpanded(true);
     fileManager->findFiles(currentFolder);
 }
 
@@ -90,6 +101,10 @@ void MainWindow::addFile(File* file) {
 }
 
 void MainWindow::findFilesDone() {
+    if (fileToSelect != nullptr) {
+        fileListWidget->select(fileToSelect->getPath());
+    }
+    fileToSelect = nullptr;
 }
 
 void MainWindow::thumbnailDone(QString path, QImage image) {
@@ -105,26 +120,15 @@ void MainWindow::thumbnailError(QString path) {
     fileListWidget->setErrorPixmap(path);
 }
 
-void MainWindow::itemDoubleClicked(QListWidgetItem* i) {
-    auto item = static_cast<FileListItem*>(i);
-    auto file = item->getFile();
-    if (file->isFolder()) {
-        selectFolder(file);
-    } else if (file->isImage()) {
-        showImage(file);
-    }
-}
-
-void MainWindow::selectFolder(File* file) {
-    folderTreeWidget->blockSignals(true);
+void MainWindow::enterFolder(File* file) {
     folderTreeWidget->clearSelection();
-    folderTreeWidget->blockSignals(false);
-    if (folderTreeWidget->hasItem(file)) {
-        auto folderItem = folderTreeWidget->getItem(file);
-        folderItem->setSelected(true);
-    } else {
+    if (!folderTreeWidget->hasItem(file)) {
+        // TODO: check later with start up directory and with CLI
         fileManager->expandFolders(file->getPath());
+        return;
     }
+    folderTreeWidget->expandTo(file);
+    folderTreeWidget->select(file);
 }
 
 void MainWindow::showImage(File* file) {
@@ -136,4 +140,30 @@ void MainWindow::showImage(File* file) {
     }
     viewWindow->setImage(file);
     hide();
+}
+
+void MainWindow::backspacePressed() {
+    auto parent = currentFolder->getParent();
+    if (parent->getPath() != "") {
+        fileToSelect = currentFolder;
+        folderTreeWidget->clearSelection();
+        folderTreeWidget->select(parent);
+    }
+}
+
+void MainWindow::enterPressed() {
+    auto items = fileListWidget->selectedItems();
+    if (items.size() != 1) {
+        return;
+    }
+    execute(items.at(0));
+}
+
+void MainWindow::execute(QListWidgetItem* item) {
+    auto file = static_cast<FileListItem*>(item)->getFile();
+    if (file->isFolder()) {
+        enterFolder(file);
+    } else if (file->isImage()) {
+        showImage(file);
+    }
 }

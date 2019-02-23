@@ -10,11 +10,14 @@ ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     setMouseTracking(true);
 }
 
-void ViewWidget::setImage(QString path) {
+void ViewWidget::reset() {
     translate.setX(0);
     translate.setY(0);
     mouseDown = false;
-    pixmap.load(path);
+}
+
+void ViewWidget::setImage(const QImage image) {
+    this->image = image;
     update();
 }
 
@@ -56,16 +59,16 @@ void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     p.setBrush(backgroundBrush);
     p.drawRect(rect());
 
-    if (pixmap.isNull()) {
+    if (image.isNull()) {
         return;
     }
 
-    float pw = pixmap.width();
-    float ph = pixmap.height();
+    float pw = image.width();
+    float ph = image.height();
     float vw = width();
     float vh = height();
     bool resized = false;
-    QSize drawSize = pixmap.size();
+    QSize drawSize = image.size();
 
     if (fit && (pw > vw || ph > vh)) {
         if (pw / ph > vw / vh) {
@@ -86,10 +89,10 @@ void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     }
 
     if (resized) {
-        auto smoothPixmap = pixmap.scaled(drawSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        p.drawPixmap(drawRect, smoothPixmap);
+        auto smoothPixmap = image.scaled(drawSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        p.drawImage(drawRect, smoothPixmap);
     } else {
-        p.drawPixmap(drawRect, pixmap);
+        p.drawImage(drawRect, image);
     }
 }
 

@@ -4,8 +4,11 @@
 #include <QMainWindow>
 #include <QShortcut>
 #include <QTimer>
+#include <QImage>
 #include "viewwidget.h"
 #include "file.h"
+#include "filemanager.h"
+#include "filelistwidget.h"
 
 class MainWindow;
 
@@ -21,28 +24,32 @@ public:
     void setMaximized(bool value);
 
 public slots:
-    void escapePressed();
+    void showMainWindow();
     void switchFullscreen();
     void switchFit();
-    void doubleClickedSlot();
+    void imageLoaded(const QImage image);
+    void nextImage();
+    void prevImage();
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
-    virtual void wheelEvent(QWheelEvent* event) override;
+    virtual void wheelEvent(QWheelEvent* event) override;    
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    void nextImage();
-    void prevImage();
-    void showCurrentImage();
+    void loadCurrentImage();
     void fillImageList(File* parent);
+    void goFullscreen();
+    void backFromFullscreen();
     MainWindow* mainWindow;
-    void showMainWindow();
     ViewWidget* viewWidget;
     QStringList imageList;
     int currentIndex;
     bool wasMaximized;
-    void goFullscreen();
-    void backFromFullscreen();
+    FileManager* fileManager;
+    FileListWidget* fileListWidget;
+    QImage emptyImage;
+
 };
 
 #endif // VIEWWINDOW_H

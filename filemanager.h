@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QHash>
+#include <QImage>
 #include "config.h"
 #include "file.h"
 #include "foundfile.h"
@@ -21,12 +22,15 @@ public:
     void expandFolders(QString path);
     void findFiles(File* file);
     File* getFileByPath(QString path);
+    void loadImage(QString path);
 
 public slots:
     void foundFile(FoundFile result);
     void foundFolder(FoundFolder result);
     void folderEmptySlot(QString folderPath);
     void findFilesDoneSlot();
+    void expandFoldersDoneSlot(QStringList folderPaths);
+    void imageLoadedSlot(const QImage image);
 
 signals:
     void findFilesSignal(QString path);
@@ -35,7 +39,10 @@ signals:
     void folderEmpty(File* file);
     void fileAdded(File* file);
     void findFilesDone();
-    void expandFoldersSignal(QString path);
+    void expandFoldersSignal(QStringList folderPaths, QStringList allFolderPaths);
+    void expandFoldersDone(QStringList allFolderPaths);
+    void loadImageSignal(QString path);
+    void imageLoaded(const QImage image);
 
 private:
     QStringList imageExtensions;

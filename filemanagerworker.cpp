@@ -22,16 +22,23 @@ void FileManagerWorker::findFiles(QString folderPath) {
 
 void FileManagerWorker::findFolders(QString folderPath) {
     auto entries = findEntries(folderPath, QDir::NoDotAndDotDot | QDir::Dirs);
-    if (!entries.size()) {
-        emit folderEmpty(folderPath);
-        return;
+    if (entries.size()) {
+        foreach (auto entry, entries) {
+            auto result = FoundFolder();
+            result.name = entry.fileName();
+            result.folderPath = folderPath;
+            emit foundFolder(result);
+        }
+    } else {
+        emit folderEmpty(folderPath);        
     }
-    foreach (auto entry, entries) {
-        auto result = FoundFolder();
-        result.name = entry.fileName();
-        result.folderPath = folderPath;
-        emit foundFolder(result);
+}
+
+void FileManagerWorker::expandFolders(QStringList folderPaths, QStringList allFolderPaths) {
+    foreach (auto folderPath, folderPaths) {
+        findFolders(folderPath);
     }
+    emit expandFoldersDone(allFolderPaths);
 }
 
 QFileInfoList FileManagerWorker::findEntries(QString folderPath, QFlags<QDir::Filter> filter) {
@@ -39,4 +46,9 @@ QFileInfoList FileManagerWorker::findEntries(QString folderPath, QFlags<QDir::Fi
     dir.setFilter(filter);
     dir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase);
     return dir.entryInfoList();
+}
+
+void FileManagerWorker::loadImage(QString path) {
+    QImage image(path);
+    emit imageLoaded(image);
 }

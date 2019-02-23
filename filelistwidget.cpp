@@ -1,6 +1,7 @@
 #include "filelistwidget.h"
 
 #include <QDebug>
+#include <QShortcut>
 #include "filelistdelegate.h"
 #include "filelistitem.h"
 
@@ -14,6 +15,9 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
     setViewMode(QListView::IconMode);
     setResizeMode(QListView::Adjust);
     setUniformItemSizes(true);
+
+    new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(backspacePressedSlot()));
+
 }
 
 void FileListWidget::resizeImages() {
@@ -61,4 +65,28 @@ void FileListWidget::setErrorPixmap(QString path) {
 void FileListWidget::clear() {
     QListWidget::clear();
     itemsByPath.clear();
+}
+
+void FileListWidget::select(QString path) {
+    if (!hasItem(path)) {
+        return;
+    }
+    auto item = getItem(path);
+    item->setSelected(true);
+    QModelIndexList indices = selectionModel()->selectedIndexes();
+    scrollTo(indices.at(0));
+    setCurrentIndex(indices.at(0));
+}
+
+
+void FileListWidget::backspacePressedSlot() {
+    emit backspacePressed();
+}
+
+void FileListWidget::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return) {
+        emit enterPressed();
+    } else {
+        QListWidget::keyPressEvent(event);
+    }
 }

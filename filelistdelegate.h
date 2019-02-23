@@ -17,6 +17,7 @@ private:
     FileListWidget* fileListWidget;
     QBrush backgroundBrush;
     QBrush borderBrush;
+    QBrush selectionBrush;
     QPen textPen;
     void drawPixmap(QPainter *p, QPixmap &pixmap, QRect &rect, bool border) const;
 };

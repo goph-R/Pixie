@@ -14,9 +14,6 @@ FolderTreeWidget::FolderTreeWidget() : QTreeWidget() {
 }
 
 FolderTreeWidget::~FolderTreeWidget() {
-    foreach (auto file, itemsByPath.values()) {
-        delete file;
-    }
     itemsByPath.clear();
 }
 
@@ -69,3 +66,24 @@ FolderTreeItem* FolderTreeWidget::getItem(File* file) {
     return itemsByPath.value(file->getPath());
 }
 
+void FolderTreeWidget::select(File* file) {
+    if (!hasItem(file)) {
+        return;
+    }
+    auto item = getItem(file);
+    item->setSelected(true);
+    QModelIndexList indices = selectionModel()->selectedIndexes();
+    scrollTo(indices.at(0));
+    setCurrentIndex(indices.at(0));
+}
+
+void FolderTreeWidget::expandTo(File* file) {
+    blockSignals(true);
+    auto current = file->getParent();
+    while (current->getPath() != "") {
+        auto item = getItem(current);
+        item->setExpanded(true);
+        current = current->getParent();
+    }
+    blockSignals(false);
+}

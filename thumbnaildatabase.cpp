@@ -47,7 +47,6 @@ void ThumbnailDatabase::save(QString path, QImage image) {
         return;
     }
     QByteArray ba;
-    qDebug() << "is anything happening";
     QBuffer buffer(&ba);
     QSqlQuery query;
     buffer.open(QIODevice::WriteOnly | QIODevice::Truncate);

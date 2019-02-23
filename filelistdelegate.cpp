@@ -7,9 +7,10 @@
 
 FileListDelegate::FileListDelegate(QWidget* parent) : QStyledItemDelegate (parent) {
     fileListWidget = static_cast<FileListWidget*>(parent);
-    backgroundBrush = QBrush(QColor(242, 242, 242));
-    textPen = QPen(QColor(24, 24, 24));
-    borderBrush = QBrush(QColor(255, 255, 255));
+    backgroundBrush = QColor(242, 242, 242);
+    textPen = QColor(24, 24, 24);
+    borderBrush = QColor(255, 255, 255);
+    selectionBrush = QColor(0, 128, 255, 48);
 }
 
 FileListDelegate::~FileListDelegate() {
@@ -19,21 +20,29 @@ void FileListDelegate::paint(QPainter *p, const QStyleOptionViewItem &option, co
     auto path = index.data(Qt::UserRole).toString();
     FileListItem* item = fileListWidget->getItem(path);
     File* file = item->getFile();
+
     auto bgRect = option.rect;
     bgRect.adjust(0, 0, -4, -37);
+
     auto textRect = QRect(bgRect.x() + 6, bgRect.bottom(), bgRect.width() - 12, 28);
 
-    // draw background
     p->setPen(Qt::NoPen);
-    p->setBrush(backgroundBrush);
-    p->drawRect(bgRect);
 
-    // draw pixmap
     if (file->isFolder()) {
         drawPixmap(p, fileListWidget->folderPixmap, bgRect, false);
-        bgRect.adjust(0, 8, 0, 0);
+    } else if (file->isImage()) {
+        p->setBrush(backgroundBrush);
+        p->drawRect(bgRect);
     }
     drawPixmap(p, item->pixmap, bgRect, file->isFolder() && !item->pixmap.isNull());
+
+    // draw selection
+    if (item->isSelected()) {
+        auto selRect = option.rect;
+        selRect.adjust(0, 0, -4, -4);
+        p->setBrush(selectionBrush);
+        p->drawRect(selRect);
+    }
 
     // draw text
     p->setPen(textPen);

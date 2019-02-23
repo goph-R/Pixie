@@ -15,6 +15,12 @@ public:
     bool isFit();
     void setFit(bool value);
 
+public slots:
+    void translateUp();
+    void translateDown();
+    void zoomIn();
+    void zoomOut();
+
 signals:
     void doubleClickedSignal();
 
@@ -32,6 +38,9 @@ private:
     bool mouseDown;
     QPoint mouseDownPosition;
     QPoint translate;
+    int zoomLevel;
+    const int zoomLevel100 = 13;
+    QList<float> zoomLevels;
 };
 
 #endif // VIEWWIDGET_H

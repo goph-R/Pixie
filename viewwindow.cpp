@@ -130,7 +130,6 @@ void ViewWindow::loadCurrentImage() {
 }
 
 void ViewWindow::imageLoaded(const QImage image) {
-    viewWidget->reset();
     viewWidget->setImage(image);
 }
 

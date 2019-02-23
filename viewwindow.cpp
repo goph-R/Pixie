@@ -6,8 +6,6 @@ ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     mainWindow = static_cast<MainWindow*>(parent);
 
     fileManager = mainWindow->getFileManager();
-    connect(fileManager, &FileManager::imageLoaded, this, &ViewWindow::imageLoaded);
-
     fileListWidget = mainWindow->getFileListWidget();
 
     new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
@@ -21,8 +19,10 @@ ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
     new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
 
     viewWidget = new ViewWidget();
-    QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
     setCentralWidget(viewWidget);
+
+    QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
+    QObject::connect(fileManager, SIGNAL(imageLoaded(QImage)), this, SLOT(imageLoaded(QImage)));
 
     wasMaximized = false;
 }

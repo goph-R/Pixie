@@ -29,16 +29,26 @@ protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
-    void adjustZoom();
-    QSize getZoomedSize();
+    const int ZOOM_ORIGINAL = 11;
+
+    void limitTranslate();
+    void calculateDrawSize();
+    void calculateFittedDrawSize();
+    void calculateZoomedDrawSize();
+    void drawBackground(QPainter &painter);
+    void drawImage(QPainter &painter);
+    void drawSmoothImage(QPainter &painter, QRect &drawRect);
+
+    QSize drawSize;
     QBrush backgroundBrush;
     QImage image;
+    QImage cachedImage;
+    int lastCachedWidth;
     bool fit;
     bool mouseDown;
     QPoint mouseDownPosition;
     QPoint translate;
     int zoomLevel;
-    const int zoomLevel100 = 13;
     QList<float> zoomLevels;
 };
 

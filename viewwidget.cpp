@@ -9,15 +9,18 @@ ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     backgroundBrush = QBrush(QColor(24, 24, 24));
     fit = true;
     mouseDown = false;
-    zoomLevel = zoomLevel100;
-    zoomLevels << 0.01f << 0.02f << 0.05f << 0.075f << 0.10f << 0.15f << 0.20f;
-    zoomLevels << 0.25f << 0.30f << 0.40f << 0.50f << 0.66f << 0.75f << 1.00f;
-    zoomLevels << 1.33f << 1.66f << 2.00f << 3.00f << 5.00f << 10.0f << 20.0f;
+    zoomLevel = ZOOM_ORIGINAL;
+    lastCachedWidth = 0;
+    zoomLevels << 0.05f << 0.07f << 0.10f << 0.15f << 0.20f << 0.25f;
+    zoomLevels << 0.30f << 0.40f << 0.50f << 0.66f << 0.75f << 1.00f;
+    zoomLevels << 1.33f << 1.66f << 2.00f << 3.00f << 5.00f << 10.0f;
     setMouseTracking(true);
+    lastCachedWidth = 0;
 }
 
 void ViewWidget::setImage(const QImage image) {
     this->image = image;
+    lastCachedWidth = 0;
     update();
 }
 
@@ -30,7 +33,7 @@ void ViewWidget::setFit(bool value) {
     if (fit) {
         translate.setX(0);
         translate.setY(0);
-        zoomLevel = zoomLevel100;
+        zoomLevel = ZOOM_ORIGINAL;
     }
     update();
 }
@@ -59,61 +62,94 @@ void ViewWidget::mouseDoubleClickEvent(QMouseEvent* event __attribute__((unused)
 }
 
 void ViewWidget::translateDown() {
-    if (!fit) {
-        translate.setY(translate.y() - 40);
-        update();
+    if (fit) {
+        return;
     }
+    translate.setY(translate.y() - 40);
+    update();
 }
 
 void ViewWidget::translateUp() {
     if (!fit) {
-        translate.setY(translate.y() + 40);
-        update();
+        return;
     }
+    translate.setY(translate.y() + 40);
+    update();
 }
 
 void  ViewWidget::zoomIn() {
-    if (!fit) {
-        zoomLevel++;
-        if (zoomLevel >= zoomLevels.size()) {
-            zoomLevel = zoomLevels.size() - 1;
-        }
-        update();
+    if (fit) {
+        return;
     }
+    zoomLevel++;
+    if (zoomLevel >= zoomLevels.size()) {
+        zoomLevel = zoomLevels.size() - 1;
+    }
+    update();
 }
 
 void ViewWidget::zoomOut() {
-    if (!fit) {
-        zoomLevel--;
-        if (zoomLevel < 0) {
-            zoomLevel = 0;
-        }
-        update();
+    if (fit) {
+        return;
+    }
+    zoomLevel--;
+    if (zoomLevel < 0) {
+        zoomLevel = 0;
+    }
+    update();
+}
+
+void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
+    calculateDrawSize();
+    limitTranslate();
+    QPainter p(this);
+    drawBackground(p);
+    drawImage(p);
+}
+
+
+void ViewWidget::calculateDrawSize() {
+    return fit ? calculateFittedDrawSize() : calculateZoomedDrawSize();
+}
+
+void ViewWidget::calculateFittedDrawSize() {
+    drawSize = image.size();
+    float pw = drawSize.width();
+    float ph = drawSize.height();
+    float vw = width();
+    float vh = height();
+    if (pw <= vw && ph <= vh) {
+        return;
+    }
+    if (pw / ph > vw / vh) {
+        drawSize.setWidth(static_cast<int>(vw));
+        drawSize.setHeight(static_cast<int>((vw / pw) * ph));
+    } else {
+        drawSize.setWidth(static_cast<int>((vh / ph) * pw));
+        drawSize.setHeight(static_cast<int>(vh));
     }
 }
 
-QSize ViewWidget::getZoomedSize() {
-    QSize result = image.size();
+void ViewWidget::calculateZoomedDrawSize() {
+    drawSize = image.size();
     float zoom = zoomLevels.at(zoomLevel);
-    float drawWidth = result.width() * zoom;
-    float drawHeight = result.height() * zoom;
-    result.setWidth(static_cast<int>(drawWidth));
-    result.setHeight(static_cast<int>(drawHeight));
-    return result;
+    float drawWidth = drawSize.width() * zoom;
+    float drawHeight = drawSize.height() * zoom;
+    drawSize.setWidth(static_cast<int>(drawWidth));
+    drawSize.setHeight(static_cast<int>(drawHeight));
 }
 
 void ViewWidget::limitTranslate() {
-    auto size = getZoomedSize();
-    auto limitX = (size.width() - width()) / 2;
-    auto limitY = (size.height() - height()) / 2;
-    if (size.width() < width()) {
+    auto limitX = (drawSize.width() - width()) / 2;
+    auto limitY = (drawSize.height() - height()) / 2;
+    if (drawSize.width() < width()) {
         translate.setX(0);
     } else if (translate.x() < -limitX) {
         translate.setX(-limitX);
     } else if (translate.x() > limitX) {
         translate.setX(limitX);
     }
-    if (size.height() < height()) {
+    if (drawSize.height() < height()) {
         translate.setY(0);
     } else if (translate.y() < -limitY) {
         translate.setY(-limitY);
@@ -122,50 +158,44 @@ void ViewWidget::limitTranslate() {
     }
 }
 
-void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
-
-    limitTranslate();
-
-    QPainter p(this);
+void ViewWidget::drawBackground(QPainter &p) {
     p.setPen(Qt::NoPen);
     p.setBrush(backgroundBrush);
     p.drawRect(rect());
+}
 
+void ViewWidget::drawImage(QPainter &p) {
     if (image.isNull()) {
         return;
     }
-
-    auto drawSize = getZoomedSize();
-    float pw = drawSize.width();
-    float ph = drawSize.height();
-    float vw = width();
-    float vh = height();
-    bool resized = zoomLevel < zoomLevel100;
-
-    if (fit && (pw > vw || ph > vh)) {
-        if (pw / ph > vw / vh) {
-            drawSize.setWidth(static_cast<int>(vw));
-            drawSize.setHeight(static_cast<int>((vw / pw) * ph));
-        } else {
-            drawSize.setWidth(static_cast<int>((vh / ph) * pw));
-            drawSize.setHeight(static_cast<int>(vh));
-        }
-        resized = true;
-    }
-
     QRect drawRect = QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, drawSize, rect());
-
     if (!fit) {
         drawRect.setTopLeft(drawRect.topLeft() + translate);
         drawRect.setBottomRight(drawRect.bottomRight() + translate);
     }
-
-    if (resized) {
-        auto smoothPixmap = image.scaled(drawSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        p.drawImage(drawRect, smoothPixmap);
+    if (drawSize.width() < image.width() || drawSize.height() < image.height()) {
+        drawSmoothImage(p, drawRect);
     } else {
         p.drawImage(drawRect, image);
     }
 }
+
+void ViewWidget::drawSmoothImage(QPainter &p, QRect &drawRect) {
+    float iw = image.width();
+    float rw = drawRect.width();
+    if (rw / iw < 0.51f) {
+        if (lastCachedWidth != static_cast<int>(rw)) {
+            lastCachedWidth = static_cast<int>(rw);
+            auto scaledImage = image.scaled(image.width() / 2, image.height() / 2);
+            cachedImage = scaledImage.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        }
+        p.drawImage(drawRect, cachedImage);
+    } else {
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
+        p.drawImage(drawRect, image);
+    }
+}
+
+
 
 

@@ -29,6 +29,7 @@ public:
     void setViewWindow(ViewWindow* value);
     FileManager* getFileManager();
     FileListWidget* getFileListWidget();
+    void exitApplication();
 
 public slots:
     void folderSelectionChanged();
@@ -43,7 +44,7 @@ public slots:
     void execute(QListWidgetItem* item);
     void showSettings();
     void showAbout();
-    void quit();
+    void quitSlot();
 
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;
@@ -52,6 +53,8 @@ private:
     void enterFolder(File* file);
     void showImage(File* file);
     void setPathEditTo(QString path);
+    void readSettings();
+    void saveSettings();
     QString getDisplayPath(QString path);
     Config* config;
     FileManager* fileManager;

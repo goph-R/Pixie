@@ -12,9 +12,12 @@
 #include <QDebug>
 
 ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {
-    this->mainWindow = mainWindow;
+    createImageWorkerThread();
 
+    this->mainWindow = mainWindow;
     fileListWidget = mainWindow->getFileListWidget();
+    viewWidget = new ViewWidget();
+    setCentralWidget(viewWidget);
 
     new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
     new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
@@ -26,13 +29,15 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(plusPressed()));
     new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
 
-    viewWidget = new ViewWidget();
-    setCentralWidget(viewWidget);
-
     QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
 
     wasMaximized = false;
+}
 
+ViewWindow::~ViewWindow() {
+}
+
+void ViewWindow::createImageWorkerThread() {
     auto worker = new ImageWorker();
     worker->moveToThread(&imageWorkerThread);
     QObject::connect(this, SIGNAL(loadImage(QString)), worker, SLOT(load(QString)));
@@ -41,10 +46,7 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     imageWorkerThread.start();
 }
 
-ViewWindow::~ViewWindow() {
-}
-
-void ViewWindow::quit() {
+void ViewWindow::exitApplication() {
     imageWorkerThread.quit();
     imageWorkerThread.wait();
 }

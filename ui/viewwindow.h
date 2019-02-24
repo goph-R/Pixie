@@ -19,6 +19,7 @@ public:
     virtual QSize sizeHint() const override;
     void setImage(File* file);
     void setMaximized(bool value);
+    void exitApplication();
 
 public slots:
     void showMainWindow();
@@ -32,7 +33,6 @@ public slots:
     void downPressed();
     void plusPressed();
     void minusPressed();
-    void quit();
 
 signals:
     void loadImage(QString path);
@@ -57,6 +57,7 @@ private:
     bool wasMaximized;
     FileListWidget* fileListWidget;
     QImage emptyImage;
+    void createImageWorkerThread();
     QThread imageWorkerThread;
 
 };

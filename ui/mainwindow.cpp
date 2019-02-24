@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QSizePolicy>
 #include <QSplitter>
+#include <QSettings>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -23,6 +24,10 @@
 #include "ui/settingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+
+    QSettings settings;
+    restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
+
     currentFolder = nullptr;
     fileToSelect = nullptr;
 
@@ -35,7 +40,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // ui
     folderTreeWidget = new FolderTreeWidget();
-    dockWidget = new QDockWidget();
+    dockWidget = new QDockWidget("Folders");
+    dockWidget->setObjectName("foldersDockWidget");
     dockWidget->setWidget(folderTreeWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     fileListWidget = new FileListWidget(config);
@@ -81,7 +87,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QObject::connect(fileListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileSelectionChanged()));
     QObject::connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
     QObject::connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAbout()));
-    QObject::connect(quitAction, SIGNAL(triggered()), this, SLOT(quit()));
+    QObject::connect(quitAction, SIGNAL(triggered()), this, SLOT(quitSlot()));
+
+    readSettings();
 }
 
 MainWindow::~MainWindow() {
@@ -92,14 +100,31 @@ void MainWindow::setViewWindow(ViewWindow* value) {
 }
 
 void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
+    exitApplication();
 }
 
-void MainWindow::quit() {
-    viewWindow->quit();
+void MainWindow::quitSlot() {
+    exitApplication();
+}
+
+void MainWindow::exitApplication() {
+    saveSettings();
+    viewWindow->exitApplication();
     delete thumbnailQueue;
     delete fileManager;
     delete config;
-    close();
+    QApplication::quit();
+}
+
+void MainWindow::saveSettings() {
+    QSettings settings;
+    settings.setValue("mainWindowGeometry", saveGeometry());
+    settings.setValue("mainWindowState", saveState());
+}
+
+void MainWindow::readSettings() {
+    QSettings settings;
+    restoreState(settings.value("mainWindowState").toByteArray());
 }
 
 void MainWindow::showSettings() {

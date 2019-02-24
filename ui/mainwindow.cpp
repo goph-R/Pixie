@@ -62,15 +62,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // menu
     auto menu = menuBar();
     auto fileMenu = menu->addMenu("&File");
-    auto quitAction = new QAction("&Quit");
+    auto quitAction = new QAction("&Quit", fileMenu);
     fileMenu->addAction(quitAction);
 
     auto toolsMenu = menu->addMenu("&Tools");
-    auto settingsAction = new QAction("&Settings");
+    auto settingsAction = new QAction("&Settings", toolsMenu);
     toolsMenu->addAction(settingsAction);
 
     auto helpMenu = menu->addMenu("&Help");
-    auto aboutAction = new QAction("&About");
+    auto aboutAction = new QAction("&About", helpMenu);
     helpMenu->addAction(aboutAction);
 
     QObject::connect(folderTreeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(folderExpanded(QTreeWidgetItem*)));

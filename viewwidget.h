@@ -29,6 +29,7 @@ protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
+    void adjustZoom();
     QSize getZoomedSize();
     QBrush backgroundBrush;
     QImage image;

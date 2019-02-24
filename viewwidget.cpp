@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QShortcut>
+#include <QDebug>
 
 ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     backgroundBrush = QBrush(QColor(24, 24, 24));
@@ -101,7 +102,30 @@ QSize ViewWidget::getZoomedSize() {
     return result;
 }
 
+void ViewWidget::limitTranslate() {
+    auto size = getZoomedSize();
+    auto limitX = (size.width() - width()) / 2;
+    auto limitY = (size.height() - height()) / 2;
+    if (size.width() < width()) {
+        translate.setX(0);
+    } else if (translate.x() < -limitX) {
+        translate.setX(-limitX);
+    } else if (translate.x() > limitX) {
+        translate.setX(limitX);
+    }
+    if (size.height() < height()) {
+        translate.setY(0);
+    } else if (translate.y() < -limitY) {
+        translate.setY(-limitY);
+    } else if (translate.y() > limitY) {
+        translate.setY(limitY);
+    }
+}
+
 void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
+
+    limitTranslate();
+
     QPainter p(this);
     p.setPen(Qt::NoPen);
     p.setBrush(backgroundBrush);

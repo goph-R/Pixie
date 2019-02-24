@@ -43,7 +43,8 @@ SOURCES += \
     ui/filelistitem.cpp \
     ui/viewwindow.cpp \
     ui/viewwidget.cpp \
-    ui/settingsdialog.cpp
+    ui/settingsdialog.cpp \
+    domain/imageworker.cpp
 
 HEADERS += \
     domain/config.h \
@@ -63,7 +64,8 @@ HEADERS += \
     ui/filelistitem.h \
     ui/viewwindow.h \
     ui/viewwidget.h \
-    ui/settingsdialog.h
+    ui/settingsdialog.h \
+    domain/imageworker.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

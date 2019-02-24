@@ -2,10 +2,9 @@
 
 #include <QApplication>
 #include <QShortcut>
-#include <QTimer>
 #include <QImage>
 #include "domain/file.h"
-#include "domain/filemanager.h"
+#include "domain/imageworker.h"
 #include "ui/mainwindow.h"
 #include "ui/viewwidget.h"
 #include "ui/filelistwidget.h"
@@ -15,7 +14,8 @@
 ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {
     this->mainWindow = mainWindow;
 
-    fileManager = mainWindow->getFileManager();
+    createWorkerThread();
+
     fileListWidget = mainWindow->getFileListWidget();
 
     new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
@@ -32,12 +32,22 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     setCentralWidget(viewWidget);
 
     QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
-    QObject::connect(fileManager, SIGNAL(imageLoaded(QImage)), this, SLOT(imageLoaded(QImage)));
 
     wasMaximized = false;
 }
 
 ViewWindow::~ViewWindow() {
+    workerThread.wait();
+    workerThread.quit();
+}
+
+void ViewWindow::createWorkerThread() {
+    auto worker = new ImageWorker();
+    worker->moveToThread(&workerThread);
+    QObject::connect(this, SIGNAL(loadImage(QString)), worker, SLOT(load(QString)));
+    QObject::connect(worker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
+    QObject::connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    workerThread.start();
 }
 
 void ViewWindow::quit() {
@@ -174,7 +184,7 @@ void ViewWindow::prevImage() {
 
 void ViewWindow::loadCurrentImage() {
     QString path = imageList.at(currentIndex);
-    fileManager->loadImage(path);
+    emit loadImage(path);
     fileListWidget->select(path);
 }
 

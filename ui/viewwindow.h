@@ -2,10 +2,10 @@
 #define VIEWWINDOW_H
 
 #include <QMainWindow>
+#include <QThread>
 
 class File;
 class ViewWidget;
-class FileManager;
 class FileListWidget;
 class MainWindow;
 
@@ -34,24 +34,28 @@ public slots:
     void minusPressed();
     void quit();
 
+signals:
+    void loadImage(QString path);
+
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
     virtual void wheelEvent(QWheelEvent* event) override;    
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
+    void createWorkerThread();
     void nextImage();
     void prevImage();
     void loadCurrentImage();
     void fillImageList(File* parent);
     void goFullscreen();
     void backFromFullscreen();
+    QThread workerThread;
     MainWindow* mainWindow;
     ViewWidget* viewWidget;
     QStringList imageList;
     int currentIndex;
     bool wasMaximized;
-    FileManager* fileManager;
     FileListWidget* fileListWidget;
     QImage emptyImage;
 

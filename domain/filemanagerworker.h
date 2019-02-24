@@ -14,13 +14,12 @@ class FileManagerWorker : public QObject
     Q_OBJECT
 
 public:
-    FileManagerWorker(QStringList imageExtensions);
+    FileManagerWorker();
 
 public slots:
     void findFiles(QString folderPath);
     void findFolders(QString folderPath);
     void expandFolders(QStringList folderPaths, QStringList allFolderPaths);
-    void loadImage(QString path);
 
 signals:
     void foundFile(FoundFile result);
@@ -28,11 +27,9 @@ signals:
     void folderEmpty(QString path);
     void findFilesDone(QString path, bool foundFolders);
     void expandFoldersDone(QStringList allFoldersPath);
-    void imageLoaded(const QImage image);
 
 private:
     QFileInfoList findEntries(QString folderPath, QFlags<QDir::Filter> filters);
-    QStringList imageExtensions;
 };
 
 #endif // FILEMANAGERWORKER_H

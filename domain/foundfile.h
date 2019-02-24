@@ -14,18 +14,12 @@ public:
     QString getExtension();
     QString getFolderPath();
     bool isFolder();
-    bool isImage();
-    int getWidth();
-    int getHeight();
 
 private:
     QString name;
     QString extension;
     QString folderPath;
     bool folder;
-    bool image;
-    int width;
-    int height;
 
     friend class FileManagerWorker;
 };

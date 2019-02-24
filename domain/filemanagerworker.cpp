@@ -6,8 +6,7 @@
 
 #include <QDebug>
 
-FileManagerWorker::FileManagerWorker(QStringList imageExtensions) : QObject() {
-    this->imageExtensions = imageExtensions;
+FileManagerWorker::FileManagerWorker() : QObject() {
 }
 
 void FileManagerWorker::findFiles(QString folderPath) {
@@ -19,13 +18,6 @@ void FileManagerWorker::findFiles(QString folderPath) {
         result.folder = entry.isDir();
         result.extension = entry.suffix().toLower();
         result.folderPath = folderPath;
-        result.image = imageExtensions.contains(result.extension);
-        if (result.image) {
-            QImageReader reader(entry.absoluteFilePath());
-            auto size = reader.size();
-            result.width = size.width();
-            result.height = size.height();
-        }
         emit foundFile(result);
         foundFolders |= result.folder;
     }
@@ -58,9 +50,4 @@ QFileInfoList FileManagerWorker::findEntries(QString folderPath, QFlags<QDir::Fi
     dir.setFilter(filter);
     dir.setSorting(QDir::Name | QDir::DirsFirst | QDir::IgnoreCase);
     return dir.entryInfoList();
-}
-
-void FileManagerWorker::loadImage(QString path) {
-    QImage image(path);
-    emit imageLoaded(image);
 }

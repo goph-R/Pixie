@@ -21,7 +21,7 @@ FileManager::~FileManager() {
 }
 
 void FileManager::createWorkerThread() {
-    auto worker = new FileManagerWorker(imageExtensions);
+    auto worker = new FileManagerWorker();
     worker->moveToThread(&workerThread);
     QObject::connect(this, SIGNAL(findFilesSignal(QString)), worker, SLOT(findFiles(QString)));
     QObject::connect(this, SIGNAL(findFoldersSignal(QString)), worker, SLOT(findFolders(QString)));
@@ -31,7 +31,6 @@ void FileManager::createWorkerThread() {
     QObject::connect(worker, SIGNAL(folderEmpty(QString)), this, SLOT(folderEmptySlot(QString)));
     QObject::connect(worker, SIGNAL(findFilesDone(QString, bool)), this, SLOT(findFilesDoneSlot(QString, bool)));
     QObject::connect(worker, SIGNAL(expandFoldersDone(QStringList)), this, SLOT(expandFoldersDoneSlot(QStringList)));
-    QObject::connect(worker, SIGNAL(imageLoaded(const QImage)), this, SLOT(imageLoadedSlot(const QImage)));
     QObject::connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     workerThread.start();
 }
@@ -122,9 +121,7 @@ void FileManager::foundFile(FoundFile foundFile) {
     } else if (filesByPath.contains(folderPath)) {
         file = createEntry(folderPath, foundFile.getName(), foundFile.isFolder());
         file->extension = foundFile.getExtension();
-        file->image = foundFile.isImage();
-        file->width = foundFile.getWidth();
-        file->height = foundFile.getHeight();
+        file->image = imageExtensions.contains(file->extension);
     }
     if (file != nullptr) {
         emit fileAdded(file);
@@ -144,13 +141,5 @@ File* FileManager::createEntry(QString folderPath, QString name, bool folder) {
 
 File* FileManager::getFileByPath(QString path) {
     return filesByPath.value(path);
-}
-
-void FileManager::loadImage(QString path) {
-    emit loadImageSignal(path);
-}
-
-void FileManager::imageLoadedSlot(const QImage image) {
-    emit imageLoaded(image);
 }
 

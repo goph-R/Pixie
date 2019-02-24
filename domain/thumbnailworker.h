@@ -4,10 +4,10 @@
 #include <QRunnable>
 #include <QObject>
 #include <QImage>
+#include <QStringList>
 
 class File;
 class Config;
-
 
 class ThumbnailWorker : public QRunnable
 {

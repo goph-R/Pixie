@@ -183,11 +183,11 @@ void ViewWidget::drawImage(QPainter &p) {
 }
 
 void ViewWidget::drawSmoothImage(QPainter &p, QRect &drawRect) {
+    // TODO: optimize somehow...
     float iw = image.width();
     float rw = drawRect.width();
     float ih = image.height();
     float rh = drawRect.height();
-    qDebug() << rw / iw << rh / ih;
     if (rw / iw < 0.35f || rh / ih < 0.35f) {
         if (lastCachedWidth != static_cast<int>(rw)) {
             lastCachedWidth = static_cast<int>(rw);

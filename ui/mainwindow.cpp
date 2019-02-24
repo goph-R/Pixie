@@ -7,11 +7,14 @@
 #include <QLineEdit>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QSizePolicy>
+#include <QSplitter>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
 #include "domain/thumbnailqueue.h"
 #include "domain/file.h"
+#include "domain/imageworker.h"
 #include "ui/foldertreewidget.h"
 #include "ui/foldertreeitem.h"
 #include "ui/filelistwidget.h"
@@ -32,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // ui
     folderTreeWidget = new FolderTreeWidget();
-    dockWidget = new QDockWidget("Folders");
+    dockWidget = new QDockWidget();
     dockWidget->setWidget(folderTreeWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     fileListWidget = new FileListWidget(config);
@@ -79,14 +82,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QObject::connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
     QObject::connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAbout()));
     QObject::connect(quitAction, SIGNAL(triggered()), this, SLOT(quit()));
-
 }
 
-MainWindow::~MainWindow() {    
+MainWindow::~MainWindow() {
+}
+
+void MainWindow::setViewWindow(ViewWindow* value) {
+    viewWindow = value;
+}
+
+void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
 }
 
 void MainWindow::quit() {
-    QApplication::quit();
+    viewWindow->quit();
+    delete thumbnailQueue;
+    delete fileManager;
+    delete config;
+    close();
 }
 
 void MainWindow::showSettings() {
@@ -105,17 +118,10 @@ FileListWidget* MainWindow::getFileListWidget() {
     return fileListWidget;
 }
 
-void MainWindow::setViewWindow(ViewWindow* value) {
-    viewWindow = value;
+void MainWindow::resizeEvent(QResizeEvent *event __attribute__((unused))) {
 }
 
-void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
-    delete thumbnailQueue;
-    delete fileManager;
-    delete config;
-}
-
-void MainWindow::addDrives() {  
+void MainWindow::addDrives() {
     auto icon = QIcon(":/icons/hard-drive.png");
     auto root = fileManager->getRoot();
     foreach (auto file, root->getChildren()) {

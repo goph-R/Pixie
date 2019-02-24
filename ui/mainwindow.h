@@ -5,6 +5,7 @@
 #include <QDockWidget>
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
+#include <QTimer>
 
 class Config;
 class ThumbnailQueue;
@@ -43,6 +44,9 @@ public slots:
     void showSettings();
     void showAbout();
     void quit();
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
 
 private:    
     void enterFolder(File* file);

@@ -29,5 +29,6 @@ int main(int argc, char *argv[])
     active->show();
     active->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, active->size(), availableGeometry));
 
-    return app.exec();
+    int result = app.exec();
+    return result;
 }

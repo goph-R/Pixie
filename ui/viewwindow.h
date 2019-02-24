@@ -43,7 +43,6 @@ protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    void createWorkerThread();
     void nextImage();
     void prevImage();
     void loadCurrentImage();
@@ -58,6 +57,7 @@ private:
     bool wasMaximized;
     FileListWidget* fileListWidget;
     QImage emptyImage;
+    QThread imageWorkerThread;
 
 };
 

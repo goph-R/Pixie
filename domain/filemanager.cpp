@@ -25,7 +25,6 @@ void FileManager::createWorkerThread() {
     worker->moveToThread(&workerThread);
     QObject::connect(this, SIGNAL(findFilesSignal(QString)), worker, SLOT(findFiles(QString)));
     QObject::connect(this, SIGNAL(findFoldersSignal(QString)), worker, SLOT(findFolders(QString)));
-    QObject::connect(this, SIGNAL(loadImageSignal(QString)), worker, SLOT(loadImage(QString)));
     QObject::connect(worker, SIGNAL(foundFolder(FoundFolder)), this, SLOT(foundFolder(FoundFolder)));
     QObject::connect(worker, SIGNAL(foundFile(FoundFile)), this, SLOT(foundFile(FoundFile)));
     QObject::connect(worker, SIGNAL(folderEmpty(QString)), this, SLOT(folderEmptySlot(QString)));

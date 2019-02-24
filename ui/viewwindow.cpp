@@ -14,8 +14,6 @@
 ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {
     this->mainWindow = mainWindow;
 
-    createWorkerThread();
-
     fileListWidget = mainWindow->getFileListWidget();
 
     new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
@@ -34,24 +32,21 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
 
     wasMaximized = false;
+
+    auto worker = new ImageWorker();
+    worker->moveToThread(&imageWorkerThread);
+    QObject::connect(this, SIGNAL(loadImage(QString)), worker, SLOT(load(QString)));
+    QObject::connect(worker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
+    QObject::connect(&imageWorkerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    imageWorkerThread.start();
 }
 
 ViewWindow::~ViewWindow() {
-    workerThread.wait();
-    workerThread.quit();
-}
-
-void ViewWindow::createWorkerThread() {
-    auto worker = new ImageWorker();
-    worker->moveToThread(&workerThread);
-    QObject::connect(this, SIGNAL(loadImage(QString)), worker, SLOT(load(QString)));
-    QObject::connect(worker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
-    QObject::connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    workerThread.start();
 }
 
 void ViewWindow::quit() {
-    QApplication::quit();
+    imageWorkerThread.quit();
+    imageWorkerThread.wait();
 }
 
 void ViewWindow::setMaximized(bool value) {

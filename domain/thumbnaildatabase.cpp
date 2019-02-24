@@ -1,12 +1,13 @@
-#include "thumbnaildatabase.h"
+#include "domain/thumbnaildatabase.h"
 
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QBuffer>
-#include <QDebug>
 #include <QSqlError>
 #include <QSqlDriver>
+
+#include <QDebug>
 
 ThumbnailDatabase::ThumbnailDatabase(QString path) : QObject() {
     databasePath = path;

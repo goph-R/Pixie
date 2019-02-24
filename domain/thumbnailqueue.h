@@ -4,10 +4,11 @@
 #include <QObject>
 #include <QThreadPool>
 #include <QImage>
-#include "file.h"
-#include "config.h"
-#include "filemanager.h"
-#include "thumbnailworker.h"
+
+class ThumbnailWorker;
+class Config;
+class File;
+class FileManager;
 
 class ThumbnailQueue : public QObject
 {

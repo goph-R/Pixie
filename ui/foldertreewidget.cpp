@@ -1,9 +1,11 @@
-#include "foldertreewidget.h"
+#include "ui/foldertreewidget.h"
 
 #include <QDir>
-#include <QDebug>
 #include <QHeaderView>
-#include "foldertreeitem.h"
+#include "domain/file.h"
+#include "ui/foldertreeitem.h"
+
+#include <QDebug>
 
 FolderTreeWidget::FolderTreeWidget() : QTreeWidget() {
     setHeaderHidden(true);

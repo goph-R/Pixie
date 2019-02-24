@@ -3,7 +3,9 @@
 
 #include <QTreeWidget>
 #include <QHash>
-#include "foldertreeitem.h"
+
+class File;
+class FolderTreeItem;
 
 class FolderTreeWidget : public QTreeWidget
 {

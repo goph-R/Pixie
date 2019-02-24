@@ -1,9 +1,11 @@
-#include "filemanager.h"
+#include "domain/filemanager.h"
 
-#include <qglobal.h>
 #include <QDebug>
+#include "domain/config.h"
+#include "domain/file.h"
+#include "domain/filemanagerworker.h"
+
 #include <QDir>
-#include "filemanagerworker.h"
 
 FileManager::FileManager(Config* config) : QObject() {
     imageExtensions = config->getImageExtensions();

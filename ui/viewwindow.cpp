@@ -1,9 +1,18 @@
 #include "viewwindow.h"
-#include "mainwindow.h"
+
+#include <QShortcut>
+#include <QTimer>
+#include <QImage>
+#include "domain/file.h"
+#include "domain/filemanager.h"
+#include "ui/mainwindow.h"
+#include "ui/viewwidget.h"
+#include "ui/filelistwidget.h"
+
 #include <QDebug>
 
-ViewWindow::ViewWindow(QWidget* parent) : QMainWindow(parent) {
-    mainWindow = static_cast<MainWindow*>(parent);
+ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {
+    this->mainWindow = mainWindow;
 
     fileManager = mainWindow->getFileManager();
     fileListWidget = mainWindow->getFileListWidget();

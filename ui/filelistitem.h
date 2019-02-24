@@ -3,7 +3,8 @@
 
 #include <QListWidgetItem>
 #include <QPixmap>
-#include "file.h"
+
+class File;
 
 class FileListItem : public QListWidgetItem
 {

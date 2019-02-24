@@ -1,4 +1,4 @@
-#include "config.h"
+#include "domain/config.h"
 #include <QImageReader>
 #include <QDir>
 #include <QDebug>

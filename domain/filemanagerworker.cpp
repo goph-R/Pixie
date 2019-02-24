@@ -1,8 +1,9 @@
-#include "filemanagerworker.h"
+#include "domain/filemanagerworker.h"
 
 #include <QDir>
-#include <QDebug>
 #include <QTime>
+
+#include <QDebug>
 
 FileManagerWorker::FileManagerWorker() : QObject() {
 }

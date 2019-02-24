@@ -2,7 +2,6 @@
 #define VIEWWIDGET_H
 
 #include <QWidget>
-#include <QMouseEvent>
 
 class ViewWidget : public QWidget
 {

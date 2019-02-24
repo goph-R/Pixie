@@ -25,43 +25,43 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    foldertreewidget.cpp \
-    filelistwidget.cpp \
-    config.cpp \
-    filemanagerworker.cpp \
-    filemanager.cpp \
-    file.cpp \
-    foundfile.cpp \
-    foundfolder.cpp \
-    thumbnailqueue.cpp \
-    filelistdelegate.cpp \
-    filelistitem.cpp \
-    foldertreeitem.cpp \
-    thumbnailworker.cpp \
-    viewwindow.cpp \
-    viewwidget.cpp \
-    thumbnaildatabase.cpp
+    main.cpp \
+    domain/config.cpp \
+    domain/filemanagerworker.cpp \
+    domain/filemanager.cpp \
+    domain/file.cpp \
+    domain/foundfile.cpp \
+    domain/foundfolder.cpp \
+    domain/thumbnailqueue.cpp \
+    domain/thumbnailworker.cpp \
+    domain/thumbnaildatabase.cpp \
+    ui/mainwindow.cpp \
+    ui/foldertreewidget.cpp \
+    ui/foldertreeitem.cpp \
+    ui/filelistwidget.cpp \
+    ui/filelistdelegate.cpp \
+    ui/filelistitem.cpp \
+    ui/viewwindow.cpp \
+    ui/viewwidget.cpp
 
 HEADERS += \
-        mainwindow.h \
-    foldertreewidget.h \
-    filelistwidget.h \
-    config.h \
-    filemanagerworker.h \
-    filemanager.h \
-    file.h \
-    foundfile.h \
-    foundfolder.h \
-    thumbnailqueue.h \
-    filelistdelegate.h \
-    foldertreeitem.h \
-    filelistitem.h \
-    thumbnailworker.h \
-    viewwindow.h \
-    viewwidget.h \
-    thumbnaildatabase.h
+    domain/config.h \
+    domain/filemanagerworker.h \
+    domain/filemanager.h \
+    domain/file.h \
+    domain/foundfile.h \
+    domain/foundfolder.h \
+    domain/thumbnailqueue.h \
+    domain/thumbnailworker.h \
+    domain/thumbnaildatabase.h \
+    ui/mainwindow.h \
+    ui/foldertreewidget.h \
+    ui/foldertreeitem.h \
+    ui/filelistwidget.h \
+    ui/filelistdelegate.h \
+    ui/filelistitem.h \
+    ui/viewwindow.h \
+    ui/viewwidget.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

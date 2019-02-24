@@ -1,5 +1,11 @@
-#include "thumbnailqueue.h"
+#include "domain/thumbnailqueue.h"
+
+#include "config.h"
+#include "file.h"
+#include "filemanager.h"
+#include "thumbnailworker.h"
 #include "thumbnaildatabase.h"
+
 #include <QDebug>
 
 ThumbnailQueue::ThumbnailQueue(Config* config, FileManager* fileManager) : QObject() {

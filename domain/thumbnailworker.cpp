@@ -1,9 +1,12 @@
-#include "thumbnailworker.h"
+#include "domain/thumbnailworker.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
-#include "thumbnaildatabase.h"
+#include "domain/thumbnaildatabase.h"
+#include "domain/config.h"
+#include "domain/file.h"
+
+#include <QDebug>
 
 ThumbnailWorker::ThumbnailWorker(QObject* receiver, File* file, Config* config) : QRunnable() {
     setAutoDelete(true);

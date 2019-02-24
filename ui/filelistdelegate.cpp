@@ -1,9 +1,11 @@
-#include "filelistdelegate.h"
+#include "ui/filelistdelegate.h"
 
 #include <QPainter>
-#include "filelistwidget.h"
+#include "domain/file.h"
+#include "ui/filelistwidget.h"
+#include "ui/filelistitem.h"
+
 #include <QDebug>
-#include "filelistitem.h"
 
 FileListDelegate::FileListDelegate(QWidget* parent) : QStyledItemDelegate (parent) {
     fileListWidget = static_cast<FileListWidget*>(parent);

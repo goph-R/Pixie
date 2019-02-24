@@ -2,7 +2,8 @@
 #define FOLDERTREEWIDGETITEM_H
 
 #include <QTreeWidgetItem>
-#include "file.h"
+
+class File;
 
 class FolderTreeItem : public QTreeWidgetItem
 {

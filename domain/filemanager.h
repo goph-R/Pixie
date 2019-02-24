@@ -5,10 +5,11 @@
 #include <QThread>
 #include <QHash>
 #include <QImage>
-#include "config.h"
-#include "file.h"
-#include "foundfile.h"
-#include "foundfolder.h"
+#include "domain/foundfile.h"
+#include "domain/foundfolder.h"
+
+class Config;
+class File;
 
 class FileManager : public QObject
 {

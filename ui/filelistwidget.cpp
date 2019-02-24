@@ -1,10 +1,13 @@
-#include "filelistwidget.h"
+#include "ui/filelistwidget.h"
 
-#include <QDebug>
 #include <QShortcut>
 #include <QKeyEvent>
-#include "filelistdelegate.h"
-#include "filelistitem.h"
+#include "domain/file.h"
+#include "domain/config.h"
+#include "ui/filelistdelegate.h"
+#include "ui/filelistitem.h"
+
+#include <QDebug>
 
 FileListWidget::FileListWidget(Config* config) : QListWidget() {
     this->config = config;

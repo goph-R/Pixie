@@ -3,9 +3,9 @@
 
 #include <QListWidget>
 #include <QHash>
-#include "file.h"
-#include "config.h"
 
+class Config;
+class File;
 class FileListDelegate;
 class FileListItem;
 

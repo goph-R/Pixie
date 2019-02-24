@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QStyle>
 #include <QShortcut>
+#include <QMouseEvent>
+
 #include <QDebug>
 
 ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
@@ -183,11 +185,20 @@ void ViewWidget::drawImage(QPainter &p) {
 void ViewWidget::drawSmoothImage(QPainter &p, QRect &drawRect) {
     float iw = image.width();
     float rw = drawRect.width();
-    if (rw / iw < 0.51f) {
+    float ih = image.height();
+    float rh = drawRect.height();
+    qDebug() << rw / iw << rh / ih;
+    if (rw / iw < 0.35f || rh / ih < 0.35f) {
         if (lastCachedWidth != static_cast<int>(rw)) {
             lastCachedWidth = static_cast<int>(rw);
             auto scaledImage = image.scaled(image.width() / 2, image.height() / 2);
             cachedImage = scaledImage.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        }
+        p.drawImage(drawRect, cachedImage);
+    } else if (rw / iw < 0.70f || rh / ih < 0.70f) {
+        if (lastCachedWidth != static_cast<int>(rw)) {
+            lastCachedWidth = static_cast<int>(rw);
+            cachedImage = image.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
         p.drawImage(drawRect, cachedImage);
     } else {

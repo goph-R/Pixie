@@ -3,12 +3,15 @@
 
 #include <QMainWindow>
 #include <QDockWidget>
-#include "foldertreewidget.h"
-#include "filelistwidget.h"
-#include "filemanager.h"
-#include "config.h"
-#include "thumbnailqueue.h"
+#include <QTreeWidgetItem>
+#include <QListWidgetItem>
 
+class Config;
+class ThumbnailQueue;
+class FolderTreeWidget;
+class FileManager;
+class FileListWidget;
+class File;
 class ViewWindow;
 
 class MainWindow : public QMainWindow

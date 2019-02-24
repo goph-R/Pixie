@@ -5,8 +5,8 @@
 #include <QFileInfoList>
 #include <QObject>
 #include <QImage>
-#include "foundfile.h"
-#include "foundfolder.h"
+#include "domain/foundfile.h"
+#include "domain/foundfolder.h"
 
 class FileManagerWorker : public QObject
 {

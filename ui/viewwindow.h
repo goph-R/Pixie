@@ -2,14 +2,11 @@
 #define VIEWWINDOW_H
 
 #include <QMainWindow>
-#include <QShortcut>
-#include <QTimer>
-#include <QImage>
-#include "viewwidget.h"
-#include "file.h"
-#include "filemanager.h"
-#include "filelistwidget.h"
 
+class File;
+class ViewWidget;
+class FileManager;
+class FileListWidget;
 class MainWindow;
 
 class ViewWindow : public QMainWindow
@@ -17,7 +14,7 @@ class ViewWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    ViewWindow(QWidget* parent=nullptr);
+    ViewWindow(MainWindow* mainWindow, QWidget* parent=nullptr);
     virtual ~ViewWindow() override;
     virtual QSize sizeHint() const override;
     void setImage(File* file);

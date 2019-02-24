@@ -1,12 +1,19 @@
+#include "mainwindow.h"
+
 #include <QPixmap>
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QLineEdit>
 
-#include "mainwindow.h"
-#include "viewwindow.h"
-#include "filelistitem.h"
-#include "file.h"
+#include "domain/filemanager.h"
+#include "domain/config.h"
+#include "domain/thumbnailqueue.h"
+#include "domain/file.h"
+#include "ui/foldertreewidget.h"
+#include "ui/foldertreeitem.h"
+#include "ui/filelistwidget.h"
+#include "ui/filelistitem.h"
+#include "ui/viewwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     currentFolder = nullptr;
@@ -28,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     auto w = new QWidget();
     auto v = new QVBoxLayout(w);
     v->setContentsMargins(0, 0, 0, 0);
-    v->setSpacing(5);
+    v->setSpacing(4);
     v->addWidget(pathEdit);
     v->addWidget(fileListWidget);
 
@@ -69,7 +76,7 @@ void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
     delete config;
 }
 
-void MainWindow::addDrives() {
+void MainWindow::addDrives() {  
     auto icon = QIcon(":/icons/hard-drive.png");
     auto root = fileManager->getRoot();
     foreach (auto file, root->getChildren()) {

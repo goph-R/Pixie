@@ -1,4 +1,4 @@
-#include "foundfile.h"
+#include "domain/foundfile.h"
 
 FoundFile::FoundFile() {
     folder = false;

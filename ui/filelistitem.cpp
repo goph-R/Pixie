@@ -1,4 +1,6 @@
-#include "filelistitem.h"
+#include "ui/filelistitem.h"
+
+#include "domain/file.h"
 
 FileListItem::FileListItem(File* file) : QListWidgetItem() {
     this->file = file;

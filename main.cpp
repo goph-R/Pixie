@@ -1,11 +1,11 @@
 #include <QApplication>
 #include <QScreen>
 #include <QDesktopWidget>
-#include "mainwindow.h"
-#include "viewwindow.h"
-#include "file.h"
-#include "foundfile.h"
-#include "foundfolder.h"
+#include "domain/file.h"
+#include "domain/foundfile.h"
+#include "domain/foundfolder.h"
+#include "ui/mainwindow.h"
+#include "ui/viewwindow.h"
 
 int main(int argc, char *argv[])
 {

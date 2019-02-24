@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QHash>
 #include <QImage>
+#include <QStringList>
 #include "domain/foundfile.h"
 #include "domain/foundfolder.h"
 

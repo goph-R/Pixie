@@ -1,5 +1,5 @@
-#ifndef THUMBNAILFACTORY_H
-#define THUMBNAILFACTORY_H
+#ifndef THUMBNAILQUEUE_H
+#define THUMBNAILQUEUE_H
 
 #include <QObject>
 #include <QThreadPool>
@@ -48,4 +48,4 @@ private:
 
 };
 
-#endif // THUMBNAILFACTORY_H
+#endif // THUMBNAILQUEUE_H

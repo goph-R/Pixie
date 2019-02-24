@@ -1,5 +1,6 @@
 #include "viewwindow.h"
 
+#include <QApplication>
 #include <QShortcut>
 #include <QTimer>
 #include <QImage>
@@ -37,6 +38,10 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
 }
 
 ViewWindow::~ViewWindow() {
+}
+
+void ViewWindow::quit() {
+    QApplication::quit();
 }
 
 void ViewWindow::setMaximized(bool value) {

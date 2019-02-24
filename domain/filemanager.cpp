@@ -21,7 +21,7 @@ FileManager::~FileManager() {
 }
 
 void FileManager::createWorkerThread() {
-    auto worker = new FileManagerWorker();
+    auto worker = new FileManagerWorker(imageExtensions);
     worker->moveToThread(&workerThread);
     QObject::connect(this, SIGNAL(findFilesSignal(QString)), worker, SLOT(findFiles(QString)));
     QObject::connect(this, SIGNAL(findFoldersSignal(QString)), worker, SLOT(findFolders(QString)));
@@ -122,7 +122,9 @@ void FileManager::foundFile(FoundFile foundFile) {
     } else if (filesByPath.contains(folderPath)) {
         file = createEntry(folderPath, foundFile.getName(), foundFile.isFolder());
         file->extension = foundFile.getExtension();
-        file->image = imageExtensions.contains(file->extension);
+        file->image = foundFile.isImage();
+        file->width = foundFile.getWidth();
+        file->height = foundFile.getHeight();
     }
     if (file != nullptr) {
         emit fileAdded(file);

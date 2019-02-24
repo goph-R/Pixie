@@ -13,6 +13,7 @@ class FileManager;
 class FileListWidget;
 class File;
 class ViewWindow;
+class SettingsDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -39,6 +40,9 @@ public slots:
     void backspacePressed();
     void enterPressed();
     void execute(QListWidgetItem* item);
+    void showSettings();
+    void showAbout();
+    void quit();
 
 private:    
     void enterFolder(File* file);
@@ -55,6 +59,7 @@ private:
     File* currentFolder;
     File* fileToSelect;
     ViewWindow* viewWindow;
+    SettingsDialog* settingsDialog;
 };
 
 #endif // MAINWINDOW_H

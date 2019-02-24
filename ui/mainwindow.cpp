@@ -1,9 +1,12 @@
 #include "mainwindow.h"
 
+#include <QApplication>
 #include <QPixmap>
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QLineEdit>
+#include <QMenuBar>
+#include <QMessageBox>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -14,32 +17,52 @@
 #include "ui/filelistwidget.h"
 #include "ui/filelistitem.h"
 #include "ui/viewwindow.h"
+#include "ui/settingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     currentFolder = nullptr;
     fileToSelect = nullptr;
 
+    setWindowTitle("Pixie");
+
+    // domain
     config = new Config();
     fileManager = new FileManager(config);
     thumbnailQueue = new ThumbnailQueue(config, fileManager);
 
+    // ui
     folderTreeWidget = new FolderTreeWidget();
     dockWidget = new QDockWidget("Folders");
     dockWidget->setWidget(folderTreeWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     fileListWidget = new FileListWidget(config);
     pathEdit = new QLineEdit();
+    settingsDialog = new SettingsDialog(this);
 
     addDrives();
 
+    // central widget
     auto w = new QWidget();
     auto v = new QVBoxLayout(w);
     v->setContentsMargins(0, 0, 0, 0);
     v->setSpacing(4);
     v->addWidget(pathEdit);
     v->addWidget(fileListWidget);
-
     setCentralWidget(w);
+
+    // menu
+    auto menu = menuBar();
+    auto fileMenu = menu->addMenu("&File");
+    auto quitAction = new QAction("&Quit");
+    fileMenu->addAction(quitAction);
+
+    auto toolsMenu = menu->addMenu("&Tools");
+    auto settingsAction = new QAction("&Settings");
+    toolsMenu->addAction(settingsAction);
+
+    auto helpMenu = menu->addMenu("&Help");
+    auto aboutAction = new QAction("&About");
+    helpMenu->addAction(aboutAction);
 
     QObject::connect(folderTreeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(folderExpanded(QTreeWidgetItem*)));
     QObject::connect(folderTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(folderSelectionChanged()));
@@ -53,9 +76,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QObject::connect(fileListWidget, SIGNAL(backspacePressed()), this, SLOT(backspacePressed()));
     QObject::connect(fileListWidget, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
     QObject::connect(fileListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileSelectionChanged()));
+    QObject::connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
+    QObject::connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAbout()));
+    QObject::connect(quitAction, SIGNAL(triggered()), this, SLOT(quit()));
+
 }
 
 MainWindow::~MainWindow() {    
+}
+
+void MainWindow::quit() {
+    QApplication::quit();
+}
+
+void MainWindow::showSettings() {
+    settingsDialog->exec();
+}
+
+void MainWindow::showAbout() {
+    QMessageBox::about(this, "About Pixie", "<b>Pixie</b><br><br>The Image Manager.<br><small>Version: 0.1</small>");
 }
 
 FileManager* MainWindow::getFileManager() {
@@ -110,13 +149,6 @@ void MainWindow::folderSelectionChanged() {
     fileManager->findFiles(currentFolder);
 }
 
-void MainWindow::setPathEditTo(QString path) {
-    if (config->useBackslash()) {
-        path = path.replace("/", "\\");
-    }
-    pathEdit->setText(path);
-}
-
 void MainWindow::fileSelectionChanged() {
     auto selectedItems = fileListWidget->selectedItems();
     if (selectedItems.size() != 1) {
@@ -125,6 +157,16 @@ void MainWindow::fileSelectionChanged() {
     auto fileItem = static_cast<FileListItem*>(selectedItems.at(0));
     auto file = fileItem->getFile();
     setPathEditTo(file->getPath());
+}
+
+void MainWindow::setPathEditTo(QString path) {
+    if (config->useBackslash()) {
+        path = path.replace("/", "\\");
+    }
+    pathEdit->setText(path);
+    QString winTitle = "Pixie - " + path;
+    setWindowTitle(winTitle);
+    viewWindow->setWindowTitle(winTitle);
 }
 
 void MainWindow::addFile(File* file) {

@@ -5,6 +5,7 @@
 #include <QFileInfoList>
 #include <QObject>
 #include <QImage>
+#include <QStringList>
 #include "domain/foundfile.h"
 #include "domain/foundfolder.h"
 
@@ -13,7 +14,7 @@ class FileManagerWorker : public QObject
     Q_OBJECT
 
 public:
-    FileManagerWorker();
+    FileManagerWorker(QStringList imageExtensions);
 
 public slots:
     void findFiles(QString folderPath);
@@ -31,6 +32,7 @@ signals:
 
 private:
     QFileInfoList findEntries(QString folderPath, QFlags<QDir::Filter> filters);
+    QStringList imageExtensions;
 };
 
 #endif // FILEMANAGERWORKER_H

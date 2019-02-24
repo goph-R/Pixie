@@ -7,6 +7,8 @@ File::File(File* parent, QString name, bool folder) {
     this->parent = parent;
     this->folder = folder;
     this->image = false;
+    this->width = 0;
+    this->height = 0;
     this->extension = "";
     QString parentPath = "";
     QString endSlash = "";
@@ -58,4 +60,12 @@ bool File::isFolder() {
 
 bool File::isImage() {
     return image;
+}
+
+int File::getWidth() {
+    return width;
+}
+
+int File::getHeight() {
+    return height;
 }

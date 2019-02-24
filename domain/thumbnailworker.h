@@ -1,5 +1,5 @@
-#ifndef THUMBNAILTASKSIGNALS_H
-#define THUMBNAILTASKSIGNALS_H
+#ifndef THUMBNAILWORKER_H
+#define THUMBNAILWORKER_H
 
 #include <QRunnable>
 #include <QObject>
@@ -26,4 +26,4 @@ private:
     QObject* receiver;
 };
 
-#endif // THUMBNAILTASKSIGNALS_H
+#endif // THUMBNAILWORKER_H

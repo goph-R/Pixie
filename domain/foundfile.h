@@ -1,5 +1,5 @@
-#ifndef FINDFILESRESULTITEM_H
-#define FINDFILESRESULTITEM_H
+#ifndef FOUNDFILE_H
+#define FOUNDFILE_H
 
 #include <QMetaType>
 #include <QString>
@@ -14,16 +14,22 @@ public:
     QString getExtension();
     QString getFolderPath();
     bool isFolder();
+    bool isImage();
+    int getWidth();
+    int getHeight();
 
 private:
     QString name;
     QString extension;
     QString folderPath;
     bool folder;
+    bool image;
+    int width;
+    int height;
 
     friend class FileManagerWorker;
 };
 
 Q_DECLARE_METATYPE(FoundFile);
 
-#endif // FINDFILESRESULTITEM_H
+#endif // FOUNDFILE_H

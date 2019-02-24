@@ -2,10 +2,12 @@
 
 #include <QDir>
 #include <QTime>
+#include <QImageReader>
 
 #include <QDebug>
 
-FileManagerWorker::FileManagerWorker() : QObject() {
+FileManagerWorker::FileManagerWorker(QStringList imageExtensions) : QObject() {
+    this->imageExtensions = imageExtensions;
 }
 
 void FileManagerWorker::findFiles(QString folderPath) {
@@ -17,6 +19,13 @@ void FileManagerWorker::findFiles(QString folderPath) {
         result.folder = entry.isDir();
         result.extension = entry.suffix().toLower();
         result.folderPath = folderPath;
+        result.image = imageExtensions.contains(result.extension);
+        if (result.image) {
+            QImageReader reader(entry.absoluteFilePath());
+            auto size = reader.size();
+            result.width = size.width();
+            result.height = size.height();
+        }
         emit foundFile(result);
         foundFolders |= result.folder;
     }

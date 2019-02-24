@@ -32,6 +32,7 @@ public slots:
     void downPressed();
     void plusPressed();
     void minusPressed();
+    void quit();
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;

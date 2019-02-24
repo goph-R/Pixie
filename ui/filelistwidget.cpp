@@ -11,7 +11,7 @@
 
 FileListWidget::FileListWidget(Config* config) : QListWidget() {
     this->config = config;
-    resizeImages();
+    createPixmaps();
 
     delegate = new FileListDelegate(this);
     setItemDelegate(delegate);
@@ -23,12 +23,16 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
     new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(backspacePressedSlot()));
 }
 
-void FileListWidget::resizeImages() {
+void FileListWidget::createPixmaps() {
+    folderPixmap = createPixmap(":/icons/folder-big.png");
+    filePixmap = createPixmap(":/icons/file-big.png");
+    imagePixmap = createPixmap(":/icons/image-big.png");
+    imageErrorPixmap = createPixmap(":/icons/image-error-big.png");
+}
+
+QPixmap FileListWidget::createPixmap(QString path) {
     int size = config->getThumbnailSize();
-    folderPixmap = QPixmap(":/icons/folder-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    filePixmap = QPixmap(":/icons/file-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    imagePixmap = QPixmap(":/icons/image-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    imageErrorPixmap = QPixmap(":/icons/image-error-big.png").scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    return QPixmap(path).scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 FileListWidget::~FileListWidget() {

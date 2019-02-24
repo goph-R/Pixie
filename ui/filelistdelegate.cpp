@@ -22,14 +22,12 @@ void FileListDelegate::paint(QPainter *p, const QStyleOptionViewItem &option, co
     auto path = index.data(Qt::UserRole).toString();
     FileListItem* item = fileListWidget->getItem(path);
     File* file = item->getFile();
-
     auto bgRect = option.rect;
     bgRect.adjust(0, 0, -4, -37);
-
     auto textRect = QRect(bgRect.x() + 6, bgRect.bottom(), bgRect.width() - 12, 28);
-
     p->setPen(Qt::NoPen);
 
+    // draw icon
     if (file->isFolder()) {
         drawPixmap(p, fileListWidget->folderPixmap, bgRect, false);
     } else if (file->isImage()) {

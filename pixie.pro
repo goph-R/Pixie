@@ -42,7 +42,8 @@ SOURCES += \
     ui/filelistdelegate.cpp \
     ui/filelistitem.cpp \
     ui/viewwindow.cpp \
-    ui/viewwidget.cpp
+    ui/viewwidget.cpp \
+    ui/settingsdialog.cpp
 
 HEADERS += \
     domain/config.h \
@@ -61,7 +62,8 @@ HEADERS += \
     ui/filelistdelegate.h \
     ui/filelistitem.h \
     ui/viewwindow.h \
-    ui/viewwidget.h
+    ui/viewwidget.h \
+    ui/settingsdialog.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

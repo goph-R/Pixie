@@ -16,7 +16,6 @@ class FileListWidget : public QListWidget
 public:
     FileListWidget(Config* config);
     virtual ~FileListWidget() override;
-    void resizeImages();
     FileListItem* createItem(File* file);
     bool hasItem(QString path);
     FileListItem* getItem(QString path);
@@ -33,6 +32,8 @@ signals:
     void enterPressed();
 
 private:
+    void createPixmaps();
+    QPixmap createPixmap(QString path);
     Config* config;
     QHash<QString, FileListItem*> itemsByPath;
     FileListDelegate* delegate;

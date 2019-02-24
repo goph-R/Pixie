@@ -18,6 +18,8 @@ public:
     void removeChildren();
     bool isFolder();
     bool isImage();
+    int getWidth();
+    int getHeight();
 
 private:
     File* parent;
@@ -26,6 +28,8 @@ private:
     QString name;
     QString path;
     QString extension;
+    int width;
+    int height;
     QList<File*> children;
 
     friend class FileManager;

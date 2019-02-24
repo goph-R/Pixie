@@ -18,23 +18,10 @@ FolderTreeWidget::FolderTreeWidget() : QTreeWidget() {
     h->setResizeMode(0, QHeaderView::ResizeToContents);
 #endif
     h->setStretchLastSection(false);
-    preferredWidth = 250;
 }
 
 FolderTreeWidget::~FolderTreeWidget() {
     itemsByPath.clear();
-}
-
-void FolderTreeWidget::setPreferredWidth(int width) {
-    preferredWidth = width;
-}
-
-void FolderTreeWidget::resizeEvent(QResizeEvent* event) {
-    preferredWidth = event->oldSize().width();
-}
-
-QSize FolderTreeWidget::sizeHint() const {
-    return QSize(preferredWidth, 300);
 }
 
 FolderTreeItem* FolderTreeWidget::createItem(FolderTreeItem* parentItem, File* file, QIcon icon) {

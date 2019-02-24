@@ -2,6 +2,7 @@
 #define VIEWWINDOW_H
 
 #include <QMainWindow>
+#include <QKeyEvent>
 #include <QThread>
 
 class File;

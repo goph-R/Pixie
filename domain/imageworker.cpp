@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QCoreApplication>
+#include "domain/imagerunner.h"
 
 ImageWorker::ImageWorker() : QObject() {
 }
@@ -32,21 +33,27 @@ void ImageWorker::load(QString path) {
         emit loaded(path, fullRect, reader.read());
     }
 
-    // load the image row by row  (buffer is 16MB)
-    int rowHeight = static_cast<int>((2048.0f / size.width()) * 2048.0f);
+    // load the image row by row  (buffer is 8MB)
+    int rowHeight = static_cast<int>((1024.0f / size.width()) * 1024.0f);
     auto steps = size.height() / rowHeight;
-    QFile file(path);
-    file.open(QFile::ReadOnly);
+    //QFile file(path);
+    //file.open(QFile::ReadOnly);
     for (int row = 0; row <= steps && path == getPathToLoad(); ++row) {
-        file.seek(0);
-        // Why we need always recreate the reader ... ? (Tested, without it doesn't work.)
-        QImageReader r(&file);
-        loadRow(path, &r, size, row, rowHeight);
+        //file.seek(0);
+        //QImageReader r(&file);
+        //loadRow(path, &r, size, row, rowHeight);
+        auto runnable = new ImageRunner(this, path, size, row, rowHeight);
+        threadPool.start(runnable);
     }
-    file.close();
-    emit done(path);
+    //file.close();
+    //emit done(path);
 }
 
+void ImageWorker::imageLoaded(const QString path, const QRect rect, const QImage image) {
+    emit loaded(path, rect, image);
+}
+
+/*
 void ImageWorker::loadRow(QString path, QImageReader *reader, const QSize size, int row, int rowHeight) {
     int y1 = row * rowHeight;
     int y2 = y1 + rowHeight;
@@ -62,6 +69,7 @@ void ImageWorker::loadRow(QString path, QImageReader *reader, const QSize size, 
     auto part = reader->read();
     emit loaded(path, rect, part);
 }
+*/
 
 void ImageWorker::setPathToLoad(QString path) {
     pathToLoadMutex.lock();

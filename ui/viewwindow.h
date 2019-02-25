@@ -27,6 +27,7 @@ public slots:
     void switchFullscreen();
     void switchFit();
     void imageLoaded(const QImage image);
+    void imagePartLoaded(const QRect rect, const QImage image);
     void escapePressed();
     void leftPressed();
     void rightPressed();
@@ -60,6 +61,7 @@ private:
     QImage emptyImage;
     void createImageWorkerThread();
     QThread imageWorkerThread;
+    QPixmap* pixmap;
 
 };
 

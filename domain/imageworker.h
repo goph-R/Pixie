@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QImage>
+#include <QRect>
 
 class ImageWorker : public QObject
 {
@@ -16,6 +17,7 @@ public slots:
 
 signals:
     void loaded(const QImage image);
+    void partLoaded(const QRect, const QImage image);
 };
 
 #endif // IMAGEWORKER_H

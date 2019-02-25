@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QShortcut>
 #include <QImage>
+#include <QImageReader>
+#include <QPainter>
 #include "domain/file.h"
 #include "domain/imageworker.h"
 #include "ui/mainwindow.h"
@@ -41,6 +43,7 @@ void ViewWindow::createImageWorkerThread() {
     auto worker = new ImageWorker();
     worker->moveToThread(&imageWorkerThread);
     QObject::connect(this, SIGNAL(loadImage(QString)), worker, SLOT(load(QString)));
+    QObject::connect(worker, SIGNAL(partLoaded(const QRect, const QImage)), this, SLOT(imagePartLoaded(const QRect, const QImage)));
     QObject::connect(worker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
     QObject::connect(&imageWorkerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     imageWorkerThread.start();
@@ -112,7 +115,7 @@ void ViewWindow::plusPressed() {
 }
 
 void ViewWindow::setImage(File* file) {
-    viewWidget->setImage(emptyImage);
+    viewWidget->setPixmap(nullptr);
     fillImageList(file->getParent());
     currentIndex = imageList.indexOf(file->getPath());
     loadCurrentImage();
@@ -181,12 +184,22 @@ void ViewWindow::prevImage() {
 
 void ViewWindow::loadCurrentImage() {
     QString path = imageList.at(currentIndex);
+    QImageReader reader(path);
+    pixmap = new QPixmap(reader.size());
+    viewWidget->setPixmap(pixmap);
     emit loadImage(path);
     fileListWidget->select(path);
 }
 
+void ViewWindow::imagePartLoaded(const QRect rect, const QImage image) {
+    QPainter p(pixmap);
+    p.drawImage(rect, image);
+    viewWidget->update();
+}
+
 void ViewWindow::imageLoaded(const QImage image) {
-    viewWidget->setImage(image);
+    QPixmap* pixmap = new QPixmap(QPixmap::fromImage(image));
+    viewWidget->setPixmap(pixmap);
 }
 
 void ViewWindow::keyPressEvent(QKeyEvent* event) {

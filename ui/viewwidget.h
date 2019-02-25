@@ -9,7 +9,7 @@ class ViewWidget : public QWidget
 
 public:
     ViewWidget(QWidget* parent=nullptr);
-    void setImage(const QImage image);
+    void setPixmap(QPixmap* pixmap);
     bool isFit();
     void setFit(bool value);
     void translateUp();
@@ -40,8 +40,8 @@ private:
 
     QSize drawSize;
     QBrush backgroundBrush;
-    QImage image;
-    QImage cachedImage;
+    QPixmap* pixmap;
+    QPixmap cachedPixmap;
     int lastCachedWidth;
     bool fit;
     bool mouseDown;

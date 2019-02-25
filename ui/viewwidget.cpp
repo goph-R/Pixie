@@ -16,12 +16,16 @@ ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     zoomLevels << 0.05f << 0.07f << 0.10f << 0.15f << 0.20f << 0.25f;
     zoomLevels << 0.30f << 0.40f << 0.50f << 0.66f << 0.75f << 1.00f;
     zoomLevels << 1.33f << 1.66f << 2.00f << 3.00f << 5.00f << 10.0f;
-    setMouseTracking(true);
     lastCachedWidth = 0;
+    pixmap = nullptr;
+    setMouseTracking(true);
 }
 
-void ViewWidget::setImage(const QImage image) {
-    this->image = image;
+void ViewWidget::setPixmap(QPixmap* pixmap) {
+    if (this->pixmap != nullptr) {
+        delete this->pixmap;
+    }
+    this->pixmap = pixmap;
     lastCachedWidth = 0;
     update();
 }
@@ -64,7 +68,7 @@ void ViewWidget::mouseDoubleClickEvent(QMouseEvent* event __attribute__((unused)
 }
 
 void ViewWidget::translateDown() {
-    if (fit) {
+    if (!fit) {
         return;
     }
     translate.setY(translate.y() - 40);
@@ -115,7 +119,10 @@ void ViewWidget::calculateDrawSize() {
 }
 
 void ViewWidget::calculateFittedDrawSize() {
-    drawSize = image.size();
+    if (pixmap == nullptr) {
+        return;
+    }
+    drawSize = pixmap->size();
     float pw = drawSize.width();
     float ph = drawSize.height();
     float vw = width();
@@ -133,7 +140,7 @@ void ViewWidget::calculateFittedDrawSize() {
 }
 
 void ViewWidget::calculateZoomedDrawSize() {
-    drawSize = image.size();
+    drawSize = pixmap->size();
     float zoom = zoomLevels.at(zoomLevel);
     float drawWidth = drawSize.width() * zoom;
     float drawHeight = drawSize.height() * zoom;
@@ -167,7 +174,7 @@ void ViewWidget::drawBackground(QPainter &p) {
 }
 
 void ViewWidget::drawImage(QPainter &p) {
-    if (image.isNull()) {
+    if (pixmap == nullptr) {
         return;
     }
     QRect drawRect = QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, drawSize, rect());
@@ -175,35 +182,35 @@ void ViewWidget::drawImage(QPainter &p) {
         drawRect.setTopLeft(drawRect.topLeft() + translate);
         drawRect.setBottomRight(drawRect.bottomRight() + translate);
     }
-    if (drawSize.width() < image.width() || drawSize.height() < image.height()) {
+    if (drawSize.width() < pixmap->width() || drawSize.height() < pixmap->height()) {
         drawSmoothImage(p, drawRect);
     } else {
-        p.drawImage(drawRect, image);
+        p.drawPixmap(drawRect, *pixmap);
     }
 }
 
 void ViewWidget::drawSmoothImage(QPainter &p, QRect &drawRect) {
     // TODO: optimize somehow...
-    float iw = image.width();
+    float iw = pixmap->width();
+    float ih = pixmap->height();
     float rw = drawRect.width();
-    float ih = image.height();
     float rh = drawRect.height();
-    if (rw / iw < 0.35f || rh / ih < 0.35f) {
+    /*if (rw / iw < 0.35f || rh / ih < 0.35f) {
         if (lastCachedWidth != static_cast<int>(rw)) {
             lastCachedWidth = static_cast<int>(rw);
-            auto scaledImage = image.scaled(image.width() / 2, image.height() / 2);
-            cachedImage = scaledImage.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            auto scaledpixmap = pixmap->scaled(pixmap->width() / 2, pixmap->height() / 2);
+            cachedPixmap = scaledpixmap.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
-        p.drawImage(drawRect, cachedImage);
+        p.drawPixmap(drawRect, cachedPixmap);
     } else if (rw / iw < 0.70f || rh / ih < 0.70f) {
         if (lastCachedWidth != static_cast<int>(rw)) {
             lastCachedWidth = static_cast<int>(rw);
-            cachedImage = image.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            cachedPixmap = pixmap->scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
-        p.drawImage(drawRect, cachedImage);
-    } else {
+        p.drawPixmap(drawRect, cachedPixmap);
+    } else*/ {
         p.setRenderHint(QPainter::SmoothPixmapTransform);
-        p.drawImage(drawRect, image);
+        p.drawPixmap(drawRect, *pixmap);
     }
 }
 

@@ -9,13 +9,14 @@ class ViewWidget : public QWidget
 
 public:
     ViewWidget(QWidget* parent=nullptr);
-    void setPixmap(QPixmap* pixmap);
+    void setPixmap(QPixmap* pixmap, bool update=true);
     bool isFit();
     void setFit(bool value);
     void translateUp();
     void translateDown();
     void zoomIn();
     void zoomOut();
+    void setLoaded();
     QPixmap* getPixmap();
 
 signals:
@@ -50,6 +51,7 @@ private:
     QPoint translate;
     int zoomLevel;
     QList<float> zoomLevels;
+    bool loaded;
 };
 
 #endif // VIEWWIDGET_H

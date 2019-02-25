@@ -43,8 +43,8 @@ void ViewWindow::createImageWorkerThread() {
     imageWorker = new ImageWorker();
     imageWorker->moveToThread(&imageWorkerThread);
     QObject::connect(this, SIGNAL(loadImage(QString)), imageWorker, SLOT(load(QString)));
-    QObject::connect(imageWorker, SIGNAL(partLoaded(const QRect, const QImage)), this, SLOT(imagePartLoaded(const QRect, const QImage)));
-    QObject::connect(imageWorker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
+    QObject::connect(imageWorker, SIGNAL(loaded(const QString, const QRect, const QImage)), this, SLOT(imageLoaded(const QString, const QRect, const QImage)));
+    QObject::connect(imageWorker, SIGNAL(done(const QString)), this, SLOT(imageDone(const QString)));
     QObject::connect(&imageWorkerThread, SIGNAL(finished()), imageWorker, SLOT(deleteLater()));
     imageWorkerThread.start();
 }
@@ -77,6 +77,12 @@ void ViewWindow::wheelEvent(QWheelEvent* event) {
 
 void ViewWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
     showMainWindow();
+}
+
+void ViewWindow::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return) {
+        showMainWindow();
+    }
 }
 
 void ViewWindow::switchFit() {
@@ -170,6 +176,7 @@ void ViewWindow::nextImage() {
     currentIndex++;
     if (currentIndex >= imageList.size()) {
         currentIndex = imageList.size() - 1;
+        return;
     }
     loadCurrentImage();
 }
@@ -178,21 +185,31 @@ void ViewWindow::prevImage() {
     currentIndex--;
     if (currentIndex < 0) {
         currentIndex = 0;
+        return;
     }
     loadCurrentImage();
 }
 
+const QString ViewWindow::getCurrentPath() {
+    return imageList.at(currentIndex);
+}
+
+
 void ViewWindow::loadCurrentImage() {
-    QString path = imageList.at(currentIndex);
+    QString path = getCurrentPath();
     QImageReader reader(path);
     QPixmap* pixmap = new QPixmap(reader.size());
-    viewWidget->setPixmap(pixmap);
+    pixmap->fill(QColor(24, 24, 24));
+    viewWidget->setPixmap(pixmap, false);
     imageWorker->stopLoading();
     emit loadImage(path);
     fileListWidget->select(path);
 }
 
-void ViewWindow::imagePartLoaded(const QRect rect, const QImage image) {
+void ViewWindow::imageLoaded(const QString path, const QRect rect, const QImage image) {
+    if (path != getCurrentPath()) {
+        return;
+    }
     QPixmap* pixmap = viewWidget->getPixmap();
     if (pixmap == nullptr) {
         return;
@@ -202,13 +219,9 @@ void ViewWindow::imagePartLoaded(const QRect rect, const QImage image) {
     viewWidget->update();
 }
 
-void ViewWindow::imageLoaded(const QImage image) {
-    QPixmap* pixmap = new QPixmap(QPixmap::fromImage(image));
-    viewWidget->setPixmap(pixmap);
-}
-
-void ViewWindow::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return) {
-        showMainWindow();
+void ViewWindow::imageDone(const QString path) {
+    if (path == getCurrentPath()) {
+        viewWidget->setLoaded();
     }
 }
+

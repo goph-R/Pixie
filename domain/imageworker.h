@@ -5,6 +5,8 @@
 #include <QImage>
 #include <QRect>
 #include <QMutex>
+#include <QFile>
+#include <QImageReader>
 
 class ImageWorker : public QObject
 {
@@ -18,15 +20,15 @@ public slots:
     void stopLoading();
 
 signals:
-    void loaded(const QImage image);
-    void partLoaded(const QRect, const QImage image);
+    void loaded(const QString path, const QRect, const QImage image);
+    void done(const QString path);
 
 private:
     QMutex stopMutex;
     bool stop;
     bool isLoadingStopped();
     void clearLoadingStop();
-    void loadRow(const QString path, const QSize size, int row);
+    void loadRow(QString path, QImageReader* reader, const QSize size, int row, int rowHeight);
 };
 
 #endif // IMAGEWORKER_H

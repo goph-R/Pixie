@@ -27,8 +27,8 @@ public slots:
     void showMainWindow();
     void switchFullscreen();
     void switchFit();
-    void imageLoaded(const QImage image);
-    void imagePartLoaded(const QRect rect, const QImage image);
+    void imageLoaded(const QString path, const QRect rect, const QImage image);
+    void imageDone(const QString path);
     void escapePressed();
     void leftPressed();
     void rightPressed();
@@ -52,6 +52,7 @@ private:
     void fillImageList(File* parent);
     void goFullscreen();
     void backFromFullscreen();
+    const QString getCurrentPath();
     QThread workerThread;
     MainWindow* mainWindow;
     ViewWidget* viewWidget;

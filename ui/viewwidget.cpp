@@ -25,13 +25,18 @@ QPixmap* ViewWidget::getPixmap() {
     return pixmap;
 }
 
-void ViewWidget::setPixmap(QPixmap* p) {
+void ViewWidget::setLoaded() {
+    loaded = true;
+    lastCachedWidth = 0;
+}
+
+void ViewWidget::setPixmap(QPixmap* p, bool u) {
+    loaded = false;
     if (pixmap != nullptr) {
         delete pixmap;
     }
     pixmap = p;
-    lastCachedWidth = 0;
-    if (pixmap != nullptr) {
+    if (pixmap != nullptr && u) {
         update();
     }
 }
@@ -201,20 +206,20 @@ void ViewWidget::drawSmoothImage(QPainter &p, QRect &drawRect) {
     float ih = pixmap->height();
     float rw = drawRect.width();
     float rh = drawRect.height();
-    /*if (rw / iw < 0.35f || rh / ih < 0.35f) {
+    if (loaded && (rw / iw < 0.35f || rh / ih < 0.35f)) {
         if (lastCachedWidth != static_cast<int>(rw)) {
             lastCachedWidth = static_cast<int>(rw);
             auto scaledpixmap = pixmap->scaled(pixmap->width() / 2, pixmap->height() / 2);
             cachedPixmap = scaledpixmap.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
         p.drawPixmap(drawRect, cachedPixmap);
-    } else if (rw / iw < 0.70f || rh / ih < 0.70f) {
+    } else if (loaded && (rw / iw < 0.70f || rh / ih < 0.70f)) {
         if (lastCachedWidth != static_cast<int>(rw)) {
             lastCachedWidth = static_cast<int>(rw);
             cachedPixmap = pixmap->scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
         p.drawPixmap(drawRect, cachedPixmap);
-    } else*/ {
+    } else {
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.drawPixmap(drawRect, *pixmap);
     }

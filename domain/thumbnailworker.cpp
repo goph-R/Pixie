@@ -55,24 +55,25 @@ bool ThumbnailWorker::createThumbnail(QString path) {
     auto imageSize = reader.size();
     float fastSize = size * 4;
     QImage fastScaled;
-    if (imageSize.width() > fastSize && imageSize.height() > fastSize) {
-        if (reader.supportsOption(QImageIOHandler::ScaledSize)) {
-            float w = imageSize.width();
-            float h = imageSize.height();
-            float nw = fastSize;
-            float nh = fastSize;
-            if (w > h) {
-                nh = h/w * fastSize;
-            } else {
-                nw = w/h * fastSize;
-            }
-            reader.setScaledSize(QSize(static_cast<int>(nw), static_cast<int>(nh)));
-            fastScaled = reader.read();
-        } else {
-            QImage original = reader.read();
-            fastScaled = original.scaled(size * 4, size * 4, Qt::KeepAspectRatio);
-        }
+    if (imageSize.width() < fastSize || imageSize.height() < fastSize) {
+        fastScaled = reader.read();
+        image = fastScaled.scaled(size, size, Qt::KeepAspectRatio);
+        return true;
+    }
+    if (!reader.supportsOption(QImageIOHandler::ScaledSize)) {
+        QImage original = reader.read();
+        fastScaled = original.scaled(size * 4, size * 4, Qt::KeepAspectRatio);
     } else {
+        float w = imageSize.width();
+        float h = imageSize.height();
+        float nw = fastSize;
+        float nh = fastSize;
+        if (w > h) {
+            nh = h/w * fastSize;
+        } else {
+            nw = w/h * fastSize;
+        }
+        reader.setScaledSize(QSize(static_cast<int>(nw), static_cast<int>(nh)));
         fastScaled = reader.read();
     }
     image = fastScaled.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);

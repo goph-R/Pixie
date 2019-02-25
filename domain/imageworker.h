@@ -24,6 +24,9 @@ signals:
 private:
     QMutex stopMutex;
     bool stop;
+    bool isLoadingStopped();
+    void clearLoadingStop();
+    void loadRow(const QString path, const QSize size, int row);
 };
 
 #endif // IMAGEWORKER_H

@@ -29,8 +29,8 @@ void ImageWorker::load(QString path) {
         emit loaded(path, fullRect, reader.read());
     }
 
-    // load the image row by row  (buffer is 8MB)
-    int rowHeight = static_cast<int>((2048.0f / size.width()) * 1024.0f);
+    // load the image row by row  (buffer is 16MB)
+    int rowHeight = static_cast<int>((2048.0f / size.width()) * 2048.0f);
     auto steps = size.height() / rowHeight;
     QFile file(path);
     file.open(QFile::ReadOnly);

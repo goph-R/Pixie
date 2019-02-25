@@ -3,11 +3,16 @@
 #include <QImageReader>
 #include <QFile>
 #include <QDebug>
+#include <QCoreApplication>
 
 ImageWorker::ImageWorker() : QObject() {
 }
 
 void ImageWorker::load(QString path) {
+    stopMutex.lock();
+    stop = false;
+    stopMutex.unlock();
+
     QImageReader reader(path);
     if (!reader.supportsOption(QImageIOHandler::ClipRect)) {
         QImage image(path);
@@ -17,6 +22,14 @@ void ImageWorker::load(QString path) {
     auto size = reader.size();
     auto steps = size.height() / 2048;
     for (int i = 0; i <= steps; ++i) {
+
+        stopMutex.lock();
+        bool stopLoop = stop;
+        stopMutex.unlock();
+        if (stopLoop) {
+            break;
+        }
+
         QImageReader reader(path);
         int y1 = i * 2048;
         int y2 = y1 + 2048;
@@ -29,7 +42,12 @@ void ImageWorker::load(QString path) {
             reader.setClipRect(r);
             auto part = reader.read();
             emit partLoaded(r, part);
-        }
+        }        
     }
 }
 
+void ImageWorker::stopLoading() {
+    stopMutex.lock();
+    stop = true;
+    stopMutex.unlock();
+}

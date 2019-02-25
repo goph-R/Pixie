@@ -9,6 +9,7 @@ class File;
 class ViewWidget;
 class FileListWidget;
 class MainWindow;
+class ImageWorker;
 
 class ViewWindow : public QMainWindow
 {
@@ -60,6 +61,7 @@ private:
     FileListWidget* fileListWidget;
     QImage emptyImage;
     void createImageWorkerThread();
+    ImageWorker* imageWorker;
     QThread imageWorkerThread;
 
 };

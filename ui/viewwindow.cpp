@@ -40,12 +40,12 @@ ViewWindow::~ViewWindow() {
 }
 
 void ViewWindow::createImageWorkerThread() {
-    auto worker = new ImageWorker();
-    worker->moveToThread(&imageWorkerThread);
-    QObject::connect(this, SIGNAL(loadImage(QString)), worker, SLOT(load(QString)));
-    QObject::connect(worker, SIGNAL(partLoaded(const QRect, const QImage)), this, SLOT(imagePartLoaded(const QRect, const QImage)));
-    QObject::connect(worker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
-    QObject::connect(&imageWorkerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    imageWorker = new ImageWorker();
+    imageWorker->moveToThread(&imageWorkerThread);
+    QObject::connect(this, SIGNAL(loadImage(QString)), imageWorker, SLOT(load(QString)));
+    QObject::connect(imageWorker, SIGNAL(partLoaded(const QRect, const QImage)), this, SLOT(imagePartLoaded(const QRect, const QImage)));
+    QObject::connect(imageWorker, SIGNAL(loaded(const QImage)), this, SLOT(imageLoaded(const QImage)));
+    QObject::connect(&imageWorkerThread, SIGNAL(finished()), imageWorker, SLOT(deleteLater()));
     imageWorkerThread.start();
 }
 
@@ -187,6 +187,7 @@ void ViewWindow::loadCurrentImage() {
     QImageReader reader(path);
     QPixmap* pixmap = new QPixmap(reader.size());
     viewWidget->setPixmap(pixmap);
+    imageWorker->stopLoading();
     emit loadImage(path);
     fileListWidget->select(path);
 }

@@ -10,6 +10,7 @@
 #include <QSizePolicy>
 #include <QSplitter>
 #include <QSettings>
+#include <QThreadPool>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -110,6 +111,7 @@ void MainWindow::quitSlot() {
 void MainWindow::exitApplication() {
     saveSettings();
     viewWindow->exitApplication();
+    QThreadPool::globalInstance()->waitForDone();
     delete thumbnailQueue;
     delete fileManager;
     delete config;

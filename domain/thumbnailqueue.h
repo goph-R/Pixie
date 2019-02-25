@@ -38,7 +38,7 @@ signals:
 private:
     void createDatabaseThread();
     QList<ThumbnailWorker*> queue;
-    QThreadPool threadPool;
+    QThreadPool* threadPool;
     Config* config;
     void startNext();
     int active;

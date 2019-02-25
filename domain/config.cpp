@@ -2,6 +2,7 @@
 #include <QImageReader>
 #include <QDir>
 #include <QDebug>
+#include <QThreadPool>
 
 Config::Config() {
     thumbnailSize = 192;

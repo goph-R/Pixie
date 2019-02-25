@@ -12,6 +12,7 @@ public:
     int getThumbnailSize();
     const QString getThumbnailsPath();
     bool useBackslash();
+    int getMaxThreadCount();
 
 private:
     void setUpImageExtensions();

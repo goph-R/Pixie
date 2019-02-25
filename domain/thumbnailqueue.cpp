@@ -9,6 +9,7 @@
 #include <QDebug>
 
 ThumbnailQueue::ThumbnailQueue(Config* config, FileManager* fileManager) : QObject() {
+    threadPool = QThreadPool::globalInstance();
     active = 0;
     this->config = config;
     this->fileManager = fileManager;
@@ -17,7 +18,6 @@ ThumbnailQueue::ThumbnailQueue(Config* config, FileManager* fileManager) : QObje
 
 ThumbnailQueue::~ThumbnailQueue() {
     clear();
-    threadPool.waitForDone();
     databaseThread.quit();
     databaseThread.wait();
 }
@@ -58,7 +58,7 @@ void ThumbnailQueue::clear() {
 }
 
 void ThumbnailQueue::start() {
-    int max = threadPool.maxThreadCount();
+    int max = threadPool->maxThreadCount();
     while (queue.size() && active < max) {
         startNext();
     }
@@ -67,7 +67,7 @@ void ThumbnailQueue::start() {
 void ThumbnailQueue::startNext() {
     active++;
     auto task = queue.takeFirst();
-    threadPool.start(task);
+    threadPool->start(task, QThread::NormalPriority);
 }
 
 void ThumbnailQueue::doneSlot(QString path, QImage image, int format) {

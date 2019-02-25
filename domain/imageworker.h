@@ -15,11 +15,14 @@ class ImageWorker : public QObject
 
 public:
     ImageWorker();
-    void setPathToLoad(QString path); // mutex
+    ~ImageWorker();
+    void setPathToLoad(QString path);
+    const QString getPathToLoad();
 
 public slots:
     void load(QString path);
-    void imageLoaded(const QString path, const QRect, const QImage image);
+    void loadedSlot(const QString path, const QRect, const QImage image);
+    void doneSlot(const QString path);
 
 signals:
     void loaded(const QString path, const QRect, const QImage image);
@@ -28,9 +31,8 @@ signals:
 private:
     QMutex pathToLoadMutex;
     QString pathToLoad;
-    QString getPathToLoad();
     void loadRow(QString path, QImageReader* reader, const QSize size, int row, int rowHeight);
-    QThreadPool threadPool;
+    QThreadPool* threadPool;
 };
 
 #endif // IMAGEWORKER_H

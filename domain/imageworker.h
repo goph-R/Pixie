@@ -22,7 +22,6 @@ public:
 public slots:
     void load(QString path);
     void loadedSlot(const QString path, const QRect, const QImage image);
-    void doneSlot(const QString path);
 
 signals:
     void loaded(const QString path, const QRect, const QImage image);
@@ -33,6 +32,7 @@ private:
     QString pathToLoad;
     void loadRow(QString path, QImageReader* reader, const QSize size, int row, int rowHeight);
     QThreadPool* threadPool;
+    int active;
 };
 
 #endif // IMAGEWORKER_H

@@ -194,7 +194,6 @@ const QString ViewWindow::getCurrentPath() {
     return imageList.at(currentIndex);
 }
 
-
 void ViewWindow::loadCurrentImage() {
     QString path = getCurrentPath();
     QImageReader reader(path);

@@ -37,21 +37,31 @@ void ImageWorker::load(QString path) {
         emit loaded(path, fullRect, reader.read());
     }
 
+    if (path != getPathToLoad()) {
+        return;
+    }
+
     // load the image row by row  (buffer is 16MB)
     int rowHeight = static_cast<int>((2048.0f / size.width()) * 2048.0f);
     auto steps = size.height() / rowHeight;
+
+    active = 0;
     for (int row = 0; row <= steps; ++row) {
-        auto runnable = new ImageRowWorker(this, path, size, row, rowHeight, row == steps);
+        auto runnable = new ImageRowWorker(this, path, size, row, rowHeight);
         threadPool->start(runnable, QThread::HighPriority);
+        ++active;
     }
 }
 
 void ImageWorker::loadedSlot(const QString path, const QRect rect, const QImage image) {
+    if (path != getPathToLoad()) {
+        return;
+    }
     emit loaded(path, rect, image);
-}
-
-void ImageWorker::doneSlot(const QString path) {
-    emit done(path);
+    --active;
+    if (!active) {
+        emit done(path);
+    }
 }
 
 void ImageWorker::setPathToLoad(QString path) {

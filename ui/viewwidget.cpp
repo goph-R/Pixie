@@ -28,6 +28,8 @@ QPixmap* ViewWidget::getPixmap() {
 void ViewWidget::setLoaded() {
     loaded = true;
     lastCachedWidth = 0;
+    qDebug() << "loaded";
+    update();
 }
 
 void ViewWidget::setPixmap(QPixmap* p, bool u) {

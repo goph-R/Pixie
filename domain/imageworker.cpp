@@ -9,6 +9,9 @@ ImageWorker::ImageWorker() : QObject() {
 }
 
 void ImageWorker::load(QString path) {
+    if (path != getPathToLoad()) {
+        return;
+    }
 
     QImageReader reader(path);
     auto size = reader.size();
@@ -19,10 +22,6 @@ void ImageWorker::load(QString path) {
         QImage image = reader.read();
         emit loaded(path, fullRect, image);
         emit done(path);
-        return;
-    }
-
-    if (path != getPathToLoad()) {
         return;
     }
 

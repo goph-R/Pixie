@@ -16,6 +16,7 @@ public:
     void translateDown();
     void zoomIn();
     void zoomOut();
+    QPixmap* getPixmap();
 
 signals:
     void doubleClickedSignal();

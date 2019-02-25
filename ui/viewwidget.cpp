@@ -21,13 +21,19 @@ ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     setMouseTracking(true);
 }
 
-void ViewWidget::setPixmap(QPixmap* pixmap) {
-    if (this->pixmap != nullptr) {
-        delete this->pixmap;
+QPixmap* ViewWidget::getPixmap() {
+    return pixmap;
+}
+
+void ViewWidget::setPixmap(QPixmap* p) {
+    if (pixmap != nullptr) {
+        delete pixmap;
     }
-    this->pixmap = pixmap;
+    pixmap = p;
     lastCachedWidth = 0;
-    update();
+    if (pixmap != nullptr) {
+        update();
+    }
 }
 
 bool ViewWidget::isFit() {

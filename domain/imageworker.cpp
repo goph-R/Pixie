@@ -1,19 +1,25 @@
 #include "imageworker.h"
 
 #include <QImageReader>
+#include <QFile>
+#include <QDebug>
 
 ImageWorker::ImageWorker() : QObject() {
 }
 
 void ImageWorker::load(QString path) {
-    // TODO: use QImageReader::setClipRect if possible and read it part by part
     QImageReader reader(path);
+    if (!reader.supportsOption(QImageIOHandler::ClipRect)) {
+        QImage image(path);
+        emit loaded(image);
+        return;
+    }
     auto size = reader.size();
-    auto steps = size.height() / 2000;
+    auto steps = size.height() / 2048;
     for (int i = 0; i <= steps; ++i) {
         QImageReader reader(path);
-        int y1 = i * 2000;
-        int y2 = y1 + 2000;
+        int y1 = i * 2048;
+        int y2 = y1 + 2048;
         if (y2 > size.height()) {
             y2 = size.height();
         }
@@ -25,8 +31,5 @@ void ImageWorker::load(QString path) {
             emit partLoaded(r, part);
         }
     }
-
-    //QImage image(path);
-    //emit loaded(image);
 }
 

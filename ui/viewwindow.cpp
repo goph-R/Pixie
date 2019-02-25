@@ -185,13 +185,17 @@ void ViewWindow::prevImage() {
 void ViewWindow::loadCurrentImage() {
     QString path = imageList.at(currentIndex);
     QImageReader reader(path);
-    pixmap = new QPixmap(reader.size());
+    QPixmap* pixmap = new QPixmap(reader.size());
     viewWidget->setPixmap(pixmap);
     emit loadImage(path);
     fileListWidget->select(path);
 }
 
 void ViewWindow::imagePartLoaded(const QRect rect, const QImage image) {
+    QPixmap* pixmap = viewWidget->getPixmap();
+    if (pixmap == nullptr) {
+        return;
+    }
     QPainter p(pixmap);
     p.drawImage(rect, image);
     viewWidget->update();

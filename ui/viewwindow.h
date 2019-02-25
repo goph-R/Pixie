@@ -61,7 +61,6 @@ private:
     QImage emptyImage;
     void createImageWorkerThread();
     QThread imageWorkerThread;
-    QPixmap* pixmap;
 
 };
 

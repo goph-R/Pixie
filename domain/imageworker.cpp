@@ -31,11 +31,13 @@ void ImageWorker::load(QString path) {
     }
 
     // if scaling supported send a very rough preview (the width is 100 big pixels)
+    /*
     if (reader.supportsOption(QImageIOHandler::ScaledSize)) {
         int pixelSize = size.width() / 100;
         reader.setScaledSize(size / pixelSize);
         emit loaded(path, fullRect, reader.read());
     }
+    */
 
     if (path != getPathToLoad()) {
         return;

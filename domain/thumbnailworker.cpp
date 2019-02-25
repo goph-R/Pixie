@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QImageReader>
 #include "domain/thumbnaildatabase.h"
 #include "domain/config.h"
 #include "domain/file.h"
@@ -47,11 +48,33 @@ QString ThumbnailWorker::getFirstImagePath() {
 }
 
 bool ThumbnailWorker::createThumbnail(QString path) {
-    auto original = QImage(path);
-    if (original.isNull()) {
+    QImageReader reader(path);
+    if (!reader.canRead()) {
         return false;
     }
-    auto fastScaled = original.scaled(size * 4, size * 4, Qt::KeepAspectRatio);
+    auto imageSize = reader.size();
+    float fastSize = size * 4;
+    QImage fastScaled;
+    if (imageSize.width() > fastSize && imageSize.height() > fastSize) {
+        if (reader.supportsOption(QImageIOHandler::ScaledSize)) {
+            float w = imageSize.width();
+            float h = imageSize.height();
+            float nw = fastSize;
+            float nh = fastSize;
+            if (w > h) {
+                nh = h/w * fastSize;
+            } else {
+                nw = w/h * fastSize;
+            }
+            reader.setScaledSize(QSize(static_cast<int>(nw), static_cast<int>(nh)));
+            fastScaled = reader.read();
+        } else {
+            QImage original = reader.read();
+            fastScaled = original.scaled(size * 4, size * 4, Qt::KeepAspectRatio);
+        }
+    } else {
+        fastScaled = reader.read();
+    }
     image = fastScaled.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     return true;
 }

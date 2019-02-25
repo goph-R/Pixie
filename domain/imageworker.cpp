@@ -9,7 +9,7 @@ ImageWorker::ImageWorker() : QObject() {
 }
 
 void ImageWorker::load(QString path) {
-    clearLoadingStop();
+
     QImageReader reader(path);
     auto size = reader.size();
     QRect fullRect(0, 0, size.width(), size.height());
@@ -19,6 +19,10 @@ void ImageWorker::load(QString path) {
         QImage image = reader.read();
         emit loaded(path, fullRect, image);
         emit done(path);
+        return;
+    }
+
+    if (path != getPathToLoad()) {
         return;
     }
 
@@ -34,7 +38,7 @@ void ImageWorker::load(QString path) {
     auto steps = size.height() / rowHeight;
     QFile file(path);
     file.open(QFile::ReadOnly);
-    for (int row = 0; row <= steps && !isLoadingStopped(); ++row) {
+    for (int row = 0; row <= steps && path == getPathToLoad(); ++row) {
         file.seek(0);
         // Why we need always recreate the reader ... ? (Tested, without it doesn't work.)
         QImageReader r(&file);
@@ -60,21 +64,15 @@ void ImageWorker::loadRow(QString path, QImageReader *reader, const QSize size, 
     emit loaded(path, rect, part);
 }
 
-void ImageWorker::stopLoading() {
-    stopMutex.lock();
-    stop = true;
-    stopMutex.unlock();
+void ImageWorker::setPathToLoad(QString path) {
+    pathToLoadMutex.lock();
+    pathToLoad = path;
+    pathToLoadMutex.unlock();
 }
 
-void ImageWorker::clearLoadingStop() {
-    stopMutex.lock();
-    stop = false;
-    stopMutex.unlock();
-}
-
-bool ImageWorker::isLoadingStopped() {
-    stopMutex.lock();
-    bool result = stop;
-    stopMutex.unlock();
+QString ImageWorker::getPathToLoad() {
+    pathToLoadMutex.lock();
+    QString result = pathToLoad;
+    pathToLoadMutex.unlock();
     return result;
 }

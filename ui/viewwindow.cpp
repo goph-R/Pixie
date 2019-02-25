@@ -201,7 +201,7 @@ void ViewWindow::loadCurrentImage() {
     QPixmap* pixmap = new QPixmap(reader.size());
     pixmap->fill(QColor(24, 24, 24));
     viewWidget->setPixmap(pixmap, false);
-    imageWorker->stopLoading();
+    imageWorker->setPathToLoad(path);
     emit loadImage(path);
     fileListWidget->select(path);
 }

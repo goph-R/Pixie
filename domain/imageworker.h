@@ -14,20 +14,19 @@ class ImageWorker : public QObject
 
 public:
     ImageWorker();
+    void setPathToLoad(QString path); // mutex
 
 public slots:
     void load(QString path);
-    void stopLoading();
 
 signals:
     void loaded(const QString path, const QRect, const QImage image);
     void done(const QString path);
 
 private:
-    QMutex stopMutex;
-    bool stop;
-    bool isLoadingStopped();
-    void clearLoadingStop();
+    QMutex pathToLoadMutex;
+    QString pathToLoad;
+    QString getPathToLoad();
     void loadRow(QString path, QImageReader* reader, const QSize size, int row, int rowHeight);
 };
 

@@ -2,7 +2,7 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <QImageReader>
+#include "domain/imageutils.h"
 #include "domain/thumbnaildatabase.h"
 #include "domain/config.h"
 #include "domain/file.h"
@@ -53,29 +53,37 @@ bool ThumbnailWorker::createThumbnail(QString path) {
         return false;
     }
     auto imageSize = reader.size();
-    float fastSize = size * 4;
-    QImage fastScaled;
-    if (imageSize.width() < fastSize || imageSize.height() < fastSize) {
-        fastScaled = reader.read();
-        image = fastScaled.scaled(size, size, Qt::KeepAspectRatio);
-        return true;
-    }
-    if (!reader.supportsOption(QImageIOHandler::ScaledSize)) {
-        QImage original = reader.read();
-        fastScaled = original.scaled(size * 4, size * 4, Qt::KeepAspectRatio);
+    if (imageSize.width() < size && imageSize.height() < size) {
+        auto tmp = reader.read();
+        image = tmp.scaled(size, size, Qt::KeepAspectRatio);
     } else {
-        float w = imageSize.width();
-        float h = imageSize.height();
-        float nw = fastSize;
-        float nh = fastSize;
-        if (w > h) {
-            nh = h/w * fastSize;
-        } else {
-            nw = w/h * fastSize;
-        }
-        reader.setScaledSize(QSize(static_cast<int>(nw), static_cast<int>(nh)));
-        fastScaled = reader.read();
+        auto fastScaled = fastScale(&reader, imageSize);
+        image = fastScaled.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    image = fastScaled.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if (ImageUtils::needsTransform(&reader)) {
+        image = ImageUtils::getTransformedImage(&reader, image);
+    }
     return true;
 }
+
+QImage ThumbnailWorker::fastScale(QImageReader* reader, QSize &imageSize) {
+    if (!reader->supportsOption(QImageIOHandler::ScaledSize)) {
+        QImage original = reader->read();
+        return original.scaled(size * 4, size * 4, Qt::KeepAspectRatio);
+    }
+    QImage fastScaled;
+    float fastSize = size * 4;
+    float w = imageSize.width();
+    float h = imageSize.height();
+    float nw = fastSize;
+    float nh = fastSize;
+    if (w > h) {
+        nh = h/w * fastSize;
+    } else {
+        nw = w/h * fastSize;
+    }
+    reader->setScaledSize(QSize(static_cast<int>(nw), static_cast<int>(nh)));
+    fastScaled = reader->read();
+    return fastScaled;
+}
+

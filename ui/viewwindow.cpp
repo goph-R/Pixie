@@ -5,8 +5,10 @@
 #include <QImage>
 #include <QImageReader>
 #include <QPainter>
+#include <QImageIOHandler>
 #include "domain/file.h"
 #include "domain/imageworker.h"
+#include "domain/imageutils.h"
 #include "ui/mainwindow.h"
 #include "ui/viewwidget.h"
 #include "ui/filelistwidget.h"
@@ -197,7 +199,9 @@ const QString ViewWindow::getCurrentPath() {
 void ViewWindow::loadCurrentImage() {
     QString path = getCurrentPath();
     QImageReader reader(path);
-    QPixmap* pixmap = new QPixmap(reader.size());
+    auto size = reader.size();
+    size = ImageUtils::getTransformedSize(&reader, size);
+    QPixmap* pixmap = new QPixmap(size);
     pixmap->fill(QColor(24, 24, 24));
     viewWidget->setPixmap(pixmap, false);
     imageWorker->setPathToLoad(path);

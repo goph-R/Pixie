@@ -58,7 +58,7 @@ void ThumbnailDatabase::save(QString path, QImage image, int format) {
     QBuffer buffer(&ba);
     QSqlQuery query;
     buffer.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    image.save(&buffer, getImageFormat(format), 85);
+    image.save(&buffer, getImageFormat(format), 70);
     query.prepare("INSERT INTO thumbnail (path, format, image) VALUES (:path, :format, :image)");
     query.bindValue(":path", path);
     query.bindValue(":format", format);

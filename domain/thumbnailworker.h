@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QImage>
 #include <QStringList>
+#include <QImageReader>
 
 class File;
 class Config;
@@ -16,6 +17,7 @@ public:
     void run();
 
 private:
+    QImage fastScale(QImageReader* reader, QSize &size);
     bool folder;
     QString getFirstImagePath();
     QString path;

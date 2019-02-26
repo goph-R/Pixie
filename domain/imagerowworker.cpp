@@ -3,7 +3,8 @@
 #include <QRect>
 #include <QImageReader>
 #include <QDebug>
-#include "imageworker.h"
+#include "domain/imageutils.h"
+#include "domain/imageworker.h"
 
 ImageRowWorker::ImageRowWorker(ImageWorker* worker, QString path, QSize size, int row, int rowHeight) : QRunnable() {
     this->worker = worker;
@@ -28,6 +29,10 @@ void ImageRowWorker::run() {
     int h = y2 - y1;
     QRect rect(0, y1, size.width(), h);
     reader.setClipRect(rect);
-    auto part = reader.read();
-    QMetaObject::invokeMethod(worker, "loadedSlot", Qt::QueuedConnection, Q_ARG(QString, path), Q_ARG(QRect, rect), Q_ARG(QImage, part));
+    auto image = reader.read();
+    if (ImageUtils::needsTransform(&reader)) {
+        image = ImageUtils::getTransformedImage(&reader, image);
+        rect = ImageUtils::getTransformedRect(&reader, size, rect);
+    }
+    QMetaObject::invokeMethod(worker, "loadedSlot", Qt::QueuedConnection, Q_ARG(QString, path), Q_ARG(QRect, rect), Q_ARG(QImage, image));
 }

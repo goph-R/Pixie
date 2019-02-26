@@ -45,7 +45,8 @@ SOURCES += \
     ui/viewwidget.cpp \
     ui/settingsdialog.cpp \
     domain/imageworker.cpp \
-    domain/imagerowworker.cpp
+    domain/imagerowworker.cpp \
+    domain/imageutils.cpp
 
 HEADERS += \
     domain/config.h \
@@ -67,7 +68,8 @@ HEADERS += \
     ui/viewwidget.h \
     ui/settingsdialog.h \
     domain/imageworker.h \
-    domain/imagerowworker.h
+    domain/imagerowworker.h \
+    domain/imageutils.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

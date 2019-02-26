@@ -97,3 +97,32 @@ void FileListWidget::keyPressEvent(QKeyEvent* event) {
         QListWidget::keyPressEvent(event);
     }
 }
+
+QList<File*> FileListWidget::getFiles() {
+    QList<File*> result;
+    for(int i = 0; i < count(); ++i) {
+        auto fileListItem = static_cast<FileListItem*>(item(i));
+        result.append(fileListItem->getFile());
+    }
+    return result;
+}
+
+int FileListWidget::countImages() {
+    int result = 0;
+    foreach (auto file, getFiles()) {
+        if (file->isImage()) {
+            ++result;
+        }
+    }
+    return result;
+}
+
+int FileListWidget::countFolders() {
+    int result = 0;
+    foreach (auto file, getFiles()) {
+        if (file->isFolder()) {
+            ++result;
+        }
+    }
+    return result;
+}

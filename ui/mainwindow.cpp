@@ -11,6 +11,7 @@
 #include <QSplitter>
 #include <QSettings>
 #include <QThreadPool>
+#include <QStatusBar>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -217,6 +218,10 @@ void MainWindow::findFilesDone() {
         fileListWidget->select(fileToSelect->getPath());
     }
     fileToSelect = nullptr;
+    int imageCount = fileListWidget->countImages();
+    int folderCount = fileListWidget->countFolders();
+    QString text = tr("Images: %1  |  Folders: %2").arg(imageCount).arg(folderCount);
+    statusBar()->showMessage(text);
 }
 
 void MainWindow::thumbnailDone(QString path, QImage image) {

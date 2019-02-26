@@ -22,6 +22,8 @@ public:
     void setErrorPixmap(QString path);
     virtual void clear();
     void select(QString path);
+    int countImages();
+    int countFolders();
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 public slots:
@@ -41,6 +43,7 @@ private:
     QPixmap filePixmap;
     QPixmap imagePixmap;
     QPixmap imageErrorPixmap;
+    QList<File*> getFiles();
 
     friend class FileListDelegate;
 };

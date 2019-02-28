@@ -20,8 +20,8 @@ public:
     virtual ~ViewWindow() override;
     virtual QSize sizeHint() const override;
     void setImage(File* file);
-    void setMaximized(bool value);
     void exitApplication();
+    void setEscapeQuits(bool value);
 
 public slots:
     void showMainWindow();
@@ -44,8 +44,11 @@ protected:
     virtual void closeEvent(QCloseEvent* event) override;
     virtual void wheelEvent(QWheelEvent* event) override;    
     virtual void keyPressEvent(QKeyEvent* event) override;
+    virtual void changeEvent(QEvent* event) override;
 
 private:
+    void saveSettings();
+    void readSettings();
     void nextImage();
     void prevImage();
     void loadCurrentImage();
@@ -64,6 +67,7 @@ private:
     void createImageWorkerThread();
     ImageWorker* imageWorker;
     QThread imageWorkerThread;
+    bool escapeQuits;
 
 };
 

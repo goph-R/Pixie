@@ -28,6 +28,7 @@ public:
 
 public slots:
     void backspacePressedSlot();
+    void copySelection();
 
 signals:
     void backspacePressed();

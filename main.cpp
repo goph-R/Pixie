@@ -23,11 +23,14 @@ int main(int argc, char *argv[])
     MainWindow mainWindow;
     ViewWindow viewWindow(&mainWindow);
     mainWindow.setViewWindow(&viewWindow);
+
     if (argc > 1) {
         mainWindow.startWith(argv[1]);
+        viewWindow.setEscapeQuits(true);
+        viewWindow.show();
+    } else {
+        mainWindow.show();
     }
-    mainWindow.show();
 
-    int result = app.exec();
-    return result;
+    return app.exec();
 }

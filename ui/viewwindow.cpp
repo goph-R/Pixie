@@ -6,6 +6,7 @@
 #include <QImageReader>
 #include <QPainter>
 #include <QImageIOHandler>
+#include <QSettings>
 #include "domain/file.h"
 #include "domain/imageworker.h"
 #include "domain/imageutils.h"
@@ -15,7 +16,10 @@
 
 #include <QDebug>
 
-ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {
+ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {    
+    QSettings settings;
+    restoreGeometry(settings.value("viewWindowGeometry").toByteArray());
+
     createImageWorkerThread();
 
     this->mainWindow = mainWindow;
@@ -36,9 +40,16 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
 
     wasMaximized = false;
+    escapeQuits = false;
+
+    readSettings();
 }
 
 ViewWindow::~ViewWindow() {
+}
+
+void ViewWindow::setEscapeQuits(bool value) {
+    escapeQuits = value;
 }
 
 void ViewWindow::createImageWorkerThread() {
@@ -52,17 +63,20 @@ void ViewWindow::createImageWorkerThread() {
 }
 
 void ViewWindow::exitApplication() {
+    saveSettings();
     imageWorkerThread.quit();
     imageWorkerThread.wait();
 }
 
-void ViewWindow::setMaximized(bool value) {
-    wasMaximized = value;
-    if (value) {
-        showMaximized();
-    } else {
-        showNormal();
-    }
+void ViewWindow::saveSettings() {
+    QSettings settings;
+    settings.setValue("viewWindowGeometry", saveGeometry());
+    settings.setValue("viewWindowState", saveState());
+}
+
+void ViewWindow::readSettings() {
+    QSettings settings;
+    restoreState(settings.value("viewWindowState").toByteArray());
 }
 
 QSize ViewWindow::sizeHint() const {
@@ -87,13 +101,25 @@ void ViewWindow::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+void ViewWindow::changeEvent(QEvent *event) {
+    if (event->type() == QEvent::WindowStateChange) {
+        auto stateChangeEvent = static_cast<QWindowStateChangeEvent*>(event);
+        wasMaximized = stateChangeEvent->oldState() & Qt::WindowMaximized;
+    }
+    QMainWindow::changeEvent(event);
+}
+
 void ViewWindow::switchFit() {
     viewWidget->setFit(!viewWidget->isFit());
 }
 
 void ViewWindow::escapePressed() {
-    // TODO: if started from CLI close the app
-    showMainWindow();
+    if (escapeQuits) {
+        mainWindow->exitApplication();
+    } else {
+        showMainWindow();
+    }
+
 }
 
 void ViewWindow::leftPressed() {
@@ -139,6 +165,7 @@ void ViewWindow::fillImageList(File* parent) {
 }
 
 void ViewWindow::showMainWindow() {
+    escapeQuits = false;
     backFromFullscreen();
     if (isMaximized()) { // FIX: when back from fullscreen this never true
         mainWindow->showMaximized();
@@ -159,7 +186,6 @@ void ViewWindow::switchFullscreen() {
 
 void ViewWindow::goFullscreen() {
     if (!isFullScreen()) {
-        wasMaximized = isMaximized();
         showFullScreen();
     }
 }

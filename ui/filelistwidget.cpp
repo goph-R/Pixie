@@ -2,12 +2,14 @@
 
 #include <QShortcut>
 #include <QKeyEvent>
+#include <QClipboard>
+#include <QMimeData>
+#include <QApplication>
+#include <QDebug>
 #include "domain/file.h"
 #include "domain/config.h"
 #include "ui/filelistdelegate.h"
 #include "ui/filelistitem.h"
-
-#include <QDebug>
 
 FileListWidget::FileListWidget(Config* config) : QListWidget() {
     this->config = config;
@@ -21,6 +23,7 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
     setUniformItemSizes(true);
 
     new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(backspacePressedSlot()));
+    new QShortcut(QKeySequence("Ctrl+C"), this, SLOT(copySelection()));
 }
 
 void FileListWidget::createPixmaps() {
@@ -126,3 +129,21 @@ int FileListWidget::countFolders() {
     }
     return result;
 }
+
+void FileListWidget::copySelection() {
+    auto items = selectedItems();
+    if (items.count() < 1) {
+        return;
+    }
+    auto clipboard = QApplication::clipboard();
+    auto mimeData = new QMimeData();
+    QList<QUrl> urls;
+    foreach (auto item, items) {
+        auto fileItem = static_cast<FileListItem*>(item);
+        auto file = fileItem->getFile();
+        urls.append(QUrl::fromLocalFile(file->getPath()));
+    }
+    mimeData->setUrls(urls);
+    clipboard->setMimeData(mimeData);
+}
+

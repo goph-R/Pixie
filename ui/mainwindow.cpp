@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QClipboard>
+#include <QMimeData>
+#include <QUrl>
 #include <QPixmap>
 #include <QDebug>
 #include <QVBoxLayout>
@@ -14,6 +17,7 @@
 #include <QStatusBar>
 #include <QFileInfo>
 #include <QDir>
+#include <QShortcut>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -93,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QObject::connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
     QObject::connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAbout()));
     QObject::connect(quitAction, SIGNAL(triggered()), this, SLOT(quitSlot()));
+
+    new QShortcut(QKeySequence("Ctrl+V"), this, SLOT(pasteFiles()));
 
     readSettings();
 }
@@ -231,6 +237,9 @@ void MainWindow::addFile(File* file) {
     if (file->getParent()->getPath() != currentFolder->getPath()) {
         return;
     }
+    if (fileListWidget->hasItem(file->getPath())) {
+        return;
+    }
     fileListWidget->createItem(file);
     if (file->isFolder() || file->isImage()) {
         thumbnailQueue->add(file);
@@ -277,9 +286,9 @@ void MainWindow::enterFolder(File* file) {
 
 void MainWindow::showImage(File* file) {
     if (isMaximized()) {
-        viewWindow->setMaximized(true);
+        viewWindow->showMaximized();
     } else {
-        viewWindow->setMaximized(false);
+        viewWindow->showNormal();
         viewWindow->setGeometry(geometry());
     }
     viewWindow->setImage(file);
@@ -310,4 +319,34 @@ void MainWindow::execute(QListWidgetItem* item) {
     } else if (file->isImage()) {
         showImage(file);
     }
+}
+
+void MainWindow::pasteFiles() {
+    auto clipboard = QApplication::clipboard();
+    auto mimeData = clipboard->mimeData();
+    if (!mimeData->hasUrls()) {
+        return;
+    }
+    foreach (auto url, mimeData->urls()) {
+        if (url.isLocalFile()) {
+            pasteFile(url.toLocalFile());
+        }
+    }
+    clipboard->clear();
+    fileManager->findFiles(currentFolder);
+}
+
+void MainWindow::pasteFile(QString srcPath) {
+    QFileInfo info(srcPath);
+    if (info.isDir()) {
+        // TODO
+        return;
+    }
+    QString dstPath = currentFolder->getPath() + info.fileName();
+    QFileInfo dstInfo(dstPath);
+    if (dstInfo.exists()) {
+        // TODO
+        return;
+    }
+    QFile::copy(srcPath, dstPath);
 }

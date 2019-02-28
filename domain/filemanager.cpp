@@ -57,7 +57,6 @@ void FileManager::findFolders(File* file) {
 }
 
 void FileManager::expandFolders(QString path) {
-    // gather folders
     auto expandPath = path;
     if (expandPath.endsWith("/")) {
         expandPath = expandPath.left(expandPath.length() - 1);
@@ -73,8 +72,6 @@ void FileManager::expandFolders(QString path) {
         }
         folderPaths << current;
     }
-
-    // expand folders one by one
     if (!folderPaths.size()) {
         emit expandFoldersDone(path);
     } else {
@@ -99,7 +96,6 @@ void FileManager::folderEmptySlot(QString folderPath) {
 
 void FileManager::findFilesDoneSlot(QString folderPath, bool foundFolders) {
     if (!foundFolders && filesByPath.contains(folderPath)) {
-        qDebug() << folderPath;
         emit folderEmpty(filesByPath.value(folderPath));
     }
     emit findFilesDone();

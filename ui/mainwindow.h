@@ -47,6 +47,7 @@ public slots:
     void showSettings();
     void showAbout();
     void quitSlot();
+    void pasteFiles();
 
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;
@@ -57,6 +58,7 @@ private:
     void setPathEditTo(QString path);
     void readSettings();
     void saveSettings();
+    void pasteFile(QString srcPath);
     QString getDisplayPath(QString path);
     Config* config;
     FileManager* fileManager;

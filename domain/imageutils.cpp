@@ -18,7 +18,6 @@ QRect ImageUtils::getTransformedRect(QImageReader* reader, const QSize size, con
     QRect result = rect;
 #if QT_VERSION >= 0x050500
     auto t = reader->transformation();
-    qDebug() << t;
     if (t & QImageIOHandler::TransformationMirror) {
         result.setX(size.width() - rect.x() - rect.width());
     }

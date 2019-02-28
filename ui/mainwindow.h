@@ -29,12 +29,14 @@ public:
     void setViewWindow(ViewWindow* value);
     FileManager* getFileManager();
     FileListWidget* getFileListWidget();
+    void startWith(const char* path);
     void exitApplication();
 
 public slots:
     void folderSelectionChanged();
     void fileSelectionChanged();
-    void folderExpanded(QTreeWidgetItem*);    
+    void folderExpanded(QTreeWidgetItem*);
+    void expandFoldersDone(QString path);
     void addFile(File*);
     void findFilesDone();
     void thumbnailDone(QString path, QImage image);
@@ -67,6 +69,7 @@ private:
     File* fileToSelect;
     ViewWindow* viewWindow;
     SettingsDialog* settingsDialog;
+    QString filePathToExecute;
 };
 
 #endif // MAINWINDOW_H

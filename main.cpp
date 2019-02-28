@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QScreen>
 #include <QDesktopWidget>
+#include <QDebug>
 #include "domain/file.h"
 #include "domain/foundfile.h"
 #include "domain/foundfolder.h"
@@ -22,9 +23,10 @@ int main(int argc, char *argv[])
     MainWindow mainWindow;
     ViewWindow viewWindow(&mainWindow);
     mainWindow.setViewWindow(&viewWindow);
-
-    QMainWindow* active = &mainWindow; // TODO: open the image view if filename argument presents
-    active->show();
+    if (argc > 1) {
+        mainWindow.startWith(argv[1]);
+    }
+    mainWindow.show();
 
     int result = app.exec();
     return result;

@@ -29,7 +29,7 @@ FolderTreeItem* FolderTreeWidget::createItem(FolderTreeItem* parentItem, File* f
     auto item = new FolderTreeItem(parentItem, file);
     item->setText(0, file->getName());
     item->setIcon(0, icon);
-    item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+    item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
     itemsByPath.insert(file->getPath(), item);
     addLoadingItem(item);
     return item;
@@ -44,8 +44,8 @@ void FolderTreeWidget::removeLoadingTextItem(FolderTreeItem* item) {
     if (item == nullptr) {
         return;
     }
-    FolderTreeItem* child = static_cast<FolderTreeItem*>(item->child(0));
-    if (child->isLoadingText()) {
+    FolderTreeItem* child = static_cast<FolderTreeItem*>(item->child(0));    
+    if (child != nullptr && child->isLoadingText()) {
         item->takeChild(0);
     }
 }

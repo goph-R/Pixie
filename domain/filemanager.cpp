@@ -25,11 +25,12 @@ void FileManager::createWorkerThread() {
     worker->moveToThread(&workerThread);
     QObject::connect(this, SIGNAL(findFilesSignal(QString)), worker, SLOT(findFiles(QString)));
     QObject::connect(this, SIGNAL(findFoldersSignal(QString)), worker, SLOT(findFolders(QString)));
+    QObject::connect(this, SIGNAL(expandFoldersSignal(QString, QStringList)), worker, SLOT(expandFolders(QString, QStringList)));
     QObject::connect(worker, SIGNAL(foundFolder(FoundFolder)), this, SLOT(foundFolder(FoundFolder)));
     QObject::connect(worker, SIGNAL(foundFile(FoundFile)), this, SLOT(foundFile(FoundFile)));
     QObject::connect(worker, SIGNAL(folderEmpty(QString)), this, SLOT(folderEmptySlot(QString)));
     QObject::connect(worker, SIGNAL(findFilesDone(QString, bool)), this, SLOT(findFilesDoneSlot(QString, bool)));
-    QObject::connect(worker, SIGNAL(expandFoldersDone(QStringList)), this, SLOT(expandFoldersDoneSlot(QStringList)));
+    QObject::connect(worker, SIGNAL(expandFoldersDone(QString)), this, SLOT(expandFoldersDoneSlot(QString)));
     QObject::connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     workerThread.start();
 }
@@ -56,32 +57,34 @@ void FileManager::findFolders(File* file) {
 }
 
 void FileManager::expandFolders(QString path) {
+    // gather folders
     auto expandPath = path;
     if (expandPath.endsWith("/")) {
         expandPath = expandPath.left(expandPath.length() - 1);
     }
     auto parts = expandPath.split("/");
-    auto current = parts.at(0) + "/";
-    parts.removeFirst();
+    QString current = "";
     QStringList folderPaths;
-    QStringList allFolderPaths;
     foreach (auto part, parts) {
         current += part + "/";
-        allFolderPaths << current;
-        if (!filesByPath.contains(current)) {
-            folderPaths << current;
+        QFileInfo info(current);
+        if (!info.exists()) {
+            return;
         }
+        folderPaths << current;
     }
+
+    // expand folders one by one
     if (!folderPaths.size()) {
-        emit expandFoldersDone(allFolderPaths);
+        emit expandFoldersDone(path);
     } else {
-        emit expandFoldersSignal(folderPaths, allFolderPaths);
+        emit expandFoldersSignal(path, folderPaths);
     }
 
 }
 
-void FileManager::expandFoldersDoneSlot(QStringList allFolderPaths) {
-    emit expandFoldersDone(allFolderPaths);
+void FileManager::expandFoldersDoneSlot(QString path) {
+    emit expandFoldersDone(path);
 }
 
 void FileManager::findFiles(File* file) {
@@ -96,12 +99,13 @@ void FileManager::folderEmptySlot(QString folderPath) {
 
 void FileManager::findFilesDoneSlot(QString folderPath, bool foundFolders) {
     if (!foundFolders && filesByPath.contains(folderPath)) {
-        //emit folderEmpty(filesByPath.value(folderPath));
+        qDebug() << folderPath;
+        emit folderEmpty(filesByPath.value(folderPath));
     }
     emit findFilesDone();
 }
 
-void FileManager::foundFolder(FoundFolder foundFolder) {
+void FileManager::foundFolder(FoundFolder foundFolder) {    
     QString folderPath = foundFolder.getFolderPath();
     QString path = folderPath + foundFolder.getName();
     if (filesByPath.contains(path)) {
@@ -139,6 +143,6 @@ File* FileManager::createEntry(QString folderPath, QString name, bool folder) {
 }
 
 File* FileManager::getFileByPath(QString path) {
-    return filesByPath.value(path);
+    return filesByPath.contains(path) ? filesByPath.value(path) : nullptr;
 }
 

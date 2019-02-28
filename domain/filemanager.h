@@ -31,7 +31,7 @@ public slots:
     void foundFolder(FoundFolder result);
     void folderEmptySlot(QString folderPath);
     void findFilesDoneSlot(QString folderPath, bool foundFolders);
-    void expandFoldersDoneSlot(QStringList folderPaths);
+    void expandFoldersDoneSlot(QString path);
 
 signals:
     void findFilesSignal(QString path);
@@ -40,8 +40,8 @@ signals:
     void folderEmpty(File* file);
     void fileAdded(File* file);
     void findFilesDone();
-    void expandFoldersSignal(QStringList folderPaths, QStringList allFolderPaths);
-    void expandFoldersDone(QStringList allFolderPaths);
+    void expandFoldersSignal(QString path, QStringList folderPaths);
+    void expandFoldersDone(QString path);
 
 private:
     QStringList imageExtensions;

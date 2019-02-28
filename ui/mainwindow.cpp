@@ -12,6 +12,8 @@
 #include <QSettings>
 #include <QThreadPool>
 #include <QStatusBar>
+#include <QFileInfo>
+#include <QDir>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -81,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QObject::connect(fileManager, SIGNAL(folderEmpty(File*)), folderTreeWidget, SLOT(removeLoadingText(File*)));
     QObject::connect(fileManager, SIGNAL(fileAdded(File*)), this, SLOT(addFile(File*)));
     QObject::connect(fileManager, SIGNAL(findFilesDone()), this, SLOT(findFilesDone()));
+    QObject::connect(fileManager, SIGNAL(expandFoldersDone(QString)), this, SLOT(expandFoldersDone(QString)));
     QObject::connect(thumbnailQueue, SIGNAL(done(QString, QImage)), this, SLOT(thumbnailDone(QString, QImage)));
     QObject::connect(thumbnailQueue, SIGNAL(error(QString)), this, SLOT(thumbnailError(QString)));
     QObject::connect(fileListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(execute(QListWidgetItem*)));
@@ -99,6 +102,27 @@ MainWindow::~MainWindow() {
 
 void MainWindow::setViewWindow(ViewWindow* value) {
     viewWindow = value;
+}
+
+void MainWindow::startWith(const char* p) {
+    QString path = p;
+    path.replace("\\", "/");
+    path = path.replace(0, 1, path[0].toUpper());
+    QFileInfo info(path);
+    if (!info.isDir()) {
+        filePathToExecute = path;
+        path = info.absoluteDir().path() + "/";
+    }
+    fileManager->expandFolders(path);
+}
+
+void MainWindow::expandFoldersDone(QString path) {
+    auto file = fileManager->getFileByPath(path);
+    if (file == nullptr) {
+        return;
+    }
+    folderTreeWidget->expandTo(file);
+    folderTreeWidget->select(file);
 }
 
 void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
@@ -222,6 +246,14 @@ void MainWindow::findFilesDone() {
     int folderCount = fileListWidget->countFolders();
     QString text = tr("Images: %1  |  Folders: %2").arg(imageCount).arg(folderCount);
     statusBar()->showMessage(text);
+    if (filePathToExecute == "") {
+        return;
+    }
+    // this only runs if started with a filename
+    if (fileListWidget->hasItem(filePathToExecute)) {
+        execute(fileListWidget->getItem(filePathToExecute));
+    }
+    filePathToExecute = "";
 }
 
 void MainWindow::thumbnailDone(QString path, QImage image) {
@@ -239,11 +271,6 @@ void MainWindow::thumbnailError(QString path) {
 
 void MainWindow::enterFolder(File* file) {
     folderTreeWidget->clearSelection();
-    if (!folderTreeWidget->hasItem(file)) {
-        // TODO: check later with start up directory and with CLI
-        fileManager->expandFolders(file->getPath());
-        return;
-    }
     folderTreeWidget->expandTo(file);
     folderTreeWidget->select(file);
 }

@@ -19,14 +19,14 @@ public:
 public slots:
     void findFiles(QString folderPath);
     void findFolders(QString folderPath);
-    void expandFolders(QStringList folderPaths, QStringList allFolderPaths);
+    void expandFolders(QString path, QStringList folderPaths);
 
 signals:
     void foundFile(FoundFile result);
     void foundFolder(FoundFolder result);
     void folderEmpty(QString path);
     void findFilesDone(QString path, bool foundFolders);
-    void expandFoldersDone(QStringList allFoldersPath);
+    void expandFoldersDone(QString path);
 
 private:
     QFileInfoList findEntries(QString folderPath, QFlags<QDir::Filter> filters);

@@ -38,11 +38,11 @@ void FileManagerWorker::findFolders(QString folderPath) {
     }
 }
 
-void FileManagerWorker::expandFolders(QStringList folderPaths, QStringList allFolderPaths) {
+void FileManagerWorker::expandFolders(QString path, QStringList folderPaths) {
     foreach (auto folderPath, folderPaths) {
         findFolders(folderPath);
     }
-    emit expandFoldersDone(allFolderPaths);
+    emit expandFoldersDone(path);
 }
 
 QFileInfoList FileManagerWorker::findEntries(QString folderPath, QFlags<QDir::Filter> filter) {

@@ -11,12 +11,11 @@ File::File(File* parent, QString name, bool folder) {
     this->height = 0;
     this->extension = "";
     QString parentPath = "";
-    QString endSlash = "";
     if (parent != nullptr) {
         parentPath = parent->getPath();
-        endSlash = folder && parentPath != "" ? "/" : "";
     }
-    path = parentPath + name + endSlash;
+    path = parentPath + name;
+
 }
 
 File::~File() {
@@ -31,6 +30,14 @@ QString File::getName() {
     return name;
 }
 
+QString File::getDisplayName() {
+    if (folder) {
+        return name.left(name.length() - 1); // remove trailing slash
+    } else {
+        return name;
+    }
+}
+
 File* File::getParent() {
     return parent;
 }
@@ -43,7 +50,7 @@ QString File::getExtension() {
     return extension;
 }
 
-const QList<File*> File::getChildren() {
+QList<File*> File::getChildren() {
     return children;
 }
 

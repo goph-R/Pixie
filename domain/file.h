@@ -12,9 +12,10 @@ public:
     QString getPath();
     QString getExtension();
     QString getName();
+    QString getDisplayName();
     File* getParent();
     void addChild(File* file);
-    const QList<File*> getChildren();
+    QList<File*> getChildren();
     void removeChildren();
     bool isFolder();
     bool isImage();

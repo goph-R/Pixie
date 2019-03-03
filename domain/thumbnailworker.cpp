@@ -26,7 +26,7 @@ void ThumbnailWorker::run() {
     if (folder) {
         imagePath = getFirstImagePath();
         if (imagePath == "") {
-            QMetaObject::invokeMethod(receiver, "emptySlot", Qt::QueuedConnection);
+            QMetaObject::invokeMethod(receiver, "emptySlot", Qt::QueuedConnection, Q_ARG(QString, path));
             return;
         }
     }

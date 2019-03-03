@@ -67,3 +67,13 @@ void ThumbnailDatabase::save(QString path, QImage image, int format) {
     buffer.close();
 }
 
+void ThumbnailDatabase::remove(QString path) {
+    if (!db.open()) {
+        return;
+    }
+    QSqlQuery query;
+    query.prepare("DELETE FROM thumbnail WHERE path = :path");
+    query.bindValue(":path", path);
+    query.exec();
+}
+

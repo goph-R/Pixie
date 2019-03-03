@@ -12,6 +12,7 @@ class ThumbnailQueue;
 class FolderTreeWidget;
 class FileManager;
 class FileListWidget;
+class FileListItem;
 class File;
 class ViewWindow;
 class SettingsDialog;
@@ -41,20 +42,21 @@ public slots:
     void findFilesDone();
     void thumbnailDone(QString path, QImage image);
     void thumbnailError(QString path);
+    void thumbnailEmpty(QString path);
     void backspacePressed();
     void enterPressed();
-    void execute(QListWidgetItem* item);
     void showSettings();
     void showAbout();
     void quitSlot();
     void pasteFiles();
+    void execute(QListWidgetItem* item);
 
 protected:
     virtual void resizeEvent(QResizeEvent *event) override;
 
 private:    
     void enterFolder(File* file);
-    void showImage(File* file);
+    void showImage(QList<QListWidgetItem*> items);
     void setPathEditTo(QString path);
     void readSettings();
     void saveSettings();

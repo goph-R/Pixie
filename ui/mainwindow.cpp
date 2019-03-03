@@ -88,8 +88,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QObject::connect(fileManager, SIGNAL(fileAdded(File*)), this, SLOT(addFile(File*)));
     QObject::connect(fileManager, SIGNAL(findFilesDone()), this, SLOT(findFilesDone()));
     QObject::connect(fileManager, SIGNAL(expandFoldersDone(QString)), this, SLOT(expandFoldersDone(QString)));
-    QObject::connect(thumbnailQueue, SIGNAL(done(QString, QImage)), this, SLOT(thumbnailDone(QString, QImage)));
-    QObject::connect(thumbnailQueue, SIGNAL(error(QString)), this, SLOT(thumbnailError(QString)));
+    QObject::connect(thumbnailQueue, SIGNAL(doneSignal(QString, QImage)), this, SLOT(thumbnailDone(QString, QImage)));
+    QObject::connect(thumbnailQueue, SIGNAL(errorSignal(QString)), this, SLOT(thumbnailError(QString)));
+    QObject::connect(thumbnailQueue, SIGNAL(emptySignal(QString)), this, SLOT(thumbnailEmpty(QString)));
     QObject::connect(fileListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(execute(QListWidgetItem*)));
     QObject::connect(fileListWidget, SIGNAL(backspacePressed()), this, SLOT(backspacePressed()));
     QObject::connect(fileListWidget, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
@@ -153,11 +154,18 @@ void MainWindow::saveSettings() {
     QSettings settings;
     settings.setValue("mainWindowGeometry", saveGeometry());
     settings.setValue("mainWindowState", saveState());
+    if (currentFolder != nullptr) {
+        settings.setValue("lastFolderPath", currentFolder->getPath());
+    }
 }
 
 void MainWindow::readSettings() {
     QSettings settings;
     restoreState(settings.value("mainWindowState").toByteArray());
+    QString lastFolderPath = settings.value("lastFolderPath", "").toString();
+    if (lastFolderPath != "") {
+        fileManager->expandFolders(lastFolderPath);
+    }
 }
 
 void MainWindow::showSettings() {
@@ -208,7 +216,7 @@ void MainWindow::folderSelectionChanged() {
     }
     thumbnailQueue->clear();
     fileListWidget->clear();
-    currentFolder = folderItem->getFile();    
+    currentFolder = folderItem->getFile();
     setPathEditTo(currentFolder->getPath());
     fileManager->findFiles(currentFolder);
 }
@@ -260,7 +268,9 @@ void MainWindow::findFilesDone() {
     }
     // this only runs if started with a filename
     if (fileListWidget->hasItem(filePathToExecute)) {
-        execute(fileListWidget->getItem(filePathToExecute));
+        QList<QListWidgetItem*> items;
+        items.append(fileListWidget->getItem(filePathToExecute));
+        showImage(items);
     }
     filePathToExecute = "";
 }
@@ -278,21 +288,65 @@ void MainWindow::thumbnailError(QString path) {
     fileListWidget->setErrorPixmap(path);
 }
 
+void MainWindow::thumbnailEmpty(QString path) {
+    fileListWidget->clearPixmap(path);
+}
+
 void MainWindow::enterFolder(File* file) {
     folderTreeWidget->clearSelection();
     folderTreeWidget->expandTo(file);
     folderTreeWidget->select(file);
 }
 
-void MainWindow::showImage(File* file) {
+void MainWindow::showImage(QList<QListWidgetItem*> items) {
+    QString path = "";
+    QStringList paths;
+    QList<File*> files;
+    bool changeSelection = true;
+    if (items.size() == 1) {
+        auto fileItem = static_cast<FileListItem*>(items.at(0));
+        auto file = fileItem->getFile();
+        path = file->getPath();
+        files = currentFolder->getChildren();
+    } else {
+        changeSelection = false;
+        foreach (auto item, items) {
+            auto fileItem = static_cast<FileListItem*>(item);
+            files.append(fileItem->getFile());
+        }
+    }
+    foreach (auto file, files) {
+        if (!file->isImage()) {
+            continue;
+        }
+        if (path == "") {
+            path = file->getPath();
+        }
+        paths.append(file->getPath());
+    }
+    if (paths.size() < 1) {
+        return;
+    }
+    viewWindow->setImages(path, paths, changeSelection);
     if (isMaximized()) {
         viewWindow->showMaximized();
     } else {
         viewWindow->showNormal();
         viewWindow->setGeometry(geometry());
     }
-    viewWindow->setImage(file);
     hide();
+}
+
+void MainWindow::execute(QListWidgetItem* item) {
+    auto fileItem = static_cast<FileListItem*>(item);
+    auto file = fileItem->getFile();
+    if (file->isFolder()) {
+        enterFolder(file);
+    } else if (file->isImage()) {
+        QList<QListWidgetItem*> items;
+        items.append(item);
+        showImage(items);
+    }
 }
 
 void MainWindow::backspacePressed() {
@@ -306,18 +360,10 @@ void MainWindow::backspacePressed() {
 
 void MainWindow::enterPressed() {
     auto items = fileListWidget->selectedItems();
-    if (items.size() != 1) {
-        return;
-    }
-    execute(items.at(0));
-}
-
-void MainWindow::execute(QListWidgetItem* item) {
-    auto file = static_cast<FileListItem*>(item)->getFile();
-    if (file->isFolder()) {
-        enterFolder(file);
-    } else if (file->isImage()) {
-        showImage(file);
+    if (items.size() == 1) {
+        execute(items.at(0));
+    } else {
+        showImage(items);
     }
 }
 

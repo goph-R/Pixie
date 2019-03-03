@@ -14,7 +14,7 @@ ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     zoomLevel = ZOOM_ORIGINAL;
     lastCachedWidth = 0;
     zoomLevels << 0.05f << 0.07f << 0.10f << 0.15f << 0.20f << 0.25f;
-    zoomLevels << 0.30f << 0.40f << 0.50f << 0.66f << 0.75f << 1.00f;
+    zoomLevels << 0.30f << 0.40f << 0.50f << 0.62f << 0.75f << 1.00f;
     zoomLevels << 1.33f << 1.66f << 2.00f << 3.00f << 5.00f << 10.0f;
     lastCachedWidth = 0;
     pixmap = nullptr;
@@ -202,21 +202,13 @@ void ViewWidget::drawImage(QPainter &p) {
 }
 
 void ViewWidget::drawSmoothImage(QPainter &p, QRect &drawRect) {
-    // TODO: optimize somehow...
     float iw = pixmap->width();
     float ih = pixmap->height();
     float rw = drawRect.width();
     float rh = drawRect.height();
-    if (loaded && (rw / iw < 0.35f || rh / ih < 0.35f)) {
-        if (lastCachedWidth != static_cast<int>(rw)) {
-            lastCachedWidth = static_cast<int>(rw);
-            auto scaledpixmap = pixmap->scaled(pixmap->width() / 2, pixmap->height() / 2);
-            cachedPixmap = scaledpixmap.scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        }
-        p.drawPixmap(drawRect, cachedPixmap);
-    } else if (loaded && (rw / iw < 0.70f || rh / ih < 0.70f)) {
-        if (lastCachedWidth != static_cast<int>(rw)) {
-            lastCachedWidth = static_cast<int>(rw);
+    if (loaded && (rw / iw < 1.0f || rh / ih < 1.0f)) {
+        if (lastCachedWidth != drawRect.width()) {
+            lastCachedWidth = drawRect.width();
             cachedPixmap = pixmap->scaled(drawRect.width(), drawRect.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         }
         p.drawPixmap(drawRect, cachedPixmap);

@@ -27,7 +27,7 @@ FolderTreeWidget::~FolderTreeWidget() {
 FolderTreeItem* FolderTreeWidget::createItem(FolderTreeItem* parentItem, File* file, QIcon icon) {
     removeLoadingTextItem(parentItem);
     auto item = new FolderTreeItem(parentItem, file);
-    item->setText(0, file->getName());
+    item->setText(0, file->getDisplayName());
     item->setIcon(0, icon);
     item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
     itemsByPath.insert(file->getPath(), item);

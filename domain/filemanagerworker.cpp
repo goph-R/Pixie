@@ -14,7 +14,7 @@ void FileManagerWorker::findFiles(QString folderPath) {
     bool foundFolders = false;
     foreach (auto entry, entries) {
         auto result = FoundFile();
-        result.name = entry.fileName();
+        result.name = entry.fileName() + (entry.isDir() ? "/" : "");
         result.folder = entry.isDir();
         result.extension = entry.suffix().toLower();
         result.folderPath = folderPath;
@@ -29,7 +29,7 @@ void FileManagerWorker::findFolders(QString folderPath) {
     if (entries.size()) {
         foreach (auto entry, entries) {
             auto result = FoundFolder();
-            result.name = entry.fileName();
+            result.name = entry.fileName() + "/";
             result.folderPath = folderPath;
             emit foundFolder(result);
         }

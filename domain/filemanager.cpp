@@ -57,6 +57,10 @@ void FileManager::findFolders(File* file) {
 }
 
 void FileManager::expandFolders(QString path) {
+    QFileInfo info(path);
+    if (!info.exists()) {
+        return;
+    }
     auto expandPath = path;
     if (expandPath.endsWith("/")) {
         expandPath = expandPath.left(expandPath.length() - 1);
@@ -114,6 +118,7 @@ void FileManager::foundFolder(FoundFolder foundFolder) {
 void FileManager::foundFile(FoundFile foundFile) {
     QString folderPath = foundFile.getFolderPath();
     QString path = folderPath + foundFile.getName();
+    qDebug() << path;
     File* file = nullptr;
     if (filesByPath.contains(path)) {
         file = filesByPath.value(path);

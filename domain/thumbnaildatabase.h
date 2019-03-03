@@ -20,6 +20,7 @@ public slots:
     void connect();
     void find(QString path);
     void save(QString path, QImage image, int format);
+    void remove(QString path);
 
 signals:
     void notFound(QString path);

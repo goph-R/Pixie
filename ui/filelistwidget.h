@@ -20,6 +20,7 @@ public:
     bool hasItem(QString path);
     FileListItem* getItem(QString path);
     void setErrorPixmap(QString path);
+    void clearPixmap(QString path);
     virtual void clear();
     void select(QString path);
     int countImages();
@@ -44,6 +45,7 @@ private:
     QPixmap filePixmap;
     QPixmap imagePixmap;
     QPixmap imageErrorPixmap;
+    QPixmap nullPixmap;
     QList<File*> getFiles();
 
     friend class FileListDelegate;

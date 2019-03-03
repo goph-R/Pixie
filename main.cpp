@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     if (argc > 1) {
         mainWindow.startWith(argv[1]);
-        viewWindow.setEscapeQuits(true);
+        viewWindow.setCloseQuits(true);
         viewWindow.show();
     } else {
         mainWindow.show();

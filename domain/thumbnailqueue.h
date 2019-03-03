@@ -17,7 +17,7 @@ class ThumbnailQueue : public QObject
 public:
     ThumbnailQueue(Config* config, FileManager* fileManager);
     ~ThumbnailQueue();
-    void add(File* file);
+    void add(File* file, bool useCache=true);
     void start();
     void clear();
 
@@ -26,16 +26,19 @@ public slots:
     void notFoundSlot(QString path);
     void doneSlot(QString path, QImage image, int format);
     void errorSlot(QString path);
-    void emptySlot();
+    void emptySlot(QString path);
 
 signals:    
-    void connectDatabase();
-    void find(QString path);
-    void save(QString path, QImage image, int format);
-    void done(QString path, QImage image);
-    void error(QString path);
+    void connectDatabaseSignal();
+    void findSignal(QString path);
+    void saveSignal(QString path, QImage image, int format);
+    void removeSignal(QString path);
+    void doneSignal(QString path, QImage image);
+    void errorSignal(QString path);
+    void emptySignal(QString path);
 
 private:
+    void createTask(File* file);
     void createDatabaseThread();
     QList<ThumbnailWorker*> queue;
     QThreadPool* threadPool;

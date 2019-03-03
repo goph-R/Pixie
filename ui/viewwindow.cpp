@@ -40,7 +40,7 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
 
     wasMaximized = false;
-    escapeQuits = false;
+    closeQuits = false;
 
     readSettings();
 }
@@ -48,8 +48,8 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
 ViewWindow::~ViewWindow() {
 }
 
-void ViewWindow::setEscapeQuits(bool value) {
-    escapeQuits = value;
+void ViewWindow::setCloseQuits(bool value) {
+    closeQuits = value;
 }
 
 void ViewWindow::createImageWorkerThread() {
@@ -92,7 +92,11 @@ void ViewWindow::wheelEvent(QWheelEvent* event) {
 }
 
 void ViewWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
-    showMainWindow();
+    if (closeQuits) {
+        mainWindow->exitApplication();
+    } else {
+        showMainWindow();
+    }
 }
 
 void ViewWindow::keyPressEvent(QKeyEvent* event) {
@@ -114,12 +118,11 @@ void ViewWindow::switchFit() {
 }
 
 void ViewWindow::escapePressed() {
-    if (escapeQuits) {
+    if (closeQuits) {
         mainWindow->exitApplication();
     } else {
         showMainWindow();
     }
-
 }
 
 void ViewWindow::leftPressed() {
@@ -148,24 +151,16 @@ void ViewWindow::plusPressed() {
     viewWidget->zoomIn();
 }
 
-void ViewWindow::setImage(File* file) {
+void ViewWindow::setImages(QString path, QStringList paths, bool changeSelection) {
+    this->changeSelection = changeSelection;
     viewWidget->setPixmap(nullptr);
-    fillImageList(file->getParent());
-    currentIndex = imageList.indexOf(file->getPath());
+    imageList = paths;
+    currentIndex = imageList.indexOf(path);
     loadCurrentImage();
 }
 
-void ViewWindow::fillImageList(File* parent) {
-    imageList.clear();
-    foreach (auto child, parent->getChildren()) {
-        if (child->isImage()) {
-            imageList.append(child->getPath());
-        }
-    }
-}
-
 void ViewWindow::showMainWindow() {
-    escapeQuits = false;
+    closeQuits = false;
     backFromFullscreen();
     if (isMaximized()) { // FIX: when back from fullscreen this never true
         mainWindow->showMaximized();
@@ -232,7 +227,9 @@ void ViewWindow::loadCurrentImage() {
     viewWidget->setPixmap(pixmap, false);
     imageWorker->setPathToLoad(path);
     emit loadImage(path);
-    fileListWidget->select(path);
+    if (changeSelection) {
+        fileListWidget->select(path);
+    }
 }
 
 void ViewWindow::imageLoaded(const QString path, const QRect rect, const QImage image) {

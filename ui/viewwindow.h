@@ -19,9 +19,9 @@ public:
     ViewWindow(MainWindow* mainWindow, QWidget* parent=nullptr);
     virtual ~ViewWindow() override;
     virtual QSize sizeHint() const override;
-    void setImage(File* file);
+    void setImages(QString path, QStringList paths, bool changeSelection);
     void exitApplication();
-    void setEscapeQuits(bool value);
+    void setCloseQuits(bool value);
 
 public slots:
     void showMainWindow();
@@ -52,7 +52,6 @@ private:
     void nextImage();
     void prevImage();
     void loadCurrentImage();
-    void fillImageList(File* parent);
     void goFullscreen();
     void backFromFullscreen();
     const QString getCurrentPath();
@@ -67,7 +66,8 @@ private:
     void createImageWorkerThread();
     ImageWorker* imageWorker;
     QThread imageWorkerThread;
-    bool escapeQuits;
+    bool closeQuits;
+    bool changeSelection;
 
 };
 

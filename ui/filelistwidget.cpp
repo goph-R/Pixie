@@ -17,9 +17,11 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
 
     delegate = new FileListDelegate(this);
     setItemDelegate(delegate);
-    setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+    //setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
     setViewMode(QListView::IconMode);
     setResizeMode(QListView::Adjust);
+    setMovement(QListView::Static);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
     setUniformItemSizes(true);
 
     new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(backspacePressedSlot()));
@@ -48,7 +50,7 @@ FileListItem* FileListWidget::createItem(File* file) {
         item->setPixmap(file->isImage() ? imagePixmap : filePixmap);
     }
     int thumbnailSize = config->getThumbnailSize();
-    item->setText(file->getName());
+    item->setText(file->getDisplayName());
     item->setData(Qt::UserRole, file->getPath());
     item->setSizeHint(QSize(thumbnailSize + 4, thumbnailSize + 37));
     addItem(item);
@@ -68,6 +70,14 @@ void FileListWidget::setErrorPixmap(QString path) {
     if (hasItem(path)) {
         auto item = getItem(path);
         item->setPixmap(imageErrorPixmap);
+        viewport()->update();
+    }
+}
+
+void FileListWidget::clearPixmap(QString path) {
+    if (hasItem(path)) {
+        auto item = getItem(path);
+        item->setPixmap(nullPixmap);
         viewport()->update();
     }
 }

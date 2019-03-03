@@ -118,7 +118,6 @@ void FileManager::foundFolder(FoundFolder foundFolder) {
 void FileManager::foundFile(FoundFile foundFile) {
     QString folderPath = foundFile.getFolderPath();
     QString path = folderPath + foundFile.getName();
-    qDebug() << path;
     File* file = nullptr;
     if (filesByPath.contains(path)) {
         file = filesByPath.value(path);

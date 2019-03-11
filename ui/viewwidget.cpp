@@ -22,6 +22,18 @@ ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
     setMouseTracking(true);
 }
 
+void ViewWidget::rotate(int angle) {
+    if (pixmap == nullptr) {
+        return;
+    }
+    QMatrix matrix;
+    QPixmap* temp = new QPixmap(pixmap->transformed(matrix.rotate(angle)));
+    delete pixmap;
+    pixmap = temp;
+    lastCachedWidth = 0;
+    update();
+}
+
 QPixmap* ViewWidget::getPixmap() {
     return pixmap;
 }

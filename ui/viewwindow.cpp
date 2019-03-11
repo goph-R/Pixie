@@ -263,30 +263,37 @@ void ViewWindow::showContextMenu(const QPoint &pos) {
 
     QAction copyToPathAction(&contextMenu);
     QAction copyToAction("Copy to ..", &contextMenu);
+    QAction rotateLeftAction("Rotate left", &contextMenu);
+    QAction rotateRightAction("Rotate right", &contextMenu);
+
+    connect(&copyToPathAction, SIGNAL(triggered()), this, SLOT(copyToLastTriggered()));
+    connect(&copyToAction, SIGNAL(triggered()), this, SLOT(copyToTriggered()));
+    connect(&rotateLeftAction, SIGNAL(triggered()), this, SLOT(rotateLeftTriggered()));
+    connect(&rotateRightAction, SIGNAL(triggered()), this, SLOT(rotateRightTriggered()));
 
     if (!lastCopyToPath.isEmpty()) {
         QFileInfo info(lastCopyToPath);
         copyToPathAction.setText("Copy to " + info.fileName());
-        connect(&copyToPathAction, SIGNAL(triggered()), this, SLOT(copyToLastClicked()));
         contextMenu.addAction(&copyToPathAction);
     }
-
-    connect(&copyToAction, SIGNAL(triggered()), this, SLOT(copyToClicked()));
     contextMenu.addAction(&copyToAction);
+    contextMenu.addSeparator();
+    contextMenu.addAction(&rotateLeftAction);
+    contextMenu.addAction(&rotateRightAction);
 
     contextMenu.exec(mapToGlobal(pos));
 }
 
-void ViewWindow::copyToClicked() {
+void ViewWindow::copyToLastTriggered() {
+    copyToPath(lastCopyToPath);
+}
+
+void ViewWindow::copyToTriggered() {
     QString path = QFileDialog::getExistingDirectory(this, tr("Copy to .."), lastCopyToPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (path.isEmpty()) {
         return;
     }
     copyToPath(path);
-}
-
-void ViewWindow::copyToLastClicked() {
-    copyToPath(lastCopyToPath);
 }
 
 void ViewWindow::copyToPath(QString path) {
@@ -296,4 +303,12 @@ void ViewWindow::copyToPath(QString path) {
     QFileInfo info(getCurrentPath());
     QFile::copy(getCurrentPath(), path + "/" + info.fileName());
     lastCopyToPath = path;
+}
+
+void ViewWindow::rotateLeftTriggered() {
+    viewWidget->rotate(-90);
+}
+
+void ViewWindow::rotateRightTriggered() {
+    viewWidget->rotate(90);
 }

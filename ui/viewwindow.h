@@ -37,8 +37,10 @@ public slots:
     void plusPressed();
     void minusPressed();
     void showContextMenu(const QPoint &pos);
-    void copyToClicked();
-    void copyToLastClicked();
+    void copyToTriggered();
+    void copyToLastTriggered();
+    void rotateLeftTriggered();
+    void rotateRightTriggered();
 
 signals:
     void loadImage(QString path);

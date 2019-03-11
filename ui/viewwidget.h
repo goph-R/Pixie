@@ -18,6 +18,7 @@ public:
     void zoomOut();
     void setLoaded();
     QPixmap* getPixmap();
+    void rotate(int angle);
 
 signals:
     void doubleClickedSignal();

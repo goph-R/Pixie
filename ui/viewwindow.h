@@ -36,6 +36,9 @@ public slots:
     void downPressed();
     void plusPressed();
     void minusPressed();
+    void showContextMenu(const QPoint &pos);
+    void copyToClicked();
+    void copyToLastClicked();
 
 signals:
     void loadImage(QString path);
@@ -55,6 +58,7 @@ private:
     void goFullscreen();
     void backFromFullscreen();
     const QString getCurrentPath();
+    void copyToPath(QString path);
     QThread workerThread;
     MainWindow* mainWindow;
     ViewWidget* viewWidget;
@@ -68,6 +72,7 @@ private:
     QThread imageWorkerThread;
     bool closeQuits;
     bool changeSelection;
+    QString lastCopyToPath;
 
 };
 

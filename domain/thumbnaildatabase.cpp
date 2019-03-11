@@ -38,7 +38,8 @@ void ThumbnailDatabase::find(QString path) {
     QImage image;
     query.prepare("SELECT format, image FROM thumbnail WHERE path = :path");
     query.bindValue(":path", path);
-    query.exec();
+    if (!query.exec()) {
+    }
     if (query.first()) {
         record = query.record();
         auto format = record.field("format").value().toInt();
@@ -63,7 +64,8 @@ void ThumbnailDatabase::save(QString path, QImage image, int format) {
     query.bindValue(":path", path);
     query.bindValue(":format", format);
     query.bindValue(":image", buffer.data());
-    query.exec();
+    if (!query.exec()) {
+    }
     buffer.close();
 }
 
@@ -74,6 +76,7 @@ void ThumbnailDatabase::remove(QString path) {
     QSqlQuery query;
     query.prepare("DELETE FROM thumbnail WHERE path = :path");
     query.bindValue(":path", path);
-    query.exec();
+    if (!query.exec()) {
+    }
 }
 

@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const char* startPath, QWidget *parent = nullptr);
     virtual ~MainWindow() override;
     virtual QSize sizeHint() const override;
     void addDrives();
@@ -74,6 +74,7 @@ private:
     ViewWindow* viewWindow;
     SettingsDialog* settingsDialog;
     QString filePathToExecute;
+    const char* startPath;
 };
 
 #endif // MAINWINDOW_H

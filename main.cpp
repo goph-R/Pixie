@@ -20,12 +20,16 @@ int main(int argc, char *argv[])
     qRegisterMetaType<FoundFile>("FoundFile");
     qRegisterMetaType<FoundFolder>("FoundFolder");
 
-    MainWindow mainWindow;
+    const char* startPath = nullptr;
+    if (argc > 1) {
+        startPath = argv[1];
+    }
+
+    MainWindow mainWindow(startPath);
     ViewWindow viewWindow(&mainWindow);
     mainWindow.setViewWindow(&viewWindow);
 
-    if (argc > 1) {
-        mainWindow.startWith(argv[1]);
+    if (startPath != nullptr) {
         viewWindow.setCloseQuits(true);
         viewWindow.show();
     } else {

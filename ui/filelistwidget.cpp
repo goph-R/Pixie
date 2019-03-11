@@ -5,6 +5,7 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QApplication>
+#include <QScrollBar>
 #include <QDebug>
 #include "domain/file.h"
 #include "domain/config.h"
@@ -17,7 +18,8 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
 
     delegate = new FileListDelegate(this);
     setItemDelegate(delegate);
-    //setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    verticalScrollBar()->setSingleStep(((config->getThumbnailSize() + 37) / 3)); // TODO
     setViewMode(QListView::IconMode);
     setResizeMode(QListView::Adjust);
     setMovement(QListView::Static);
@@ -91,6 +93,7 @@ void FileListWidget::select(QString path) {
     if (!hasItem(path)) {
         return;
     }
+    clearSelection();
     auto item = getItem(path);
     item->setSelected(true);
     QModelIndexList indices = selectionModel()->selectedIndexes();

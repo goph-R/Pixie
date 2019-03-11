@@ -15,6 +15,9 @@
 #include "ui/filelistwidget.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFileDialog>
+#include <QMenu>
 
 ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {    
     QSettings settings;
@@ -38,9 +41,11 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
 
     QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
+    connect(viewWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
 
     wasMaximized = false;
     closeQuits = false;
+    lastCopyToPath = QDir::homePath();
 
     readSettings();
 }
@@ -72,11 +77,13 @@ void ViewWindow::saveSettings() {
     QSettings settings;
     settings.setValue("viewWindowGeometry", saveGeometry());
     settings.setValue("viewWindowState", saveState());
+    settings.setValue("lastCopyToPath", lastCopyToPath);
 }
 
 void ViewWindow::readSettings() {
     QSettings settings;
     restoreState(settings.value("viewWindowState").toByteArray());
+    lastCopyToPath = settings.value("lastCopyToPath", lastCopyToPath).toString();
 }
 
 QSize ViewWindow::sizeHint() const {
@@ -251,3 +258,42 @@ void ViewWindow::imageDone(const QString path) {
     }
 }
 
+void ViewWindow::showContextMenu(const QPoint &pos) {
+    QMenu contextMenu(tr("Context menu"), this);
+
+    QAction copyToPathAction(&contextMenu);
+    QAction copyToAction("Copy to ..", &contextMenu);
+
+    if (!lastCopyToPath.isEmpty()) {
+        QFileInfo info(lastCopyToPath);
+        copyToPathAction.setText("Copy to " + info.fileName());
+        connect(&copyToPathAction, SIGNAL(triggered()), this, SLOT(copyToLastClicked()));
+        contextMenu.addAction(&copyToPathAction);
+    }
+
+    connect(&copyToAction, SIGNAL(triggered()), this, SLOT(copyToClicked()));
+    contextMenu.addAction(&copyToAction);
+
+    contextMenu.exec(mapToGlobal(pos));
+}
+
+void ViewWindow::copyToClicked() {
+    QString path = QFileDialog::getExistingDirectory(this, tr("Copy to .."), lastCopyToPath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (path.isEmpty()) {
+        return;
+    }
+    copyToPath(path);
+}
+
+void ViewWindow::copyToLastClicked() {
+    copyToPath(lastCopyToPath);
+}
+
+void ViewWindow::copyToPath(QString path) {
+    if (path.endsWith("/")) {
+        path = path.left(path.length() - 1);
+    }
+    QFileInfo info(getCurrentPath());
+    QFile::copy(getCurrentPath(), path + "/" + info.fileName());
+    lastCopyToPath = path;
+}

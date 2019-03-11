@@ -18,6 +18,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QShortcut>
+#include <QScrollBar>
 
 #include "domain/filemanager.h"
 #include "domain/config.h"
@@ -31,7 +32,9 @@
 #include "ui/viewwindow.h"
 #include "ui/settingsdialog.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(const char* startPath, QWidget *parent) : QMainWindow(parent) {
+
+    this->startPath = startPath;
 
     QSettings settings;
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
@@ -102,6 +105,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     new QShortcut(QKeySequence("Ctrl+V"), this, SLOT(pasteFiles()));
 
     readSettings();
+
+    if (startPath != nullptr) {
+        startWith(startPath);
+    }
 }
 
 MainWindow::~MainWindow() {
@@ -163,7 +170,7 @@ void MainWindow::readSettings() {
     QSettings settings;
     restoreState(settings.value("mainWindowState").toByteArray());
     QString lastFolderPath = settings.value("lastFolderPath", "").toString();
-    if (lastFolderPath != "") {
+    if (startPath == nullptr && lastFolderPath != "") {
         fileManager->expandFolders(lastFolderPath);
     }
 }

@@ -8,6 +8,7 @@
 #include <QDebug>
 
 ViewWidget::ViewWidget(QWidget* parent) : QWidget(parent) {
+    setContextMenuPolicy(Qt::CustomContextMenu);
     backgroundBrush = QBrush(QColor(24, 24, 24));
     fit = true;
     mouseDown = false;
@@ -57,20 +58,27 @@ void ViewWidget::setFit(bool value) {
 }
 
 void ViewWidget::mousePressEvent(QMouseEvent* event) {
-    mouseDown = true;
-    if (!fit) {
-        mouseDownPosition = event->pos() - translate;
+    if (event->buttons() & Qt::RightButton) {
+        return;
     }
+    setCursor(Qt::ClosedHandCursor);
+    mouseDown = true;
+    mouseDownPosition = event->pos() - translate;
+    update();
 }
 
 void ViewWidget::mouseMoveEvent(QMouseEvent* event) {
-    if (!fit && mouseDown) {
+    if (mouseDown) {
         translate = event->pos() - mouseDownPosition;
         update();
     }
 }
 
 void ViewWidget::mouseReleaseEvent(QMouseEvent* event __attribute__((unused))) {
+    if (event->buttons() & Qt::RightButton) {
+        return;
+    }
+    setCursor(Qt::ArrowCursor);
     mouseDown = false;
     update();
 }
@@ -127,7 +135,7 @@ void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
 
 
 void ViewWidget::calculateDrawSize() {
-    return fit ? calculateFittedDrawSize() : calculateZoomedDrawSize();
+    return fit && !mouseDown ? calculateFittedDrawSize() : calculateZoomedDrawSize();
 }
 
 void ViewWidget::calculateFittedDrawSize() {
@@ -161,6 +169,9 @@ void ViewWidget::calculateZoomedDrawSize() {
 }
 
 void ViewWidget::limitTranslate() {
+    if (fit && !mouseDown) {
+        return;
+    }
     auto limitX = (drawSize.width() - width()) / 2;
     auto limitY = (drawSize.height() - height()) / 2;
     if (drawSize.width() < width()) {
@@ -190,7 +201,7 @@ void ViewWidget::drawImage(QPainter &p) {
         return;
     }
     QRect drawRect = QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, drawSize, rect());
-    if (!fit) {
+    if (!fit || mouseDown) {
         drawRect.setTopLeft(drawRect.topLeft() + translate);
         drawRect.setBottomRight(drawRect.bottomRight() + translate);
     }

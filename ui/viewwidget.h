@@ -53,6 +53,7 @@ private:
     int lastCachedWidth;
     bool fit;
     bool loaded;
+
 };
 
 #endif // VIEWWIDGET_H

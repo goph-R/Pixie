@@ -54,6 +54,7 @@ MainWindow::MainWindow(const char* startPath, QWidget *parent) : QMainWindow(par
     dockWidget = new QDockWidget("Folders");
     dockWidget->setObjectName("foldersDockWidget");
     dockWidget->setWidget(folderTreeWidget);
+    dockWidget->setFeatures(QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     fileListWidget = new FileListWidget(config);
     pathEdit = new QLineEdit();
@@ -76,9 +77,9 @@ MainWindow::MainWindow(const char* startPath, QWidget *parent) : QMainWindow(par
     auto quitAction = new QAction("&Quit", fileMenu);
     fileMenu->addAction(quitAction);
 
-    auto toolsMenu = menu->addMenu("&Tools");
-    auto settingsAction = new QAction("&Settings", toolsMenu);
-    toolsMenu->addAction(settingsAction);
+//    auto toolsMenu = menu->addMenu("&Tools");
+//    auto settingsAction = new QAction("&Settings", toolsMenu);
+//    toolsMenu->addAction(settingsAction);
 
     auto helpMenu = menu->addMenu("&Help");
     auto aboutAction = new QAction("&About", helpMenu);
@@ -98,7 +99,7 @@ MainWindow::MainWindow(const char* startPath, QWidget *parent) : QMainWindow(par
     QObject::connect(fileListWidget, SIGNAL(backspacePressed()), this, SLOT(backspacePressed()));
     QObject::connect(fileListWidget, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
     QObject::connect(fileListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileSelectionChanged()));
-    QObject::connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
+    //QObject::connect(settingsAction, SIGNAL(triggered()), this, SLOT(showSettings()));
     QObject::connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAbout()));
     QObject::connect(quitAction, SIGNAL(triggered()), this, SLOT(quitSlot()));
 

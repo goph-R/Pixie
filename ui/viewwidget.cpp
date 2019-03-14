@@ -50,7 +50,7 @@ void ViewWidget::setPixmap(QPixmap* p, bool u) {
         delete pixmap;
     }
     pixmap = p;
-    if (pixmap != nullptr && u) {
+    if (pixmap != nullptr && u) {        
         update();
     }
 }

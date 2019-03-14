@@ -108,35 +108,29 @@ MainWindow::MainWindow(const char* startPath, QWidget *parent) : QMainWindow(par
 
     if (startPath != nullptr) {
         startWith(startPath);
+        setUiEnabled(false);
     }
 }
 
 MainWindow::~MainWindow() {
 }
 
+QSize MainWindow::sizeHint() const {
+    return QSize(1280, 720);
+}
+
 void MainWindow::setViewWindow(ViewWindow* value) {
     viewWindow = value;
 }
 
-void MainWindow::startWith(const char* p) {
-    QString path = p;
-    path.replace("\\", "/");
-    path = path.replace(0, 1, path[0].toUpper());
-    QFileInfo info(path);
-    if (!info.isDir()) {
-        filePathToExecute = path;
-        path = info.absoluteDir().path() + "/";
-    }
-    fileManager->expandFolders(path);
-}
-
 void MainWindow::expandFoldersDone(QString path) {
+    setUiEnabled(true);
     auto file = fileManager->getFileByPath(path);
     if (file == nullptr) {
         return;
     }
     folderTreeWidget->expandTo(file);
-    folderTreeWidget->select(file);
+    folderTreeWidget->select(file);    
 }
 
 void MainWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
@@ -157,24 +151,6 @@ void MainWindow::exitApplication() {
     QApplication::quit();
 }
 
-void MainWindow::saveSettings() {
-    QSettings settings;
-    settings.setValue("mainWindowGeometry", saveGeometry());
-    settings.setValue("mainWindowState", saveState());
-    if (currentFolder != nullptr) {
-        settings.setValue("lastFolderPath", currentFolder->getPath());
-    }
-}
-
-void MainWindow::readSettings() {
-    QSettings settings;
-    restoreState(settings.value("mainWindowState").toByteArray());
-    QString lastFolderPath = settings.value("lastFolderPath", "").toString();
-    if (startPath == nullptr && lastFolderPath != "") {
-        fileManager->expandFolders(lastFolderPath);
-    }
-}
-
 void MainWindow::showSettings() {
     settingsDialog->exec();
 }
@@ -189,22 +165,6 @@ FileManager* MainWindow::getFileManager() {
 
 FileListWidget* MainWindow::getFileListWidget() {
     return fileListWidget;
-}
-
-void MainWindow::resizeEvent(QResizeEvent *event __attribute__((unused))) {
-}
-
-void MainWindow::addDrives() {
-    auto icon = QIcon(":/icons/hard-drive.png");
-    auto root = fileManager->getRoot();
-    foreach (auto file, root->getChildren()) {
-        auto item = folderTreeWidget->createItem(nullptr, file, icon);
-        folderTreeWidget->addTopLevelItem(item);
-    }
-}
-
-QSize MainWindow::sizeHint() const {
-    return QSize(1280, 720);
 }
 
 void MainWindow::folderExpanded(QTreeWidgetItem* item) {
@@ -236,29 +196,6 @@ void MainWindow::fileSelectionChanged() {
     auto fileItem = static_cast<FileListItem*>(selectedItems.at(0));
     auto file = fileItem->getFile();
     setPathEditTo(file->getPath());
-}
-
-void MainWindow::setPathEditTo(QString path) {
-    if (config->useBackslash()) {
-        path = path.replace("/", "\\");
-    }
-    pathEdit->setText(path);
-    QString winTitle = "Pixie - " + path;
-    setWindowTitle(winTitle);
-    viewWindow->setWindowTitle(winTitle);
-}
-
-void MainWindow::addFile(File* file) {
-    if (file->getParent()->getPath() != currentFolder->getPath()) {
-        return;
-    }
-    if (fileListWidget->hasItem(file->getPath())) {
-        return;
-    }
-    fileListWidget->createItem(file);
-    if (file->isFolder() || file->isImage()) {
-        thumbnailQueue->add(file);
-    }
 }
 
 void MainWindow::findFilesDone() {
@@ -297,6 +234,105 @@ void MainWindow::thumbnailError(QString path) {
 
 void MainWindow::thumbnailEmpty(QString path) {
     fileListWidget->clearPixmap(path);
+}
+
+void MainWindow::backspacePressed() {
+    auto parent = currentFolder->getParent();
+    if (parent->getPath() != "") {
+        fileToSelect = currentFolder;
+        folderTreeWidget->clearSelection();
+        folderTreeWidget->select(parent);
+    }
+}
+
+void MainWindow::enterPressed() {
+    auto items = fileListWidget->selectedItems();
+    if (items.size() == 1) {
+        execute(items.at(0));
+    } else {
+        showImage(items);
+    }
+}
+
+void MainWindow::pasteFiles() {
+    auto clipboard = QApplication::clipboard();
+    auto mimeData = clipboard->mimeData();
+    if (!mimeData->hasUrls()) {
+        return;
+    }
+    foreach (auto url, mimeData->urls()) {
+        if (url.isLocalFile()) {
+            pasteFile(url.toLocalFile());
+        }
+    }
+    clipboard->clear();
+    fileManager->findFiles(currentFolder);
+}
+
+void MainWindow::setUiEnabled(bool value) {
+    setEnabled(value);
+}
+
+void MainWindow::startWith(const char* p) {
+    QString path = p;
+    path.replace("\\", "/");
+    path = path.replace(0, 1, path[0].toUpper());
+    QFileInfo info(path);
+    if (!info.isDir()) {
+        filePathToExecute = path;
+        path = info.absoluteDir().path() + "/";
+    }
+    fileManager->expandFolders(path);
+}
+
+void MainWindow::readSettings() {
+    QSettings settings;
+    restoreState(settings.value("mainWindowState").toByteArray());
+    QString lastFolderPath = settings.value("lastFolderPath", "").toString();
+    if (startPath == nullptr && lastFolderPath != "") {
+        fileManager->expandFolders(lastFolderPath);
+    }
+}
+
+void MainWindow::saveSettings() {
+    QSettings settings;
+    settings.setValue("mainWindowGeometry", saveGeometry());
+    settings.setValue("mainWindowState", saveState());
+    if (currentFolder != nullptr) {
+        settings.setValue("lastFolderPath", currentFolder->getPath());
+    }
+}
+
+void MainWindow::addDrives() {
+    auto icon = QIcon(":/icons/hard-drive.png");
+    auto root = fileManager->getRoot();
+    foreach (auto file, root->getChildren()) {
+        auto item = folderTreeWidget->createItem(nullptr, file, icon);
+        folderTreeWidget->addTopLevelItem(item);
+    }
+}
+
+void MainWindow::setPathEditTo(QString path) {
+    if (config->useBackslash()) {
+        path = path.replace("/", "\\");
+    }
+    pathEdit->setText(path);
+    QString winTitle = "Pixie - " + path;
+    setWindowTitle(winTitle);
+    viewWindow->setWindowTitle(winTitle);
+}
+
+void MainWindow::addFile(File* file) {
+    if (file->getParent()->getPath() != currentFolder->getPath()) {
+        return;
+    }
+    if (fileListWidget->hasItem(file->getPath())) {
+        return;
+    }
+    fileListWidget->createItem(file);
+    if (file->isFolder() || file->isImage()) {
+        thumbnailQueue->add(file);
+    }
 }
 
 void MainWindow::enterFolder(File* file) {
@@ -354,39 +390,6 @@ void MainWindow::execute(QListWidgetItem* item) {
         items.append(item);
         showImage(items);
     }
-}
-
-void MainWindow::backspacePressed() {
-    auto parent = currentFolder->getParent();
-    if (parent->getPath() != "") {
-        fileToSelect = currentFolder;
-        folderTreeWidget->clearSelection();
-        folderTreeWidget->select(parent);
-    }
-}
-
-void MainWindow::enterPressed() {
-    auto items = fileListWidget->selectedItems();
-    if (items.size() == 1) {
-        execute(items.at(0));
-    } else {
-        showImage(items);
-    }
-}
-
-void MainWindow::pasteFiles() {
-    auto clipboard = QApplication::clipboard();
-    auto mimeData = clipboard->mimeData();
-    if (!mimeData->hasUrls()) {
-        return;
-    }
-    foreach (auto url, mimeData->urls()) {
-        if (url.isLocalFile()) {
-            pasteFile(url.toLocalFile());
-        }
-    }
-    clipboard->clear();
-    fileManager->findFiles(currentFolder);
 }
 
 void MainWindow::pasteFile(QString srcPath) {

@@ -52,8 +52,11 @@ protected:
     virtual void changeEvent(QEvent* event) override;
 
 private:
-    void saveSettings();
+    void createImageWorkerThread();
+    void createViewWidget();
+    void createShortcuts();
     void readSettings();
+    void saveSettings();
     void nextImage();
     void prevImage();
     void loadCurrentImage();
@@ -61,20 +64,18 @@ private:
     void backFromFullscreen();
     const QString getCurrentPath();
     void copyToPath(QString path);
-    QThread workerThread;
+    QThread imageWorkerThread;
+    QStringList imageList;
+    QImage emptyImage;
+    QString lastCopyToPath;
     MainWindow* mainWindow;
     ViewWidget* viewWidget;
-    QStringList imageList;
+    FileListWidget* fileListWidget;
+    ImageWorker* imageWorker;
     int currentIndex;
     bool wasMaximized;
-    FileListWidget* fileListWidget;
-    QImage emptyImage;
-    void createImageWorkerThread();
-    ImageWorker* imageWorker;
-    QThread imageWorkerThread;
     bool closeQuits;
     bool changeSelection;
-    QString lastCopyToPath;
 
 };
 

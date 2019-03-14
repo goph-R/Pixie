@@ -10,6 +10,7 @@ class ViewWidget : public QWidget
 public:
     ViewWidget(QWidget* parent=nullptr);
     void setPixmap(QPixmap* pixmap, bool update=true);
+    QPixmap* getPixmap();
     bool isFit();
     void setFit(bool value);
     void translateUp();
@@ -17,7 +18,6 @@ public:
     void zoomIn();
     void zoomOut();
     void setLoaded();
-    QPixmap* getPixmap();
     void rotate(int angle);
 
 signals:
@@ -45,13 +45,13 @@ private:
     QBrush backgroundBrush;
     QPixmap* pixmap;
     QPixmap cachedPixmap;
-    int lastCachedWidth;
-    bool fit;
+    QPoint translate;
     bool mouseDown;
     QPoint mouseDownPosition;
-    QPoint translate;
-    int zoomLevel;
     QList<float> zoomLevels;
+    int zoomLevel;
+    int lastCachedWidth;
+    bool fit;
     bool loaded;
 };
 

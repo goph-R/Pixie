@@ -25,7 +25,6 @@ public:
     MainWindow(const char* startPath, QWidget *parent = nullptr);
     virtual ~MainWindow() override;
     virtual QSize sizeHint() const override;
-    void addDrives();
     virtual void closeEvent(QCloseEvent* event) override;
     void setViewWindow(ViewWindow* value);
     FileManager* getFileManager();
@@ -51,10 +50,8 @@ public slots:
     void pasteFiles();
     void execute(QListWidgetItem* item);
 
-protected:
-    virtual void resizeEvent(QResizeEvent *event) override;
-
 private:    
+    void addDrives();
     void enterFolder(File* file);
     void showImage(QList<QListWidgetItem*> items);
     void setPathEditTo(QString path);
@@ -62,6 +59,7 @@ private:
     void saveSettings();
     void pasteFile(QString srcPath);
     QString getDisplayPath(QString path);
+    void setUiEnabled(bool value);
     Config* config;
     FileManager* fileManager;
     ThumbnailQueue* thumbnailQueue;

@@ -69,6 +69,44 @@ void ViewWidget::setFit(bool value) {
     update();
 }
 
+void ViewWidget::translateDown() {
+    if (fit) {
+        return;
+    }
+    translate.setY(translate.y() - 40);
+    update();
+}
+
+void ViewWidget::translateUp() {
+    if (fit) {
+        return;
+    }
+    translate.setY(translate.y() + 40);
+    update();
+}
+
+void  ViewWidget::zoomIn() {
+    if (fit) {
+        return;
+    }
+    zoomLevel++;
+    if (zoomLevel >= zoomLevels.size()) {
+        zoomLevel = zoomLevels.size() - 1;
+    }
+    update();
+}
+
+void ViewWidget::zoomOut() {
+    if (fit) {
+        return;
+    }
+    zoomLevel--;
+    if (zoomLevel < 0) {
+        zoomLevel = 0;
+    }
+    update();
+}
+
 void ViewWidget::mousePressEvent(QMouseEvent* event) {
     if (event->buttons() & Qt::RightButton) {
         return;
@@ -98,45 +136,6 @@ void ViewWidget::mouseReleaseEvent(QMouseEvent* event __attribute__((unused))) {
 void ViewWidget::mouseDoubleClickEvent(QMouseEvent* event __attribute__((unused))) {
     emit doubleClickedSignal();
 }
-
-void ViewWidget::translateDown() {
-    if (!fit) {
-        return;
-    }
-    translate.setY(translate.y() - 40);
-    update();
-}
-
-void ViewWidget::translateUp() {
-    if (!fit) {
-        return;
-    }
-    translate.setY(translate.y() + 40);
-    update();
-}
-
-void  ViewWidget::zoomIn() {
-    if (fit) {
-        return;
-    }
-    zoomLevel++;
-    if (zoomLevel >= zoomLevels.size()) {
-        zoomLevel = zoomLevels.size() - 1;
-    }
-    update();
-}
-
-void ViewWidget::zoomOut() {
-    if (fit) {
-        return;
-    }
-    zoomLevel--;
-    if (zoomLevel < 0) {
-        zoomLevel = 0;
-    }
-    update();
-}
-
 void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     calculateDrawSize();
     limitTranslate();
@@ -144,7 +143,6 @@ void ViewWidget::paintEvent(QPaintEvent *event __attribute__((unused))) {
     drawBackground(p);
     drawImage(p);
 }
-
 
 void ViewWidget::calculateDrawSize() {
     return fit && !mouseDown ? calculateFittedDrawSize() : calculateZoomedDrawSize();

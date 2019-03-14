@@ -20,32 +20,17 @@
 #include <QMenu>
 
 ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {    
+    this->mainWindow = mainWindow;
+    wasMaximized = false;
+    closeQuits = false;
+    lastCopyToPath = QDir::homePath();
+
     QSettings settings;
     restoreGeometry(settings.value("viewWindowGeometry").toByteArray());
 
     createImageWorkerThread();
-
-    this->mainWindow = mainWindow;
-    fileListWidget = mainWindow->getFileListWidget();
-    viewWidget = new ViewWidget();
-    setCentralWidget(viewWidget);
-
-    new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
-    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
-    new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
-    new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(leftPressed()));
-    new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(rightPressed()));
-    new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(upPressed()));
-    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(downPressed()));
-    new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(plusPressed()));
-    new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
-
-    QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
-    connect(viewWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
-
-    wasMaximized = false;
-    closeQuits = false;
-    lastCopyToPath = QDir::homePath();
+    createViewWidget();
+    createShortcuts();
 
     readSettings();
 }
@@ -53,18 +38,12 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
 ViewWindow::~ViewWindow() {
 }
 
-void ViewWindow::setCloseQuits(bool value) {
-    closeQuits = value;
+QSize ViewWindow::sizeHint() const {
+    return QSize(1280, 720);
 }
 
-void ViewWindow::createImageWorkerThread() {
-    imageWorker = new ImageWorker();
-    imageWorker->moveToThread(&imageWorkerThread);
-    QObject::connect(this, SIGNAL(loadImage(QString)), imageWorker, SLOT(load(QString)));
-    QObject::connect(imageWorker, SIGNAL(loaded(const QString, const QRect, const QImage)), this, SLOT(imageLoaded(const QString, const QRect, const QImage)));
-    QObject::connect(imageWorker, SIGNAL(done(const QString)), this, SLOT(imageDone(const QString)));
-    QObject::connect(&imageWorkerThread, SIGNAL(finished()), imageWorker, SLOT(deleteLater()));
-    imageWorkerThread.start();
+void ViewWindow::setCloseQuits(bool value) {
+    closeQuits = value;
 }
 
 void ViewWindow::exitApplication() {
@@ -73,21 +52,12 @@ void ViewWindow::exitApplication() {
     imageWorkerThread.wait();
 }
 
-void ViewWindow::saveSettings() {
-    QSettings settings;
-    settings.setValue("viewWindowGeometry", saveGeometry());
-    settings.setValue("viewWindowState", saveState());
-    settings.setValue("lastCopyToPath", lastCopyToPath);
-}
-
-void ViewWindow::readSettings() {
-    QSettings settings;
-    restoreState(settings.value("viewWindowState").toByteArray());
-    lastCopyToPath = settings.value("lastCopyToPath", lastCopyToPath).toString();
-}
-
-QSize ViewWindow::sizeHint() const {
-    return QSize(1280, 720);
+void ViewWindow::setImages(QString path, QStringList paths, bool changeSelection) {
+    this->changeSelection = changeSelection;
+    viewWidget->setPixmap(nullptr);
+    imageList = paths;
+    currentIndex = imageList.indexOf(path);
+    loadCurrentImage();
 }
 
 void ViewWindow::wheelEvent(QWheelEvent* event) {
@@ -118,6 +88,51 @@ void ViewWindow::changeEvent(QEvent *event) {
         wasMaximized = stateChangeEvent->oldState() & Qt::WindowMaximized;
     }
     QMainWindow::changeEvent(event);
+}
+
+void ViewWindow::createViewWidget() {
+    fileListWidget = mainWindow->getFileListWidget();
+    viewWidget = new ViewWidget();
+    setCentralWidget(viewWidget);
+    QObject::connect(viewWidget, SIGNAL(doubleClickedSignal()), this, SLOT(showMainWindow()));
+    QObject::connect(viewWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
+
+}
+
+void ViewWindow::createShortcuts() {
+    new QShortcut(QKeySequence("*"), this, SLOT(switchFit()));
+    new QShortcut(QKeySequence("0"), this, SLOT(switchFit()));
+    new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(escapePressed()));
+    new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(switchFullscreen()));
+    new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(leftPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(rightPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(upPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(downPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(plusPressed()));
+    new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(minusPressed()));
+}
+
+void ViewWindow::createImageWorkerThread() {
+    imageWorker = new ImageWorker();
+    imageWorker->moveToThread(&imageWorkerThread);
+    QObject::connect(this, SIGNAL(loadImage(QString)), imageWorker, SLOT(load(QString)));
+    QObject::connect(imageWorker, SIGNAL(loaded(const QString, const QRect, const QImage)), this, SLOT(imageLoaded(const QString, const QRect, const QImage)));
+    QObject::connect(imageWorker, SIGNAL(done(const QString)), this, SLOT(imageDone(const QString)));
+    QObject::connect(&imageWorkerThread, SIGNAL(finished()), imageWorker, SLOT(deleteLater()));
+    imageWorkerThread.start();
+}
+
+void ViewWindow::readSettings() {
+    QSettings settings;
+    restoreState(settings.value("viewWindowState").toByteArray());
+    lastCopyToPath = settings.value("lastCopyToPath", lastCopyToPath).toString();
+}
+
+void ViewWindow::saveSettings() {
+    QSettings settings;
+    settings.setValue("viewWindowGeometry", saveGeometry());
+    settings.setValue("viewWindowState", saveState());
+    settings.setValue("lastCopyToPath", lastCopyToPath);
 }
 
 void ViewWindow::switchFit() {
@@ -156,14 +171,6 @@ void ViewWindow::minusPressed() {
 
 void ViewWindow::plusPressed() {
     viewWidget->zoomIn();
-}
-
-void ViewWindow::setImages(QString path, QStringList paths, bool changeSelection) {
-    this->changeSelection = changeSelection;
-    viewWidget->setPixmap(nullptr);
-    imageList = paths;
-    currentIndex = imageList.indexOf(path);
-    loadCurrentImage();
 }
 
 void ViewWindow::showMainWindow() {
@@ -296,6 +303,14 @@ void ViewWindow::copyToTriggered() {
     copyToPath(path);
 }
 
+void ViewWindow::rotateLeftTriggered() {
+    viewWidget->rotate(-90);
+}
+
+void ViewWindow::rotateRightTriggered() {
+    viewWidget->rotate(90);
+}
+
 void ViewWindow::copyToPath(QString path) {
     if (path.endsWith("/")) {
         path = path.left(path.length() - 1);
@@ -303,12 +318,4 @@ void ViewWindow::copyToPath(QString path) {
     QFileInfo info(getCurrentPath());
     QFile::copy(getCurrentPath(), path + "/" + info.fileName());
     lastCopyToPath = path;
-}
-
-void ViewWindow::rotateLeftTriggered() {
-    viewWidget->rotate(-90);
-}
-
-void ViewWindow::rotateRightTriggered() {
-    viewWidget->rotate(90);
 }

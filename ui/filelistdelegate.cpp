@@ -45,8 +45,12 @@ void FileListDelegate::paint(QPainter *p, const QStyleOptionViewItem &option, co
     }
 
     // draw text
+    QString text = index.data().toString();
+    auto font = p->font();
+    QFontMetrics fontMetrics(font);
+    auto elidedText = fontMetrics.elidedText(text, Qt::ElideMiddle, textRect.width());
     p->setPen(textPen);
-    p->drawText(textRect, Qt::AlignCenter, index.data().toString());
+    p->drawText(textRect, Qt::AlignCenter, elidedText);
 }
 
 void FileListDelegate::drawPixmap(QPainter *p, QPixmap &pixmap, QRect &bgRect, bool border) const {

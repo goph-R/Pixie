@@ -137,7 +137,7 @@ int FileListWidget::countImages() {
 int FileListWidget::countFolders() {
     int result = 0;
     foreach (auto file, getFiles()) {
-        if (file->isFolder()) {
+        if (file->isFolder() && !file->isDotDot()) {
             ++result;
         }
     }

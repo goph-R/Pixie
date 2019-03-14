@@ -12,12 +12,14 @@ FileManager::FileManager(Config* config) : QObject() {
     createWorkerThread();
     createRoot();
     findDrives();
+    dotDotFile = new File(nullptr, "..", true);
 }
 
 FileManager::~FileManager() {
     workerThread.quit();
     workerThread.wait();
     delete root;
+    delete dotDotFile;
 }
 
 void FileManager::createWorkerThread() {
@@ -88,8 +90,11 @@ void FileManager::expandFoldersDoneSlot(QString path) {
     emit expandFoldersDone(path);
 }
 
-void FileManager::findFiles(File* file) {
+void FileManager::findFiles(File* file, bool addDotDotFolder) {
     emit findFilesSignal(file->getPath());
+    if (addDotDotFolder) {
+        emit fileAdded(dotDotFile);
+    }
 }
 
 void FileManager::folderEmptySlot(QString folderPath) {

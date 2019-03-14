@@ -35,6 +35,7 @@ void FileListWidget::createPixmaps() {
     filePixmap = createPixmap(":/icons/file-big.png");
     imagePixmap = createPixmap(":/icons/image-big.png");
     imageErrorPixmap = createPixmap(":/icons/image-error-big.png");
+    backPixmap = createPixmap(":/icons/back-big.png");
 }
 
 QPixmap FileListWidget::createPixmap(QString path) {
@@ -154,7 +155,9 @@ void FileListWidget::copySelection() {
     foreach (auto item, items) {
         auto fileItem = static_cast<FileListItem*>(item);
         auto file = fileItem->getFile();
-        urls.append(QUrl::fromLocalFile(file->getPath()));
+        if (!file->isDotDot()) {
+            urls.append(QUrl::fromLocalFile(file->getPath()));
+        }
     }
     mimeData->setUrls(urls);
     clipboard->setMimeData(mimeData);

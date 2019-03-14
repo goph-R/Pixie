@@ -10,7 +10,7 @@ FileManagerWorker::FileManagerWorker() : QObject() {
 }
 
 void FileManagerWorker::findFiles(QString folderPath) {
-    auto entries = findEntries(folderPath, QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+    auto entries = findEntries(folderPath, QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     bool foundFolders = false;
     foreach (auto entry, entries) {
         auto result = FoundFile();

@@ -21,6 +21,7 @@ public:
     bool isImage();
     int getWidth();
     int getHeight();
+    bool isDotDot();
 
 private:
     File* parent;

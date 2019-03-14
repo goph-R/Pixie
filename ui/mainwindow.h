@@ -60,6 +60,8 @@ private:
     void pasteFile(QString srcPath);
     QString getDisplayPath(QString path);
     void setUiEnabled(bool value);
+    void findFilesInCurrentFolder();
+    void goToParentFolder();
     Config* config;
     FileManager* fileManager;
     ThumbnailQueue* thumbnailQueue;

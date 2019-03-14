@@ -46,6 +46,7 @@ private:
     QPixmap imagePixmap;
     QPixmap imageErrorPixmap;
     QPixmap nullPixmap;
+    QPixmap backPixmap;
     QList<File*> getFiles();
 
     friend class FileListDelegate;

@@ -185,7 +185,12 @@ void MainWindow::folderSelectionChanged() {
     fileListWidget->clear();
     currentFolder = folderItem->getFile();
     setPathEditTo(currentFolder->getPath());
-    fileManager->findFiles(currentFolder);
+    findFilesInCurrentFolder();
+}
+
+void MainWindow::findFilesInCurrentFolder() {
+    bool addDotDotFolder = currentFolder->getParent()->getName() != "";
+    fileManager->findFiles(currentFolder, addDotDotFolder);
 }
 
 void MainWindow::fileSelectionChanged() {
@@ -237,6 +242,10 @@ void MainWindow::thumbnailEmpty(QString path) {
 }
 
 void MainWindow::backspacePressed() {
+    goToParentFolder();
+}
+
+void MainWindow::goToParentFolder() {
     auto parent = currentFolder->getParent();
     if (parent->getPath() != "") {
         fileToSelect = currentFolder;
@@ -266,7 +275,7 @@ void MainWindow::pasteFiles() {
         }
     }
     clipboard->clear();
-    fileManager->findFiles(currentFolder);
+    findFilesInCurrentFolder();
 }
 
 void MainWindow::setUiEnabled(bool value) {
@@ -323,22 +332,26 @@ void MainWindow::setPathEditTo(QString path) {
 }
 
 void MainWindow::addFile(File* file) {
-    if (file->getParent()->getPath() != currentFolder->getPath()) {
+    if (file->getParent() != nullptr && file->getParent()->getPath() != currentFolder->getPath()) {
         return;
     }
     if (fileListWidget->hasItem(file->getPath())) {
         return;
     }
     fileListWidget->createItem(file);
-    if (file->isFolder() || file->isImage()) {
+    if (!file->isDotDot() && (file->isFolder() || file->isImage())) {
         thumbnailQueue->add(file);
     }
 }
 
 void MainWindow::enterFolder(File* file) {
-    folderTreeWidget->clearSelection();
-    folderTreeWidget->expandTo(file);
-    folderTreeWidget->select(file);
+    if (file->isDotDot()) {
+        goToParentFolder();
+    } else {
+        folderTreeWidget->clearSelection();
+        folderTreeWidget->expandTo(file);
+        folderTreeWidget->select(file);
+    }
 }
 
 void MainWindow::showImage(QList<QListWidgetItem*> items) {

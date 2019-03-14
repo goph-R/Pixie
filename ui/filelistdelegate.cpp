@@ -29,7 +29,11 @@ void FileListDelegate::paint(QPainter *p, const QStyleOptionViewItem &option, co
 
     // draw icon
     if (file->isFolder()) {
-        drawPixmap(p, fileListWidget->folderPixmap, bgRect, false);
+        if (file->isDotDot()) {
+            drawPixmap(p, fileListWidget->backPixmap, bgRect, false);
+        } else {
+            drawPixmap(p, fileListWidget->folderPixmap, bgRect, false);
+        }
     } else if (file->isImage()) {
         p->setBrush(backgroundBrush);
         p->drawRect(bgRect);

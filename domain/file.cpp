@@ -22,6 +22,10 @@ File::~File() {
     removeChildren();
 }
 
+bool File::isDotDot() {
+    return name == "..";
+}
+
 QString File::getPath() {
     return path;
 }
@@ -31,7 +35,7 @@ QString File::getName() {
 }
 
 QString File::getDisplayName() {
-    if (folder) {
+    if (folder && name != "..") {
         return name.left(name.length() - 1); // remove trailing slash
     } else {
         return name;

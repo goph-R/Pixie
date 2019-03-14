@@ -22,7 +22,7 @@ public:
     File* getRoot();
     void findFolders(File* file);
     void expandFolders(QString path);
-    void findFiles(File* file);
+    void findFiles(File* file, bool addDotDotFolder);
     File* getFileByPath(QString path);
     void loadImage(QString path);
 
@@ -52,6 +52,7 @@ private:
     void createWorkerThread();
     void createRoot();
     File* createEntry(QString folderPath, QString name, bool folder);
+    File* dotDotFile;
 };
 
 #endif // FILEMANAGER_H

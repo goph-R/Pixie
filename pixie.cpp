@@ -72,6 +72,7 @@ ThumbnailQueue* Pixie::getThumbnailQueue() {
 }
 
 void Pixie::exit() {
+    QThreadPool::globalInstance()->waitForDone();
     mainWindow->exit();
     viewWindow->exit();
 
@@ -80,8 +81,6 @@ void Pixie::exit() {
     delete thumbnailQueue;
     delete fileManager;
     delete config;
-
-    QThreadPool::globalInstance()->waitForDone();
 
     QApplication::quit();
 }

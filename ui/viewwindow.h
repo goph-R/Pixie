@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QThread>
+#include "pixie.h"
 
 class File;
 class ViewWidget;
@@ -16,11 +17,12 @@ class ViewWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    ViewWindow(MainWindow* mainWindow, QWidget* parent=nullptr);
+    ViewWindow(Pixie* pixie);
     virtual ~ViewWindow() override;
+    void create();
     virtual QSize sizeHint() const override;
     void setImages(QString path, QStringList paths, bool changeSelection);
-    void exitApplication();
+    void exit();
     void setCloseQuits(bool value);
 
 public slots:
@@ -53,7 +55,7 @@ protected:
 
 private:
     void createImageWorkerThread();
-    void createViewWidget();
+    void createUi();
     void createShortcuts();
     void readSettings();
     void saveSettings();
@@ -64,6 +66,7 @@ private:
     void backFromFullscreen();
     const QString getCurrentPath();
     void copyToPath(QString path);
+    Pixie* pixie;
     QThread imageWorkerThread;
     QStringList imageList;
     QImage emptyImage;

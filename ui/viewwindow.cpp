@@ -19,8 +19,16 @@
 #include <QFileDialog>
 #include <QMenu>
 
-ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(parent) {    
-    this->mainWindow = mainWindow;
+ViewWindow::ViewWindow(Pixie* pixie) : QMainWindow(nullptr) {
+    this->pixie = pixie;
+}
+
+ViewWindow::~ViewWindow() {
+
+}
+
+void ViewWindow::create() {
+    mainWindow = pixie->getMainWindow();
     wasMaximized = false;
     closeQuits = false;
     lastCopyToPath = QDir::homePath();
@@ -29,13 +37,10 @@ ViewWindow::ViewWindow(MainWindow *mainWindow, QWidget* parent) : QMainWindow(pa
     restoreGeometry(settings.value("viewWindowGeometry").toByteArray());
 
     createImageWorkerThread();
-    createViewWidget();
+    createUi();
     createShortcuts();
 
     readSettings();
-}
-
-ViewWindow::~ViewWindow() {
 }
 
 QSize ViewWindow::sizeHint() const {
@@ -46,7 +51,7 @@ void ViewWindow::setCloseQuits(bool value) {
     closeQuits = value;
 }
 
-void ViewWindow::exitApplication() {
+void ViewWindow::exit() {
     saveSettings();
     imageWorkerThread.quit();
     imageWorkerThread.wait();
@@ -70,7 +75,7 @@ void ViewWindow::wheelEvent(QWheelEvent* event) {
 
 void ViewWindow::closeEvent(QCloseEvent* event __attribute__((unused))) {
     if (closeQuits) {
-        mainWindow->exitApplication();
+        pixie->exit();
     } else {
         showMainWindow();
     }
@@ -90,7 +95,7 @@ void ViewWindow::changeEvent(QEvent *event) {
     QMainWindow::changeEvent(event);
 }
 
-void ViewWindow::createViewWidget() {
+void ViewWindow::createUi() {
     fileListWidget = mainWindow->getFileListWidget();
     viewWidget = new ViewWidget();
     setCentralWidget(viewWidget);
@@ -141,7 +146,7 @@ void ViewWindow::switchFit() {
 
 void ViewWindow::escapePressed() {
     if (closeQuits) {
-        mainWindow->exitApplication();
+        mainWindow->exit();
     } else {
         showMainWindow();
     }

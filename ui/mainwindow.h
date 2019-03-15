@@ -6,6 +6,7 @@
 #include <QTreeWidgetItem>
 #include <QListWidgetItem>
 #include <QTimer>
+#include "pixie.h"
 
 class Config;
 class ThumbnailQueue;
@@ -22,15 +23,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(const char* startPath, QWidget *parent = nullptr);
+    MainWindow(Pixie *pixie);
     virtual ~MainWindow() override;
+    void create();
     virtual QSize sizeHint() const override;
     virtual void closeEvent(QCloseEvent* event) override;
     void setViewWindow(ViewWindow* value);
     FileManager* getFileManager();
     FileListWidget* getFileListWidget();
     void startWith(const char* path);
-    void exitApplication();
+    void exit();
 
 public slots:
     void folderSelectionChanged();
@@ -50,7 +52,10 @@ public slots:
     void pasteFiles();
     void execute(QListWidgetItem* item);
 
-private:    
+private:
+    void createUi();
+    void createMenu();
+    void createLayout();
     void addDrives();
     void enterFolder(File* file);
     void showImage(QList<QListWidgetItem*> items);
@@ -62,6 +67,7 @@ private:
     void setUiEnabled(bool value);
     void findFilesInCurrentFolder();
     void goToParentFolder();
+    Pixie* pixie;
     Config* config;
     FileManager* fileManager;
     ThumbnailQueue* thumbnailQueue;

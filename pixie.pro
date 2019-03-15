@@ -46,7 +46,8 @@ SOURCES += \
     ui/settingsdialog.cpp \
     domain/imageworker.cpp \
     domain/imagerowworker.cpp \
-    domain/imageutils.cpp
+    domain/imageutils.cpp \
+    pixie.cpp
 
 HEADERS += \
     domain/config.h \
@@ -69,7 +70,8 @@ HEADERS += \
     ui/settingsdialog.h \
     domain/imageworker.h \
     domain/imagerowworker.h \
-    domain/imageutils.h
+    domain/imageutils.h \
+    pixie.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

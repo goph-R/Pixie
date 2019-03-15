@@ -17,6 +17,7 @@ ImageRowWorker::ImageRowWorker(ImageWorker* worker, QString path, QSize size, in
 void ImageRowWorker::run() {
     workerMutex.lock();
     if (path != worker->getPathToLoad()) {
+        workerMutex.unlock();
         return;
     }
     workerMutex.unlock();

@@ -81,5 +81,6 @@ QScrollBar::add-page:enabled, QScrollBar::sub-page:enabled  {
 }
 QScrollBar::handle {
 	background-color: #666;
+	min-height: 64px;
 }
  

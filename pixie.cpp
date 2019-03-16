@@ -85,12 +85,15 @@ void Pixie::exit() {
     mainWindow->exit();
     viewWindow->exit();
 
-    delete viewWindow;
-    delete mainWindow;
     delete thumbnailQueue;
     delete fileManager;
     delete theme;
     delete config;
 
     QApplication::quit();
+
+    // Delete windows after quit because of a crash possibility
+    delete viewWindow;
+    delete mainWindow;
+
 }

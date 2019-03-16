@@ -4,10 +4,13 @@
 #include <QDebug>
 #include <QThreadPool>
 
+QString Config::USER_FOLDER = ".pixie";
+
 Config::Config() {
     thumbnailSize = 192;
+    theme = "dark";
     setUpImageExtensions();
-    setUpCacheFolder();
+    setUpUserFolder();
 }
 
 bool Config::useBackslash() {
@@ -27,13 +30,17 @@ void Config::setUpImageExtensions() {
     }
 }
 
-void Config::setUpCacheFolder() {
+const QString Config::getUserFolder() {
+    auto result = QDir::homePath() + "/" + Config::USER_FOLDER + "/";
+    return result;
+}
+
+void Config::setUpUserFolder() {
     QString homePath = QDir::homePath();
-    cacheFolder = homePath + "/.pixie/";
-    QDir dir(cacheFolder);
+    QDir dir(getUserFolder());
     if (!dir.exists()) {
         QDir homeDir(homePath);
-        homeDir.mkdir(".pixie");
+        homeDir.mkdir(Config::USER_FOLDER);
     }
     thumbnailsPath = cacheFolder + "thumbnails.s3db";
     QFile file(thumbnailsPath);
@@ -57,4 +64,8 @@ int Config::getThumbnailSize() {
 
 const QString Config::getThumbnailsPath() {
     return thumbnailsPath;
+}
+
+const QString Config::getTheme() {
+    return theme;
 }

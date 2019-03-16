@@ -72,20 +72,21 @@ void MainWindow::create() {
 void MainWindow::createUi() {
     setWindowTitle("Pixie");
 
-    folderTreeWidget = new FolderTreeWidget();
+    folderTreeWidget = new FolderTreeWidget(pixie);
     addDrives();
     QObject::connect(folderTreeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(folderExpanded(QTreeWidgetItem*)));
     QObject::connect(folderTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(folderSelectionChanged()));
     QObject::connect(fileManager, SIGNAL(folderAdded(File*)), folderTreeWidget, SLOT(addFolder(File*)));
     QObject::connect(fileManager, SIGNAL(folderEmpty(File*)), folderTreeWidget, SLOT(removeLoadingText(File*)));
 
-    fileListWidget = new FileListWidget(config);
+    fileListWidget = new FileListWidget(pixie);
     QObject::connect(fileListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(execute(QListWidgetItem*)));
     QObject::connect(fileListWidget, SIGNAL(backspacePressed()), this, SLOT(backspacePressed()));
     QObject::connect(fileListWidget, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
     QObject::connect(fileListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileSelectionChanged()));
 
     pathEdit = new QLineEdit();
+    pathEdit->setObjectName("pathEdit");
 
     settingsDialog = new SettingsDialog(this);
 
@@ -121,6 +122,7 @@ void MainWindow::createLayout() {
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
 
     auto w = new QWidget();
+    w->setObjectName("centralWidget");
     auto v = new QVBoxLayout(w);
     v->setContentsMargins(0, 0, 0, 0);
     v->setSpacing(4);

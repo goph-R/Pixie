@@ -6,17 +6,22 @@
 #include <QMimeData>
 #include <QApplication>
 #include <QScrollBar>
-#include <QDebug>
+#include "pixie.h"
 #include "domain/file.h"
 #include "domain/config.h"
 #include "ui/filelistdelegate.h"
 #include "ui/filelistitem.h"
+#include "ui/theme.h"
 
-FileListWidget::FileListWidget(Config* config) : QListWidget() {
-    this->config = config;
+#include <QDebug>
+#include <QFileInfo>
+
+FileListWidget::FileListWidget(Pixie* pixie) : QListWidget() {
+    config = pixie->getConfig();
+    theme = pixie->getTheme();
     createPixmaps();
 
-    delegate = new FileListDelegate(this);
+    delegate = new FileListDelegate(pixie->getTheme(), this);
     setItemDelegate(delegate);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     verticalScrollBar()->setSingleStep(((config->getThumbnailSize() + 37) / 3)); // TODO
@@ -30,7 +35,7 @@ FileListWidget::FileListWidget(Config* config) : QListWidget() {
     new QShortcut(QKeySequence("Ctrl+C"), this, SLOT(copySelection()));
 }
 
-void FileListWidget::createPixmaps() {
+void FileListWidget::createPixmaps() {    
     folderPixmap = createPixmap(":/icons/folder-big.png");
     filePixmap = createPixmap(":/icons/file-big.png");
     imagePixmap = createPixmap(":/icons/image-big.png");
@@ -40,7 +45,9 @@ void FileListWidget::createPixmaps() {
 
 QPixmap FileListWidget::createPixmap(QString path) {
     int size = config->getThumbnailSize();
-    return QPixmap(path).scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    auto pixmap = theme->getPixmap(path);
+    auto result = pixmap.scaled(size - 8, size - 8, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    return result;
 }
 
 FileListWidget::~FileListWidget() {

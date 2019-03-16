@@ -12,6 +12,7 @@ class ViewWindow;
 class Config;
 class FileManager;
 class ThumbnailQueue;
+class Theme;
 
 class Pixie
 {
@@ -24,6 +25,7 @@ public:
     MainWindow* getMainWindow();
     ViewWindow* getViewWindow();
     Config* getConfig();
+    Theme* getTheme();
     FileManager* getFileManager();
     ThumbnailQueue* getThumbnailQueue();
 
@@ -34,6 +36,7 @@ private:
     ThumbnailQueue* thumbnailQueue;
     MainWindow* mainWindow;
     ViewWindow* viewWindow;
+    Theme* theme;
     const char* startPath;
 };
 

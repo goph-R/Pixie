@@ -2,17 +2,18 @@
 
 #include <QPainter>
 #include "domain/file.h"
+#include "ui/theme.h"
 #include "ui/filelistwidget.h"
 #include "ui/filelistitem.h"
 
 #include <QDebug>
 
-FileListDelegate::FileListDelegate(QWidget* parent) : QStyledItemDelegate (parent) {
+FileListDelegate::FileListDelegate(Theme* theme, QWidget* parent) : QStyledItemDelegate (parent) {
     fileListWidget = static_cast<FileListWidget*>(parent);
-    backgroundBrush = QColor(242, 242, 242);
-    textPen = QColor(24, 24, 24);
-    borderBrush = QColor(255, 255, 255);
-    selectionBrush = QColor(0, 128, 255, 48);
+    backgroundBrush = theme->getColor("files.background_color", QColor(242, 242, 242));
+    textPen = theme->getColor("files.text_color", QColor(24, 24, 24));
+    borderBrush = theme->getColor("files.border_color", QColor(255, 255, 255));
+    selectionBrush = theme->getColor("files.selection_color", QColor(0, 128, 255, 48));
 }
 
 FileListDelegate::~FileListDelegate() {

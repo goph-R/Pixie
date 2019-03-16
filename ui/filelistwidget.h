@@ -4,7 +4,9 @@
 #include <QListWidget>
 #include <QHash>
 
+class Pixie;
 class Config;
+class Theme;
 class File;
 class FileListDelegate;
 class FileListItem;
@@ -14,7 +16,7 @@ class FileListWidget : public QListWidget
     Q_OBJECT
 
 public:
-    FileListWidget(Config* config);
+    FileListWidget(Pixie* pixie);
     virtual ~FileListWidget() override;
     FileListItem* createItem(File* file);
     bool hasItem(QString path);
@@ -39,6 +41,7 @@ private:
     void createPixmaps();
     QPixmap createPixmap(QString path);
     Config* config;
+    Theme* theme;
     QHash<QString, FileListItem*> itemsByPath;
     FileListDelegate* delegate;
     QPixmap folderPixmap;

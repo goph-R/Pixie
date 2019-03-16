@@ -6,6 +6,7 @@
 #include "domain/filemanager.h"
 #include "domain/config.h"
 #include "domain/thumbnailqueue.h"
+#include "ui/theme.h"
 #include "ui/mainwindow.h"
 #include "ui/viewwindow.h"
 
@@ -25,6 +26,7 @@ Pixie::Pixie(int argc, char** argv) {
     app = new QApplication(argc, argv);
 
     config = new Config();
+    theme = new Theme(config);
     fileManager = new FileManager(config);
     thumbnailQueue = new ThumbnailQueue(config, fileManager);
 
@@ -32,6 +34,9 @@ Pixie::Pixie(int argc, char** argv) {
     viewWindow = new ViewWindow(this);
     mainWindow->create();
     viewWindow->create();
+
+    theme->apply(mainWindow);
+    theme->apply(viewWindow);
 }
 
 Pixie::~Pixie() {
@@ -63,6 +68,10 @@ Config* Pixie::getConfig() {
     return config;
 }
 
+Theme* Pixie::getTheme() {
+    return theme;
+}
+
 FileManager* Pixie::getFileManager() {
     return fileManager;
 }
@@ -80,6 +89,7 @@ void Pixie::exit() {
     delete mainWindow;
     delete thumbnailQueue;
     delete fileManager;
+    delete theme;
     delete config;
 
     QApplication::quit();

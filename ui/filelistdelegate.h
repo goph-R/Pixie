@@ -5,11 +5,12 @@
 #include <QPen>
 
 class FileListWidget;
+class Theme;
 
 class FileListDelegate : public QStyledItemDelegate
 {
 public:
-    FileListDelegate(QWidget *parent);
+    FileListDelegate(Theme* theme, QWidget *parent);
     virtual ~FileListDelegate() override;
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 

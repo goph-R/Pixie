@@ -13,15 +13,19 @@ public:
     const QString getThumbnailsPath();
     bool useBackslash();
     int getMaxThreadCount();
+    const QString getUserFolder();
+    const QString getTheme();
 
 private:
+    static QString USER_FOLDER;
     void setUpImageExtensions();
-    void setUpCacheFolder();
+    void setUpUserFolder();
     QStringList imageExtensions;
     QStringList imageFileNameFilters;
     int thumbnailSize;
     QString thumbnailsPath;
     QString cacheFolder;
+    QString theme;
 
 };
 

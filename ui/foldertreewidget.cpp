@@ -3,21 +3,19 @@
 #include <QDir>
 #include <QHeaderView>
 #include <QSizePolicy>
+#include "pixie.h"
+#include "theme.h"
 #include "domain/file.h"
 #include "ui/foldertreeitem.h"
 
 #include <QDebug>
 
-FolderTreeWidget::FolderTreeWidget() : QTreeWidget() {
+FolderTreeWidget::FolderTreeWidget(Pixie* pixie) : QTreeWidget() {
+    auto theme = pixie->getTheme();
+    folderIcon = QIcon(theme->getPixmap(":/icons/folder.png"));
     setHeaderHidden(true);
-    folderIcon = QIcon(":/icons/folder.png");
-    auto h = header();
-#if QT_VERSION >= 0x050000
-    h->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-#else
-    h->setResizeMode(0, QHeaderView::ResizeToContents);
-#endif
-    h->setStretchLastSection(false);
+    setAlternatingRowColors(true);
+    header()->setStretchLastSection(true);
 }
 
 FolderTreeWidget::~FolderTreeWidget() {

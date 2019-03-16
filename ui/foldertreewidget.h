@@ -4,6 +4,7 @@
 #include <QTreeWidget>
 #include <QHash>
 
+class Pixie;
 class File;
 class FolderTreeItem;
 
@@ -12,7 +13,7 @@ class FolderTreeWidget : public QTreeWidget
     Q_OBJECT
 
 public:
-    FolderTreeWidget();
+    FolderTreeWidget(Pixie* pixie);
     virtual ~FolderTreeWidget() override;
     FolderTreeItem* createItem(FolderTreeItem* parentItem, File* file, QIcon icon);
     bool hasItem(File* file);

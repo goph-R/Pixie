@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QThreadPool>
+#include <QCoreApplication>
 
 QString Config::USER_FOLDER = ".pixie";
 
@@ -33,6 +34,10 @@ void Config::setUpImageExtensions() {
 const QString Config::getUserFolder() {
     auto result = QDir::homePath() + "/" + Config::USER_FOLDER + "/";
     return result;
+}
+
+const QString Config::getAppFolder() {
+    return QCoreApplication::applicationDirPath() + "/";
 }
 
 void Config::setUpUserFolder() {

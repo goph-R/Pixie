@@ -14,6 +14,7 @@ public:
     bool useBackslash();
     int getMaxThreadCount();
     const QString getUserFolder();
+    const QString getAppFolder();
     const QString getTheme();
 
 private:

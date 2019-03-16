@@ -17,21 +17,27 @@ void Theme::apply(QWidget* widget) {
 }
 
 QString Theme::getBasePath() {
-    return config->getUserFolder() + "themes/" + config->getTheme() + "/";
+    QString postfix = "themes/" + config->getTheme() + "/";
+    QString themePath = config->getUserFolder() + postfix;
+    QFileInfo info(themePath);
+    if (info.exists(themePath)) {
+        return themePath;
+    }
+    themePath = config->getAppFolder() + postfix;
+    return themePath;
 }
 
 QString Theme::getPath(QString path) {
-    return path.replace(":/", getBasePath());
+    QString result = path.replace(":/", getBasePath());
+    QFileInfo info(result);
+    if (info.exists()) {
+        return result;
+    }
+    return path;
 }
 
 QPixmap Theme::getPixmap(QString path) {
-    QString pixmapPath = path;
-    QString themePath = getPath(path);
-    QFileInfo info(themePath);
-    if (info.exists(themePath)) {
-        pixmapPath = themePath;
-    }
-    QPixmap pixmap(pixmapPath);
+    QPixmap pixmap(getPath(path));
     return pixmap;
 }
 

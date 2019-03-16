@@ -47,7 +47,7 @@ void Config::setUpUserFolder() {
         QDir homeDir(homePath);
         homeDir.mkdir(Config::USER_FOLDER);
     }
-    thumbnailsPath = cacheFolder + "thumbnails.s3db";
+    thumbnailsPath = getUserFolder() + "thumbnails.s3db";
     QFile file(thumbnailsPath);
     if (!file.exists()) {
         QFile::copy(":/database/thumbnails.s3db", thumbnailsPath);

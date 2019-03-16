@@ -6,7 +6,7 @@ The Open Source Image Manager.
 
 ### Install on Windows:
 
-[Download the Win32 installer here](https://github.com/goph-R/Pixie/releases/download/0.1/PixieInstall_0.1.exe)
+[Download the Win32 installer here](https://github.com/goph-R/Pixie/releases/download/0.1.1/PixieInstall_0.1.1.exe)
 
 ### Compile on Ubuntu (18.04)
 

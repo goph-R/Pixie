@@ -166,7 +166,7 @@ void MainWindow::showSettings() {
 }
 
 void MainWindow::showAbout() {
-    QMessageBox::about(this, "About Pixie", "<b>Pixie</b><br><br>The Image Manager.<br><small>Version: 0.1</small>");
+    QMessageBox::about(this, "About Pixie", "<b>Pixie</b><br><br>The Image Manager.<br><a href=\"https://github.com/goph-R/Pixie\">Pixie on GitHub</a><br><small>Version: 0.1.1</small>");
 }
 
 FileManager* MainWindow::getFileManager() {
